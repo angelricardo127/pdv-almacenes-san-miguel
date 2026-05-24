@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane prefHeight="450.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.ReporteVentaController">
+    <children>
+
+        <TableView fx:id="tablaReportes" prefHeight="200.0" prefWidth="200.0">
+            <columns>
+                <TableColumn prefWidth="100.0" text="Folio (ID)" />
+                <TableColumn prefWidth="250.0" text="Fecha y Hora" />
+                <TableColumn prefWidth="150.0" text="Método de Pago" />
+            </columns>
+        </TableView>
+
+        <VBox fx:id="contenedorEstadoVacio" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0" style="-fx-background-color: #ffffff;">
+            <children>
+                <Label text="📭" textFill="#b5b5b5">
+                    <font>
+                        <Font size="64.0" />
+                    </font>
+                </Label>
+                <Label text="No hay ventas en el historial" textFill="#515151">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <Label text="Las ventas que proceses en la caja aparecerán en esta pantalla." textFill="#909090">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+
+    </children>
+</StackPane>
+
