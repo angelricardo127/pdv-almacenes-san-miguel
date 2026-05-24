@@ -90,4 +90,20 @@ public class VentaService {
             session.close();
         }
     }
+    /**
+     * Recupera el catálogo completo de productos desde la base de datos.
+     * @return Lista de productos disponibles para vender
+     */
+    public List<Producto> obtenerProductos() {
+        Session session = sessionFactory.openSession();
+        try {
+            // HQL: Le pedimos todos los productos de la base de datos
+            return session.createQuery("FROM Producto", Producto.class).list();
+        } catch (Exception e) {
+            System.err.println("Error al obtener el catálogo de productos: " + e.getMessage());
+            return java.util.Collections.emptyList();
+        } finally {
+            session.close();
+        }
+    }
 }
