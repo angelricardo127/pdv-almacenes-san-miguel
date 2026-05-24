@@ -73,4 +73,21 @@ public class VentaService {
             session.close();
         }
     }
+    /**
+     * Recupera el historial completo de ventas registradas en la base de datos.
+     * @return Lista de ventas para mostrar en los reportes
+     */
+    public List<Venta> obtenerHistorialVentas() {
+        Session session = sessionFactory.openSession();
+        try {
+            // HQL (Hibernate Query Language): Le pedimos los objetos Venta directamente
+            return session.createQuery("FROM Venta", Venta.class).list();
+        } catch (Exception e) {
+            System.err.println("Error al obtener el historial de ventas: " + e.getMessage());
+            // Si algo falla, devolvemos una lista vacía para que no explote la pantalla
+            return java.util.Collections.emptyList();
+        } finally {
+            session.close();
+        }
+    }
 }

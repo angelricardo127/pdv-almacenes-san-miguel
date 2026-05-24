@@ -42,4 +42,26 @@ public class VentaServiceTest {
     public static void tearDown() {
         if (sessionFactory != null) sessionFactory.close();
     }
+    // esto se acaba de agregar
+    @Test
+    @DisplayName("Debería recuperar el historial de ventas registradas")
+    public void testObtenerHistorialVentas() {
+        // 1. Ejecutar el nuevo método de lectura
+        List<Venta> historial = ventaService.obtenerHistorialVentas();
+
+        // 2. Validar que la lista no sea nula
+        assertNotNull(historial, "El historial no debería ser nulo.");
+
+        // 3. Validar que traiga datos (ya que creamos ventas en las pruebas anteriores)
+        assertFalse(historial.isEmpty(), "El historial debería contener al menos las ventas de prueba.");
+
+        // Imprimir en consola para confirmar visualmente
+        System.out.println("======== REPORTE DE VENTAS ========");
+        System.out.println("Total de tickets encontrados: " + historial.size());
+        for (Venta v : historial) {
+            System.out.println("Ticket ID: " + v.getIdVenta() + " | Método de Pago ID: " + v.getIdMetodoPago());
+        }
+        System.out.println("===================================");
+    }
 }
+
