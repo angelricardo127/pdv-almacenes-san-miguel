@@ -26,6 +26,7 @@
         <mapping class="com.asm.modelo.MetodoPago"/>
         <mapping class="com.asm.modelo.Venta"/>
         <mapping class="com.asm.modelo.DetalleVenta"/>
+        <mapping class="com.asm.modelo.Producto"/>
 
     </session-factory>
 </hibernate-configuration>
