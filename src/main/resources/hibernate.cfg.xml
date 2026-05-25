@@ -11,7 +11,7 @@
 
         <property name="hibernate.connection.username">root</property>
 
-        <property name="hibernate.connection.password">R1kardo_zzrc</property>
+        <property name="hibernate.connection.password">VhOc050723</property>
 
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 
@@ -22,6 +22,11 @@
 
         <mapping class="com.asm.modelo.Rol"/>
         <mapping class="com.asm.modelo.Usuario"/>
+        <mapping class="com.asm.modelo.Cliente"/>
+        <mapping class="com.asm.modelo.MetodoPago"/>
+        <mapping class="com.asm.modelo.Venta"/>
+        <mapping class="com.asm.modelo.DetalleVenta"/>
+        <mapping class="com.asm.modelo.Producto"/>
 
     </session-factory>
 </hibernate-configuration>
