@@ -12,25 +12,24 @@ public class Main extends Application {
 
     @Override
     public void start(Stage escenarioPrincipal) throws Exception {
-        // 1. Cargamos el archivo FXML que acabas de diseñar
-        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/PuntoVenta.fxml")));
+        // 1. Cargamos DIRECTAMENTE tu archivo de inventario en la raíz
+        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/inventario.fxml")));
 
-        // 2. Creamos la "Escena" y le damos las dimensiones de tu diseño (1366 x 768)
-        Scene escena = new Scene(raiz, 1366, 768);
+        // 2. Creamos la "Escena" con las dimensiones de tu diseño
+        Scene escena = new Scene(raiz, 900, 600);
 
-        // 3. Configuramos la ventana de Windows
-        escenarioPrincipal.setTitle("Almacenes San Miguel - Punto de Venta");
+        // 3. Configuramos la ventana de Windows con tus títulos
+        escenarioPrincipal.setTitle("Almacenes San Miguel - Almacén e Inventario");
         escenarioPrincipal.setScene(escena);
 
-        // Opcional: Para que no la puedan hacer chiquita y romper el diseño
-        escenarioPrincipal.setResizable(false);
+        // Permitimos redimensionar temporalmente para ver que todo se acomode bien
+        escenarioPrincipal.setResizable(true);
 
         // 4. ¡Luces, cámara, acción!
         escenarioPrincipal.show();
     }
 
     public static void main(String[] args) {
-        // Este es el método que arranca toda la aplicación
         launch(args);
     }
 }
