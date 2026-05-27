@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "productos")
 public class Producto {
 
+    // --- ATRIBUTOS ORIGINALES (Intocables por consistencia con el equipo) ---
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
@@ -26,19 +27,47 @@ public class Producto {
     @Column(name = "id_genero", nullable = false)
     private int idGenero;
 
-    // Constructor vacío obligatorio para Hibernate
+    // --- ATRIBUTOS NUEVOS DE FIGMA (Se agregan como opcionales sin romper el script base) ---
+    @Column(name = "sku", length = 50, unique = true)
+    private String sku;
+
+    @Column(name = "categoria", length = 100)
+    private String categoria;
+
+    @Column(name = "variantes", length = 255)
+    private String variantes;
+
+    @Column(name = "costo_compra")
+    private Double costoCompra;
+
+    @Column(name = "stock_minimo")
+    private Integer stockMinimo;
+
+    @Column(name = "proveedor", length = 150)
+    private String proveedor;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String descripcion;
+
     public Producto() {}
 
-    // Constructor completo para usar en la lógica
-    public Producto(String nombreProducto, int stock, double precio, int idTalla, int idGenero) {
+    // Constructor actualizado
+    public Producto(String sku, String nombreProducto, String categoria, String variantes, double precio, Double costoCompra, int stock, Integer stockMinimo, String proveedor, String descripcion, int idTalla, int idGenero) {
+        this.sku = sku;
         this.nombreProducto = nombreProducto;
-        this.stock = stock;
+        this.categoria = categoria;
+        this.variantes = variantes;
         this.precio = precio;
-        this.idTalla = idTalla;
-        this.idGenero = idGenero;
+        this.costoCompra = costoCompra;
+        this.stock = stock;
+        this.stockMinimo = stockMinimo;
+        this.proveedor = proveedor;
+        this.descripcion = descripcion;
+        this.idTalla = idTalla; // Respetando la BD original
+        this.idGenero = idGenero; // Respetando la BD original
     }
 
-    // Getters y Setters
+    // --- GETTERS Y SETTERS ---
     public int getIdProducto() { return idProducto; }
     public void setIdProducto(int idProducto) { this.idProducto = idProducto; }
 
@@ -56,4 +85,25 @@ public class Producto {
 
     public int getIdGenero() { return idGenero; }
     public void setIdGenero(int idGenero) { this.idGenero = idGenero; }
+
+    public String getSku() { return sku; }
+    public void setSku(String sku) { this.sku = sku; }
+
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+
+    public String getVariantes() { return variantes; }
+    public void setVariantes(String variantes) { this.variantes = variantes; }
+
+    public Double getCostoCompra() { return costoCompra; }
+    public void setCostoCompra(Double costoCompra) { this.costoCompra = costoCompra; }
+
+    public Integer getStockMinimo() { return stockMinimo; }
+    public void setStockMinimo(Integer stockMinimo) { this.stockMinimo = stockMinimo; }
+
+    public String getProveedor() { return proveedor; }
+    public void setProveedor(String proveedor) { this.proveedor = proveedor; }
+
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 }

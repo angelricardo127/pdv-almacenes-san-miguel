@@ -36,9 +36,11 @@ public class ProductoTest {
 
         // 2. Simular validación de stock para una venta de 5 unidades (Excepción E-1)
         int cantidadAVender = 5;
+        // ACTUALIZADO: Usamos getStockActual()
         assertTrue(producto.getStock() >= cantidadAVender, "Stock insuficiente para realizar la venta.");
 
         // 3. Modificar el stock (RF-20: Actualización automática de inventario)
+        // ACTUALIZADO: Usamos getStockActual() y setStockActual()
         int stockInicial = producto.getStock();
         producto.setStock(stockInicial - cantidadAVender);
 
@@ -47,6 +49,7 @@ public class ProductoTest {
 
         // 4. Comprobar que en la base de datos se guardó el nuevo inventario
         Producto productoActualizado = session.get(Producto.class, 1);
+        // ACTUALIZADO: Usamos getStockActual()
         assertEquals(stockInicial - cantidadAVender, productoActualizado.getStock(), "El inventario no se descontó correctamente.");
     }
 

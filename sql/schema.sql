@@ -144,7 +144,7 @@ CREATE TABLE devolucion (
         FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
 );
 
-
+ALTER TABLE productos DROP COLUMN stock;
 USE almacenes_san_miguel;
 
 -- Inyectar catalogos basicos de prueba
@@ -160,3 +160,4 @@ VALUES ('admin', 'admin123', 'Jefferson', 'Gutierritos', 1);
 -- Inyectar un producto para la prueba
 INSERT INTO productos (nombre_product, stock, precio, id_talla, id_genero) 
 VALUES ('Playera Tipo Polo Diaria', 50, 250.00, 2, 3);
+

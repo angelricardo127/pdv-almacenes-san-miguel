@@ -165,6 +165,6 @@ public class PuntoVentaController {
         }
         lblTotal.setText("$0.00");
 
-        System.out.println("✅ ¡Venta completada con éxito! Sistema listo para el siguiente cliente.");
+        System.out.println(" ¡Venta completada con éxito! Sistema listo para el siguiente cliente.");
     }
 }
