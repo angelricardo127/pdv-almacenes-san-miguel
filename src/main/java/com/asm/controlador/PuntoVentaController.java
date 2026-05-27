@@ -13,27 +13,42 @@ import javafx.scene.text.FontWeight;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.control.TextField;
 
 public class PuntoVentaController {
 
     // --- CONEXIONES CON LA INTERFAZ VISUAL (FXML) ---
-    @FXML private TilePane contenedorProductos;
-    @FXML private VBox emptyStateCarrito;
-    @FXML private VBox contenedorCarrito;
-    @FXML private Label lblTotal;
-    @FXML private Button btnProcesarPago; // Nuestro nuevo botón conectado
+    @FXML
+    private TilePane contenedorProductos;
+    @FXML
+    private VBox emptyStateCarrito;
+    @FXML
+    private VBox contenedorCarrito;
+    @FXML
+    private Label lblTotal;
+    @FXML
+    private Button btnProcesarPago; // Nuestro nuevo botón
 
     private double totalCompra = 0.0;
+    @FXML private TextField txtBuscarProducto;
+    private List<Producto> listaProductos;
+
 
     // --- LA MEMORIA DEL CARRITO ---
     // Guarda el ID del producto y cuántos llevamos (Ej: ID 1 -> 3 piezas)
     private Map<Integer, Integer> cantidadesCarrito = new HashMap<>();
     // Guarda el ID y el objeto Producto completo para poder leer su nombre y precio
     private Map<Integer, Producto> productosCarrito = new HashMap<>();
-
+    private VentaService servicioVentas;
     @FXML
     public void initialize() {
         System.out.println("Cargando el Punto de Venta desde la BD...");
@@ -47,10 +62,9 @@ public class PuntoVentaController {
             configuration.addAnnotatedClass(com.asm.modelo.DetalleVenta.class);
 
             SessionFactory factory = configuration.buildSessionFactory();
-            VentaService servicio = new VentaService(factory);
+            this.servicioVentas = new VentaService(factory);
 
-            List<Producto> listaProductos = servicio.obtenerProductos();
-
+            this.listaProductos = servicioVentas.obtenerProductos();
             for (Producto prod : listaProductos) {
                 // Ahora le mandamos el objeto Producto completo a la tarjeta
                 crearTarjetaProducto(prod);
@@ -150,21 +164,107 @@ public class PuntoVentaController {
             return;
         }
 
-        System.out.println("💳 Procesando el pago por un total de: $" + totalCompra);
-        // NOTA: Aquí es donde conectaremos tu VentaService para descontar el stock en MySQL.
+        try {
+            // 1. Cargar el diseño de la nueva ventanita
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModalPago.fxml"));
+            Parent root = loader.load();
 
-        // Simulamos que la venta fue un éxito y limpiamos el sistema para el siguiente cliente
-        cantidadesCarrito.clear();
-        productosCarrito.clear();
-        actualizarVistaCarrito();
+            // 2. Obtener el cerebro del Modal para pasarle los datos
+            ModalPagoController modalController = loader.getController();
+            modalController.setTotalAPagar(totalCompra);
 
-        // Regresamos el Empty State a la pantalla y dejamos el total en ceros
-        if (emptyStateCarrito != null) {
-            emptyStateCarrito.setVisible(true);
-            emptyStateCarrito.setManaged(true);
+            // 3. Crear la ventana flotante
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Procesar Pago");
+            modalStage.setScene(new Scene(root));
+
+            // 4. Hacer que bloquee la pantalla de atrás (MODAL)
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            // modalStage.setResizable(false); // Para que no le cambien el tamaño
+
+            // 5. Mostrar la ventanita y ESPERAR a que el usuario la cierre
+            modalStage.showAndWait();
+
+            // 6. Cuando la ventana se cierra, le preguntamos si el pago fue exitoso
+            if (modalController.isPagoAprobado()) {
+                System.out.println("✅ ¡Venta confirmada! Abriendo ticket...");
+
+                // Calculamos el cambio final pidiéndole el dinero recibido a la ventanita
+                double recibido = modalController.getMontoRecibido();
+                double cambio = recibido - totalCompra;
+
+                // --- GUARDAR EN BASE DE DATOS MIENTRAS SE IMPRIME EL TICKET ---
+                servicioVentas.registrarVenta(cantidadesCarrito, totalCompra);
+
+                // --- MAGIA DEL TICKET ---
+                FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/ModalTicket.fxml"));
+                Parent ticketRoot = ticketLoader.load();
+
+                ModalTicketController ticketController = ticketLoader.getController();
+                // Le inyectamos el carrito completo, los totales y el cambio
+                ticketController.cargarDatosTicket(cantidadesCarrito, productosCarrito, totalCompra, recibido, cambio, "Efectivo");
+
+                Stage ticketStage = new Stage();
+                ticketStage.setTitle("Ticket de Venta");
+                ticketStage.setScene(new Scene(ticketRoot));
+                ticketStage.initModality(Modality.APPLICATION_MODAL);
+
+                // Mostramos el ticket y ESPERAMOS a que el cajero lo cierre
+                ticketStage.showAndWait();
+
+                // --- LIMPIEZA DEL CARRITO ---
+                // Una vez que el cajero termina de ver/imprimir el ticket, limpiamos el sistema
+                cantidadesCarrito.clear();
+                productosCarrito.clear();
+                actualizarVistaCarrito();
+
+                if (emptyStateCarrito != null) {
+                    emptyStateCarrito.setVisible(true);
+                    emptyStateCarrito.setManaged(true);
+                }
+                lblTotal.setText("$0.00");
+
+            } else {
+                System.out.println("❌ Pago cancelado por el cajero.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al abrir la ventana de pago: " + e.getMessage());
+            e.printStackTrace();
         }
-        lblTotal.setText("$0.00");
+    }
+    private void filtrarProductos(String busqueda) {
+        // 1. Limpiamos las tarjetas actuales usando tu nombre real
+        contenedorProductos.getChildren().clear();
 
-        System.out.println("✅ ¡Venta completada con éxito! Sistema listo para el siguiente cliente.");
+        String busquedaMinusculas = busqueda.toLowerCase();
+
+        // 2. Volvemos a dibujar solo los que coincidan con el texto
+        for (Producto prod : listaProductos) {
+            if (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas)) {
+                crearTarjetaProducto(prod);
+            }
+        }
+    }
+    @FXML
+    private void abrirVentanaReimprimir() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/ModalReimprimir.fxml"));
+            javafx.scene.Parent root = loader.load();
+            // --- ESTAS DOS LÍNEAS SON LA MAGIA ---
+            // Le prestamos nuestro servicio de base de datos a la ventanita morada
+            ModalReimprimirController controller = loader.getController();
+            controller.setServicioVentas(this.servicioVentas);
+            // -------------------------------------
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Reimprimir Ticket");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.err.println("Error al abrir la ventana de reimpresión: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
