@@ -13,7 +13,7 @@ public class Main extends Application {
     @Override
     public void start(Stage escenarioPrincipal) throws Exception {
         // 1. Cargamos el archivo FXML que acabas de diseñar
-        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/PuntoVenta.fxml")));
+        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/Login.fxml")));
 
         // 2. Creamos la "Escena" y le damos las dimensiones de tu diseño (1366 x 768)
         Scene escena = new Scene(raiz, 1366, 768);
@@ -28,6 +28,7 @@ public class Main extends Application {
         // 4. ¡Luces, cámara, acción!
         escenarioPrincipal.show();
     }
+
 
     public static void main(String[] args) {
         // Este es el método que arranca toda la aplicación
