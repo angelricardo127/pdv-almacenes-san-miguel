@@ -49,6 +49,9 @@ public class Producto {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
+    @Column(name = "activo")
+    private boolean activo = true;
+
     public Producto() {}
 
     // Constructor
@@ -106,4 +109,7 @@ public class Producto {
 
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    public boolean getActivo(){return activo;}
+    public void setActivo(boolean activo){this.activo = activo;}
 }

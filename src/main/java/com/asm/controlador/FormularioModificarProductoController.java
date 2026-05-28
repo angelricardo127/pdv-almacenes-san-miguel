@@ -93,12 +93,17 @@ public class FormularioModificarProductoController {
         }
     }
 
-    @FXML
+    @FXML //metodo para dar de baja
     public void darDeBaja() {
-        // Aquí iría la lógica para borrar o desactivar el producto (DELETE)
-        System.out.println(" Producto enviado a la papelera: " + productoEdicion.getNombreProducto());
-        // servicio.eliminarProducto(productoEdicion.getIdProducto());
+        System.out.println("Dando de baja el producto: " + productoEdicion.getNombreProducto());
+
+        // Ejecutamos el soft delete
+        servicio.darDeBajaProducto(productoEdicion);
+
+        // Recargamos la tabla (ahora el producto ya no saldrá por el filtro que pusimos)
         controladorPadre.cargarDatosEnTabla();
+
+        // Cerramos la ventana
         cerrarVentana();
     }
 

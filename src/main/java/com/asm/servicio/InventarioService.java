@@ -73,15 +73,20 @@ public class InventarioService {
      * Recupera todos los productos para mostrarlos en la tabla de inventario de JavaFX.
      */
     public List<Producto> obtenerCatalogoCompleto() {
-        Session session = sessionFactory.openSession();
-        try {
-            return session.createQuery("FROM Producto", Producto.class).list();
+        try (org.hibernate.Session session = sessionFactory.openSession()) {
+            // El WHERE activo = true es la magia del Soft Delete
+            return session.createQuery("FROM Producto WHERE activo = true", Producto.class).list();
         } catch (Exception e) {
-            System.err.println("Error al obtener catálogo: " + e.getMessage());
-            return java.util.Collections.emptyList();
-        } finally {
-            session.close();
+            System.err.println("Error al consultar catálogo: " + e.getMessage());
+            return null;
         }
+    }
+//metodo que
+    public void darDeBajaProducto(Producto producto) {
+        // Simplemente le apagamos el switch y mandamos la actualización a MySQL
+        producto.setActivo(false);
+        actualizarProducto(producto);
+        System.out.println("🗑 Hibernate: Producto dado de baja (Soft Delete).");
     }
 
     /**
