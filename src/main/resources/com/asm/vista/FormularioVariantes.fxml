@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="0" style="-fx-background-color: white; -fx-font-family: 'Segoe UI', sans-serif;" prefWidth="750.0" prefHeight="550.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.FormularioVariantesController">
+
+    <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 30;">
+        <Label text="Gestión de Variantes" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A202C;" HBox.hgrow="ALWAYS"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label text="✕" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-text-fill: #4A5568;" onMouseClicked="#cerrarVentana"/>
+    </HBox>
+    <Separator style="-fx-background-color: #E2E8F0;"/>
+
+    <VBox fx:id="paso1" spacing="15.0" style="-fx-padding: 20 30;" VBox.vgrow="ALWAYS">
+        <Label text="Paso 1: Seleccione el producto base" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2D3748;"/>
+
+        <TableView fx:id="tablaProductos" VBox.vgrow="ALWAYS" style="-fx-border-color: #E2E8F0; -fx-background-radius: 5;">
+            <columns>
+                <TableColumn fx:id="colNombre" text="Producto" prefWidth="250.0"/>
+                <TableColumn fx:id="colSku" text="SKU" prefWidth="150.0"/>
+                <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="150.0"/>
+                <TableColumn fx:id="colAccion" text="Acción" prefWidth="120.0"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <VBox fx:id="paso2" spacing="20.0" style="-fx-padding: 20 30;" VBox.vgrow="ALWAYS" visible="false" managed="false">
+
+        <VBox spacing="10" style="-fx-background-color: #FAF5FF; -fx-border-color: #D6BCFA; -fx-border-radius: 8; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Producto Seleccionado:" style="-fx-text-fill: #6B46C1; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            <Label fx:id="lblNombreProducto" text="Nombre del Producto" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1A202C;"/>
+            <Label fx:id="lblDetallesProducto" text="SKU: --- • Categoría: ---" style="-fx-text-fill: #4A5568; -fx-font-size: 13px;"/>
+            <Label text="← Cambiar producto" onMouseClicked="#volverAlPaso1" style="-fx-text-fill: #805AD5; -fx-cursor: hand; -fx-underline: true; -fx-font-size: 13px;"/>
+        </VBox>
+
+        <VBox spacing="15" style="-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-padding: 20;">
+            <Label text="Agregar Nueva Variante" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2D3748;"/>
+
+            <HBox spacing="15">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Talla *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4A5568;"/>
+                    <TextField fx:id="txtTalla" promptText="Ej: 28, M, XL" style="-fx-padding: 8; -fx-border-color: #CBD5E0; -fx-border-radius: 4;"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Color *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4A5568;"/>
+                    <TextField fx:id="txtColor" promptText="Ej: Azul, Negro" style="-fx-padding: 8; -fx-border-color: #CBD5E0; -fx-border-radius: 4;"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Precio *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4A5568;"/>
+                    <TextField fx:id="txtPrecio" promptText="\$ 0.00" style="-fx-padding: 8; -fx-border-color: #CBD5E0; -fx-border-radius: 4;"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Stock *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4A5568;"/>
+                    <TextField fx:id="txtStock" promptText="0" style="-fx-padding: 8; -fx-border-color: #CBD5E0; -fx-border-radius: 4;"/>
+                </VBox>
+            </HBox>
+
+            <Button text="+ Agregar Variante" onAction="#agregarVariante" style="-fx-background-color: #9F7AEA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 10; -fx-cursor: hand;" maxWidth="Infinity"/>
+
+            <Label fx:id="lblVariantesAcumuladas" text="Variantes por guardar: Ninguna" style="-fx-text-fill: #718096; -fx-font-size: 12px;"/>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <HBox spacing="15.0">
+            <Button text="Cancelar" onAction="#cerrarVentana" style="-fx-background-color: white; -fx-border-color: #CBD5E0; -fx-border-radius: 6; -fx-text-fill: #2D3748; -fx-font-weight: bold; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <Button text="Guardar Variantes" onAction="#guardarEnBaseDeDatos" style="-fx-background-color: #805AD5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        </HBox>
+    </VBox>
+</VBox>

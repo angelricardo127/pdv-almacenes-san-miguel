@@ -209,4 +209,25 @@ public class InventarioController {
             e.printStackTrace();
         }
     }
+
+    @FXML //metodo para gestionar variantes
+    public void abrirGestionVariantes() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioVariantes.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            FormularioVariantesController formCtrl = loader.getController();
+            formCtrl.setDependencias(this, this.servicio);
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Gestión de Variantes");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (Exception e) {
+            System.err.println("Error al abrir Variantes: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
