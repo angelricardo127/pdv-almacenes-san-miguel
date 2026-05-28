@@ -93,44 +93,48 @@ public class ModalTicketController {
     private void imprimirTicket() {
         System.out.println("🖨️ Abriendo cuadro de diálogo de impresión...");
 
-        // 1. Creamos el "trabajo de impresión" con la herramienta nativa de JavaFX
+        // 1. Ocultamos los botones
+        btnGenerarTicket.setVisible(false);
+        btnCerrar.setVisible(false);
+        btnCerrarX.setVisible(false);
+
         PrinterJob job = PrinterJob.createPrinterJob();
 
         if (job != null) {
-            // 2. Esto abre la ventana clásica de Windows de "Seleccionar Impresora"
-            boolean mostrarDialogo = job.showPrintDialog(btnGenerarTicket.getScene().getWindow());
+            // 2. Aquí está la magia (el null) para que Windows no colapse, pero sin retrasos
+            // 1. Obtenemos la ventana actual del ticket
+            javafx.stage.Stage ventanaTicket = (javafx.stage.Stage) btnGenerarTicket.getScene().getWindow();
 
+// 2. Buscamos a la ventana Padre (la que abrió este ticket)
+            javafx.stage.Window ventanaPadre = ventanaTicket.getOwner();
+
+// 3. Le decimos a Windows que ponga la impresora justo en frente del Padre
+            boolean mostrarDialogo = job.showPrintDialog(ventanaPadre);
             if (mostrarDialogo) {
-                // 3. ¡TRUCO DE MAGIA! Ocultamos los botones para que no salgan impresos en el papel
-                btnGenerarTicket.setVisible(false);
-                btnCerrar.setVisible(false);
-                btnCerrarX.setVisible(false);
-
-                // 4. Le tomamos una "foto" a la ventana y la mandamos a la impresora
+                // 3. Tomamos la foto y la mandamos
                 boolean impreso = job.printPage(btnGenerarTicket.getScene().getRoot());
 
                 if (impreso) {
-                    job.endJob(); // Sella y envía el documento
-                    System.out.println("✅ Ticket enviado a la impresora exitosamente.");
+                    job.endJob();
+                    System.out.println("✅ Ticket enviado exitosamente.");
                 } else {
                     System.out.println("❌ Falló la comunicación con la impresora.");
                 }
-
-                // 5. Volvemos a mostrar los botones por si acaso
-                btnGenerarTicket.setVisible(true);
-                btnCerrar.setVisible(true);
-                btnCerrarX.setVisible(true);
             } else {
                 System.out.println("⚠️ Impresión cancelada por el usuario.");
             }
         } else {
-            System.out.println("❌ No se encontró ninguna impresora configurada en esta computadora.");
+            System.out.println("❌ No se encontró ninguna impresora.");
         }
 
-        // 6. Finalmente, cerramos la ventanita del ticket
+        // 4. Volvemos a mostrar los botones
+        btnGenerarTicket.setVisible(true);
+        btnCerrar.setVisible(true);
+        btnCerrarX.setVisible(true);
+
+        // 5. Cerramos la ventanita del ticket
         cerrarVentana();
     }
-
     private void cerrarVentana() {
         Stage stage = (Stage) btnCerrar.getScene().getWindow();
         stage.close();
