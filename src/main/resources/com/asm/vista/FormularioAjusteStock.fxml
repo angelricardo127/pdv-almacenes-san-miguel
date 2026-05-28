@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="18.0" style="-fx-padding: 30; -fx-background-color: white; -fx-font-family: 'Segoe UI', sans-serif;" prefWidth="480.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.FormularioAjusteStockController">
+
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Ajuste Manual de Stock" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A202C;" HBox.hgrow="ALWAYS"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label text="✕" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-text-fill: #4A5568;" onMouseClicked="#cerrarVentana"/>
+    </HBox>
+
+    <Separator style="-fx-background-color: #E2E8F0;"/>
+
+    <VBox spacing="6.0">
+        <Label text="Seleccionar Producto *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+        <ComboBox fx:id="cmbProducto" promptText="Seleccionar producto..." style="-fx-padding: 8; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-font-size: 14px; -fx-background-color: white;" maxWidth="Infinity"/>
+    </VBox>
+
+    <VBox spacing="6.0">
+        <Label text="Tipo de Ajuste *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+        <ComboBox fx:id="cmbTipoAjuste" promptText="Seleccionar tipo..." style="-fx-padding: 8; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-font-size: 14px; -fx-background-color: white;" maxWidth="Infinity"/>
+    </VBox>
+
+    <VBox spacing="6.0">
+        <Label text="Cantidad *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+        <TextField fx:id="txtCantidad" promptText="0" style="-fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px;"/>
+    </VBox>
+
+    <VBox spacing="6.0">
+        <Label text="Motivo del Ajuste *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+        <TextArea fx:id="txtMotivo" promptText="Ej: Recepción de nueva mercancía, conteo físico, producto dañado, etc." prefRowCount="3" style="-fx-padding: 5; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <HBox spacing="15.0" style="-fx-padding: 10 0 0 0;">
+        <Button text="Cancelar" onAction="#cerrarVentana" style="-fx-background-color: white; -fx-border-color: #CBD5E0; -fx-border-radius: 8; -fx-text-fill: #2D3748; -fx-font-weight: bold; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Button text="Aplicar Ajuste" onAction="#aplicarAjuste" style="-fx-background-color: #DD6B20; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(three-pass-box, rgba(221,107,32,0.3), 8, 0, 0, 2);" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+
+</VBox>

@@ -185,4 +185,28 @@ public class InventarioController {
             e.printStackTrace();
         }
     }
+
+    @FXML //metodo para ajustar el stock de forma manual
+    public void abrirAjusteStock() {
+        try {
+            // 1. Cargamos el FXML que acabas de crear
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioAjusteStock.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            // 2. Le inyectamos este controlador principal y el servicio al nuevo formulario
+            FormularioAjusteStockController formCtrl = loader.getController();
+            formCtrl.setDependencias(this, this.servicio);
+
+            // 3. Mostramos la ventana flotante
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Ajuste Manual de Stock");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (Exception e) {
+            System.err.println("Error al abrir Ajuste de Stock: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
