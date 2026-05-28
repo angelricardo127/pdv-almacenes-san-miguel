@@ -16,9 +16,15 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.List;
 
+/**
+ * Controlador principal del Módulo de Inventario.
+ * Se encarga de gestionar la vista de la tabla de productos, conectar con la base de datos
+ * a través de Hibernate y manejar la apertura de ventanas secundarias (como el registro).
+ */
 public class InventarioController {
 
-    // 1. Conectamos la tabla y sus columnas
+    // ---inyeccion de componentes fxml
+    // estas variables se enlazan directamente con los IDs definidos en el archivo de diseño
     @FXML private TableView<Producto> tablaInventario;
     @FXML private TableColumn<Producto, String> colSku;
     @FXML private TableColumn<Producto, String> colProducto;
@@ -28,32 +34,41 @@ public class InventarioController {
     @FXML private TableColumn<Producto, Integer> colStock;
     @FXML private TableColumn<Producto, String> colEstado;
     @FXML private TableColumn<Producto, Void> colAcciones;
-    @FXML private Button btnRegistrarNuevo; //nuevo boton
+    @FXML private Button btnRegistrarNuevo;
 
+    // --- servicios y estado de la vista
+    // clase que contiene la lógica de negocio
     private InventarioService servicio;
 
-    // Lista observable que JavaFX necesita para actualizar la tabla en vivo
+    // Lista especial de JavaFx. cualquier cambio en esta lista se refleja automáticamente en la tabla visual.
     private ObservableList<Producto> listaProductos;
 
+    /**
+     * Metodo initialize(), es el constructor de la vista.
+     * JavaFX lo ejecuta automáticamente justo después de cargar el archivo FXML y enlazar las variables.
+     */
     @FXML
     public void initialize() {
-        System.out.println("Iniciando el Módulo de Inventario...");
+        System.out.println("Iniciando el Módulo de Inventario");
 
         try {
-            // Configuración de base de datos
+            //. configuracion de la conexión a MySQL usando Hibernate
             Configuration configuration = new Configuration();
-            configuration.configure("hibernate.cfg.xml");
+            configuration.configure("hibernate.cfg.xml"); // lee credenciales y URL
+
+            // registramos las clases que representan tablas en la base de datos
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);
             configuration.addAnnotatedClass(com.asm.modelo.Talla.class);
             configuration.addAnnotatedClass(com.asm.modelo.Genero.class);
 
+            // construimos la fabrica de sesiones y se la pasamos al servicio
             SessionFactory factory = configuration.buildSessionFactory();
             servicio = new InventarioService(factory);
 
-            // 2. Configuramos cómo se van a llenar las celdas
+            //lee decimos a la tabla de JavaFX de dónde sacar la información para cada columna
             configurarColumnas();
 
-            // 3. Cargamos los datos de MySQL a la tabla
+            //  hacemos la consulta a la BD y llenamos la tabla
             cargarDatosEnTabla();
 
         } catch (Exception e) {
@@ -62,19 +77,23 @@ public class InventarioController {
         }
     }
 
+    /**
+     * configura el comportamiento y el diseño interno de cada columna de la tabla.
+     */
     private void configurarColumnas() {
-        // 1. Conectamos TODO con los nombres EXACTOS de tu nueva clase Producto
+        // mapeo básico,conectamos las columnas visuales con los atributos de la clase Producto.java
+        // los textos en comillas deben coincidir exactamente con los nombres de las variables en la clase.
         colSku.setCellValueFactory(new PropertyValueFactory<>("sku"));
         colProducto.setCellValueFactory(new PropertyValueFactory<>("nombreProducto"));
         colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
         colVariantes.setCellValueFactory(new PropertyValueFactory<>("variantes"));
-        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio")); // Antes decía precioVenta
-        colStock.setCellValueFactory(new PropertyValueFactory<>("stock")); // Antes decía stockActual
+        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
 
-        // 2. Calculamos el Estado usando el nuevo metodo getStockActual()
+        // logica de la columna estado gGeneración de texto dinámico)
+        // Como 'Estado' no existe en la BD, lo calculamos al vuelo dependiendo de la cantidad de stock.
         colEstado.setCellValueFactory(cellData -> {
-            // AQUÍ ESTABA EL ERROR: Cambiamos getStock() por getStockActual()
-            int cantidad = cellData.getValue().getStock(); // Volvemos a getStock()
+            int cantidad = cellData.getValue().getStock();
             String estado;
             if (cantidad > 10) {
                 estado = "Disponible";
@@ -86,44 +105,46 @@ public class InventarioController {
             return new javafx.beans.property.SimpleStringProperty(estado);
         });
 
-        // 3. Magia visual: Pintar las píldoras de Estado...
-        // (DEJA INTACTO EL CÓDIGO QUE YA TENÍAS AQUÍ ABAJO PARA LOS COLORES Y EL BOTÓN DE MODIFICAR)
-        // Magia visual: Pintar las píldoras de Estado según el nivel de inventario
+        // 3. transformamos el texto plano de estado en píldoras de colores
         colEstado.setCellFactory(columna -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
-                    setGraphic(null); // Si la fila está vacía, no dibuja nada
+                    setGraphic(null); // Limpia la celda si la fila no tiene datos
                 } else {
-                    // Creamos la "píldora" visual
+                    // creamos una etiqueta visual para el estado
                     javafx.scene.control.Label etiqueta = new javafx.scene.control.Label(item);
                     String estiloBase = "-fx-font-weight: bold; -fx-padding: 4 12; -fx-background-radius: 20; ";
 
-                    // Aplicamos los colores hexadecimales de tu Figma
+                    // aplicamos colores (Fondo y Texto) según el estado calculado
                     if (item.equals("Disponible")) {
-                        etiqueta.setStyle(estiloBase + "-fx-background-color: #E6FFFA; -fx-text-fill: #38A169;");
+                        etiqueta.setStyle(estiloBase + "-fx-background-color: #E6FFFA; -fx-text-fill: #38A169;"); // Verde
                     } else if (item.equals("Stock Bajo")) {
-                        etiqueta.setStyle(estiloBase + "-fx-background-color: #FFFAF0; -fx-text-fill: #DD6B20;");
+                        etiqueta.setStyle(estiloBase + "-fx-background-color: #FFFAF0; -fx-text-fill: #DD6B20;"); // Naranja
                     } else {
-                        etiqueta.setStyle(estiloBase + "-fx-background-color: #FFF5F5; -fx-text-fill: #E53E3E;");
+                        etiqueta.setStyle(estiloBase + "-fx-background-color: #FFF5F5; -fx-text-fill: #E53E3E;"); // Rojo
                     }
 
-                    // Centramos la píldora en la celda
-                    setGraphic(etiqueta);
-                    setStyle("-fx-alignment: CENTER;");
+                    setGraphic(etiqueta); // mostramos la etiqueta en la celda
+                    setStyle("-fx-alignment: CENTER;"); // centramos el contenido
                 }
             }
         });
-        // Magia de JavaFX: Agregar botones de "Modificar" a la columna de Acciones
+
+        //  botones de accion, creamos botones interactivos dentro de la tabla
         colAcciones.setCellFactory(param -> new TableCell<>() {
+            // Creamos el botón una sola vez por celda
             private final Button btnModificar = new Button("Modificar");
+
+            // bloque de inicialización le damos estilo y funcionalidad al botón
             {
                 btnModificar.setStyle("-fx-background-color: #4299E1; -fx-text-fill: white; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;");
                 btnModificar.setOnAction(event -> {
+                    // al hacer clic, detectamos en qué fila estamos y obtenemos ese Producto en específico
                     Producto prod = getTableView().getItems().get(getIndex());
                     System.out.println("Has hecho clic en modificar el producto: " + prod.getNombreProducto());
-                    // Aquí irá el RF10 (Modificar)
+                    // TODO: Aquí se invocará la ventana para el RF10 (Modificar Producto)
                 });
             }
 
@@ -133,6 +154,7 @@ public class InventarioController {
                 if (empty) {
                     setGraphic(null);
                 } else {
+                    // envolvemos el botón en un contenedor HBox para centrarlo correctamente
                     HBox box = new HBox(btnModificar);
                     box.setStyle("-fx-alignment: center;");
                     setGraphic(box);
@@ -141,42 +163,55 @@ public class InventarioController {
         });
     }
 
+    /**
+     * Consulta la base de datos a través del servicio y actualiza la vista.
+     */
     public void cargarDatosEnTabla() {
-        // Obtenemos la lista de la base de datos
+        // 1. Pedimos todos los productos (Esto ejecuta un 'SELECT * FROM productos' internamente)
         List<Producto> productosBD = servicio.obtenerCatalogoCompleto();
 
-        // --- LÍNEAS DE DIAGNÓSTICO ---
+        // --- LÍNEAS DE DIAGNÓSTICO (Logs para la consola) ---
         if (productosBD == null) {
-            System.out.println("🚨 Módulo Inventario: ¡La lista que regresó Hibernate es NULL!");
+            System.out.println(" Módulo Inventario: ¡La lista que regresó Hibernate es NULL!");
         } else {
-            System.out.println("📦 Módulo Inventario: Hibernate encontró " + productosBD.size() + " productos en MySQL.");
+            System.out.println(" Módulo Inventario: Hibernate encontró " + productosBD.size() + " productos en MySQL.");
         }
         // -----------------------------
 
+        // 2. si la consulta fue exitosa, actualizamos la tabla visual
         if (productosBD != null) {
-            // Convertimos la lista normal de Java a una ObservableList de JavaFX
-            listaProductos = FXCollections.observableArrayList(productosBD);
-            // Inyectamos la lista en la tabla
-            tablaInventario.setItems(listaProductos);
+            listaProductos = FXCollections.observableArrayList(productosBD); // Adaptador a JavaFX
+            tablaInventario.setItems(listaProductos); // Inyección de datos
         }
     }
 
-    @FXML //metodo para agregar un nuevo producto
+    /**
+     * Metodo enlazado al botón "Registrar Nuevo Producto"  es el RF09
+     * Abre una ventana modal flotante basada en el diseñoque relaizamos en figma
+     */
+    @FXML
     public void abrirFormularioRegistro() {
         try {
-            // Cargamos el diseño del formulario real
+            // 1. Buscamos y cargamos el archivo FXML de la nueva ventana
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioProducto.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // Le pasamos las conexiones al formulario (para que pueda actualizar la tabla al guardar)
+            // 2. Obtenemos el controlador de esa nueva ventana
             FormularioProductoController formCtrl = loader.getController();
+
+            // Le pasamos referencias a ESTE controlador y al servicio.
+            // Esto permite que cuando el formulario guarde un producto, pueda decirle a esta tabla que se recargue.
             formCtrl.setDependencias(this, this.servicio);
 
-            // Creamos y mostramos la ventana flotante
+            // 3. Preparamos el escenario (Stage) para mostrar la ventana
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Registrar Nuevo Producto");
             stage.setScene(new javafx.scene.Scene(root));
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL); // Esto bloquea la pantalla de atrás hasta que cierres el formulario
+
+            // APPLICATION_MODAL congela la ventana principal que está atrás obligando al usuario a atender el formulario
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            // 4. Mostramos la ventana y pausamos la ejecución aquí hasta que el usuario la cierre
             stage.showAndWait();
 
         } catch (Exception e) {
