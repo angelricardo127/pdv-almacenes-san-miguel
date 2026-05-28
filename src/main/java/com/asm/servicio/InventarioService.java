@@ -83,4 +83,25 @@ public class InventarioService {
             session.close();
         }
     }
+
+    /**
+     * metodo que actualiza un producto existente en la base de datos (UPDATE).
+     */
+    public void actualizarProducto(Producto producto) {
+        org.hibernate.Transaction transaccion = null;
+        try (org.hibernate.Session session = sessionFactory.openSession()) {
+            transaccion = session.beginTransaction();
+
+            // session.merge() es la magia de Hibernate para hacer el UPDATE
+            // Busca el ID del producto y sobrescribe todos sus campos con los nuevos valores
+            session.merge(producto);
+
+            transaccion.commit(); // Confirmamos los cambios en MySQL
+            System.out.println(" Hibernate: Producto actualizado con éxito en la BD.");
+        } catch (Exception e) {
+            if (transaccion != null) transaccion.rollback(); // Si algo falla, deshacemos por seguridad
+            System.err.println(" Error de Hibernate al actualizar producto: " + e.getMessage());
+            throw e;
+        }
+    }
 }
