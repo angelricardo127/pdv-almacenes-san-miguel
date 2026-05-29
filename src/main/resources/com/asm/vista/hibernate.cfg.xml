@@ -21,7 +21,7 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <mapping class="com.asm.modelo.Rol"/>
-        <mapping class="com.asm.modelo.Usuario"/>
+
         <mapping class="com.asm.modelo.Cliente"/>
         <mapping class="com.asm.modelo.MetodoPago"/>
         <mapping class="com.asm.modelo.Venta"/>
