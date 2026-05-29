@@ -34,4 +34,5 @@ public class VentaTest {
         assertEquals(0, venta.getIdVenta());
         assertNull(venta.getFecha());
     }
+
 }

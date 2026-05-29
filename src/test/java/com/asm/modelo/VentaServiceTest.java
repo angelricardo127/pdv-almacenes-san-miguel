@@ -15,7 +15,8 @@ public class VentaServiceTest {
 
     @BeforeAll
     public static void setup() {
-        sessionFactory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
+        // Conectamos a la base de datos real para las pruebas usando tu ruta ajustada
+        sessionFactory = new Configuration().configure("/com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
     }
 
     @BeforeEach
@@ -23,39 +24,30 @@ public class VentaServiceTest {
         ventaService = new VentaService(sessionFactory);
     }
 
+    // ==========================================
+    // 1. PRUEBAS DE ÉXITO (Camino Feliz)
+    // ==========================================
+
     @Test
     @DisplayName("Debería procesar una venta completa exitosa y descontar stock")
     public void testVentaCompletaExitosa() {
         List<DetalleVenta> carrito = new ArrayList<>();
 
-        // Vamos a simular que compramos 2 Playeras Polo (id_producto = 1) a $250 cada una
-        // Mandamos idVenta en 0 porque el servicio lo va a rellenar solo
+        // Simulamos compra de 2 unidades del producto con ID 1 a $250
         carrito.add(new DetalleVenta(0, 1, 2, 250.00));
 
-        // Ejecutar el servicio con método de pago 1 (Efectivo)
         boolean resultado = ventaService.registrarVentaCompleta(1, carrito);
-
         assertTrue(resultado, "La venta completa debería haberse registrado sin problemas.");
     }
 
-    @AfterAll
-    public static void tearDown() {
-        if (sessionFactory != null) sessionFactory.close();
-    }
-    // esto se acaba de agregar
     @Test
     @DisplayName("Debería recuperar el historial de ventas registradas")
     public void testObtenerHistorialVentas() {
-        // 1. Ejecutar el nuevo método de lectura
         List<Venta> historial = ventaService.obtenerHistorialVentas();
 
-        // 2. Validar que la lista no sea nula
         assertNotNull(historial, "El historial no debería ser nulo.");
-
-        // 3. Validar que traiga datos (ya que creamos ventas en las pruebas anteriores)
         assertFalse(historial.isEmpty(), "El historial debería contener al menos las ventas de prueba.");
 
-        // Imprimir en consola para confirmar visualmente
         System.out.println("======== REPORTE DE VENTAS ========");
         System.out.println("Total de tickets encontrados: " + historial.size());
         for (Venta v : historial) {
@@ -63,5 +55,52 @@ public class VentaServiceTest {
         }
         System.out.println("===================================");
     }
-}
 
+    @Test
+    @DisplayName("Debería obtener el catálogo completo de productos")
+    public void testObtenerProductos() {
+        List<Producto> catalogo = ventaService.obtenerProductos();
+
+        assertNotNull(catalogo, "El catálogo no debe ser nulo");
+        assertFalse(catalogo.isEmpty(), "El catálogo debe tener al menos un producto registrado");
+    }
+
+    // ==========================================
+    // 2. PRUEBAS DE ERROR (Caminos Tristes)
+    // ==========================================
+
+    @Test
+    @DisplayName("Debería bloquear la venta y hacer rollback si no hay stock suficiente")
+    public void testVentaFallaPorStockInsuficiente() {
+        List<DetalleVenta> carrito = new ArrayList<>();
+
+        // Intentamos comprar 99,999 unidades del producto 1 (asumiendo que no tienen tanto stock)
+        carrito.add(new DetalleVenta(0, 1, 99999, 250.00));
+
+        // El servicio debería capturar la excepción internamente y devolver FALSE
+        boolean resultado = ventaService.registrarVentaCompleta(1, carrito);
+
+        assertFalse(resultado, "La venta NO debe procesarse si se pide más del stock disponible.");
+    }
+
+    @Test
+    @DisplayName("Debería bloquear la venta si el producto no existe en la BD")
+    public void testVentaFallaPorProductoInexistente() {
+        List<DetalleVenta> carrito = new ArrayList<>();
+
+        // Intentamos comprar un producto con un ID exagerado que seguro no existe
+        carrito.add(new DetalleVenta(0, 999999, 1, 100.00));
+
+        // El servicio debería notar que es nulo y devolver FALSE
+        boolean resultado = ventaService.registrarVentaCompleta(1, carrito);
+
+        assertFalse(resultado, "La venta NO debe procesarse si el ID del producto es inválido.");
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
+    }
+}

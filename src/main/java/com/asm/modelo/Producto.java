@@ -49,8 +49,9 @@ public class Producto {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
+
     @Column(name = "activo")
-    private boolean activo = true;
+    private Boolean activo = true;
 
     public Producto() {}
 
@@ -110,6 +111,7 @@ public class Producto {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public boolean getActivo(){return activo;}
-    public void setActivo(boolean activo){this.activo = activo;}
+    // 🔥 LA CORRECCIÓN: Ajustamos los métodos a Boolean
+    public Boolean getActivo() { return activo; }
+    public void setActivo(Boolean activo) { this.activo = activo; }
 }
