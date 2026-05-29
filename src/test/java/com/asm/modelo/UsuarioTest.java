@@ -16,7 +16,7 @@ public class UsuarioTest {
     @BeforeAll
     public static void setup() {
         // Lee tu archivo hibernate.cfg.xml y prepara el motor
-        sessionFactory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
+        sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
         // lee el archivo hibernate.cfg.xml y prepara el motor de hibernate
         sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
     }

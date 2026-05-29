@@ -28,7 +28,7 @@ public class ReporteVentaController {
     @FXML
     public void initialize() {
         // Inicializamos la conexión a la base de datos y el servicio
-        SessionFactory sessionFactory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
+        SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
         ventaService = new VentaService(sessionFactory);
 
         tablaReportes.setItems(listaVentasOberservable);

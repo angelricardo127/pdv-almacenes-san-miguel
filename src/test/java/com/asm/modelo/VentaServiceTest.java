@@ -15,7 +15,7 @@ public class VentaServiceTest {
 
     @BeforeAll
     public static void setup() {
-        sessionFactory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
+        sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
     }
 
     @BeforeEach

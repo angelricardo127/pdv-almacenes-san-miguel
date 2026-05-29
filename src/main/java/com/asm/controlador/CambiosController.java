@@ -36,7 +36,7 @@ public class CambiosController {
         // 1. Configuramos Hibernate igual que en el módulo de Inventario
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("com/asm/vista/hibernate.cfg.xml");
+            configuration.configure("hibernate.cfg.xml");
 
             // Aseguramos que la clase Venta esté registrada
             configuration.addAnnotatedClass(com.asm.modelo.Venta.class);
