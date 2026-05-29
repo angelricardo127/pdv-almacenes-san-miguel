@@ -56,6 +56,8 @@
                 </VBox>
 
                 <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                    <Button text="⚠️ Ajuste de Stock"  style="-fx-background-color: #FF5A1F; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 15; -fx-cursor: hand;"/>
+                    <Button text="✏️ Gestión de Variantes" style="-fx-background-color: #A825FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 15; -fx-cursor: hand;"/>
                     <Button text="⚠ Ajuste de Stock" onAction="#abrirAjusteStock" style="-fx-background-color: #FF5A1F; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 15; -fx-cursor: hand; "/>
                     <Button text="✏ Gestión de Variantes" style="-fx-background-color: #A825FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 15; -fx-cursor: hand;"/>
                     <Button fx:id="btnRegistrarNuevo" onAction="#abrirFormularioRegistro" text="📦 Registrar Nuevo Producto" style="-fx-background-color: #06D6A0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 15; -fx-cursor: hand;"/>
