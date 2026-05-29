@@ -4,188 +4,103 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="principalPane" prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.DashboardController">
+<VBox fx:id="vistaContenido" prefHeight="768.0" prefWidth="1126.0" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.DashboardController">
+    <children>
 
-    <left>
-        <VBox prefHeight="700.0" prefWidth="240.0" style="-fx-background-color: #2b3543;" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER_LEFT">
+            <VBox.margin>
+                <Insets left="40.0" right="40.0" top="30.0" />
+            </VBox.margin>
             <children>
-                <Label text="ALMACENES&#10;SAN MIGUEL" textFill="WHITE">
-                    <font>
-                        <Font name="System Bold" size="18.0" />
-                    </font>
-                    <VBox.margin>
-                        <Insets bottom="30.0" left="20.0" top="30.0" />
-                    </VBox.margin>
-                </Label>
-
-                <Button fx:id="btnDashboard" onAction="#abrirDashboard" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: #10b981; -fx-alignment: BASELINE_LEFT; -fx-background-radius: 8;" text="⊞   Dashboard" textFill="WHITE">
-                    <font><Font name="System Bold" size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Button fx:id="btnVentas" onAction="#abrirVentas" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-alignment: BASELINE_LEFT;" text="🛒   Ventas" textFill="#9ca3af">
-                    <font><Font size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Button fx:id="btnInventario" onAction="#abrirInventario" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-alignment: BASELINE_LEFT;" text="📦   Inventario" textFill="#9ca3af">
-                    <font><Font size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Button fx:id="btnCaja" onAction="#abrirCaja" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-alignment: BASELINE_LEFT;" text="💰   Caja" textFill="#9ca3af">
-                    <font><Font size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Button fx:id="btnCambios" onAction="#abrirCambios" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-alignment: BASELINE_LEFT;" text="🔄   Cambios" textFill="#9ca3af">
-                    <font><Font size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Button fx:id="btnReportes" onAction="#abrirReportes" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-alignment: BASELINE_LEFT;" text="📊   Reportes" textFill="#9ca3af">
-                    <font><Font size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Button fx:id="btnSeguridad" onAction="#abrirSeguridad" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" style="-fx-background-color: transparent; -fx-alignment: BASELINE_LEFT;" text="🛡️   Seguridad" textFill="#9ca3af">
-                    <font><Font size="14.0" /></font>
-                    <VBox.margin><Insets bottom="5.0" left="10.0" right="10.0" /></VBox.margin>
-                    <padding><Insets left="15.0" /></padding>
-                </Button>
-
-                <Region VBox.vgrow="ALWAYS" />
-
                 <VBox>
                     <children>
-                        <Label text="👤 Roberto Sánchez P..." textFill="WHITE">
-                            <font><Font name="System Bold" size="12.0" /></font>
+                        <Label text="Panel de Control" textFill="#1e293b">
+                            <font><Font name="System Bold" size="24.0" /></font>
                         </Label>
-                        <Label text="Administrador" textFill="#9ca3af">
-                            <font><Font size="11.0" /></font>
-                            <padding><Insets left="20.0" /></padding>
+                        <Label text="Bienvenido, Roberto Sánchez Pérez • viernes, 29 de mayo de 2026" textFill="#64748b">
+                            <font><Font size="12.0" /></font>
                         </Label>
-
-                        <Button fx:id="btnCerrarSesionLateral" onAction="#cerrarSesion" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #ff0000; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER;" text="[→ Cerrar Sesión" textFill="WHITE">
-                            <font><Font name="System Bold" size="14.0" /></font>
-                            <VBox.margin><Insets top="15.0" /></VBox.margin>
-                        </Button>
                     </children>
-                    <VBox.margin>
-                        <Insets bottom="30.0" left="20.0" />
-                    </VBox.margin>
                 </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnSalir" onAction="#cerrarSesion" mnemonicParsing="false" prefHeight="35.0" prefWidth="90.0" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" text="[→ Salir" textFill="#ef4444">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Button>
             </children>
-        </VBox>
-    </left>
+        </HBox>
 
-    <center>
-        <VBox fx:id="vistaContenido" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+        <HBox spacing="30.0">
+            <VBox.margin>
+                <Insets left="40.0" right="40.0" top="40.0" />
+            </VBox.margin>
             <children>
 
-                <HBox alignment="CENTER_LEFT">
-                    <VBox.margin>
-                        <Insets left="40.0" right="40.0" top="30.0" />
-                    </VBox.margin>
+                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
+                    <effect>
+                        <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                    </effect>
                     <children>
-                        <VBox>
-                            <children>
-                                <Label text="Panel de Control" textFill="#1e293b">
-                                    <font><Font name="System Bold" size="24.0" /></font>
-                                </Label>
-                                <Label text="Bienvenido, Roberto Sánchez Pérez • viernes, 29 de mayo de 2026" textFill="#64748b">
-                                    <font><Font size="12.0" /></font>
-                                </Label>
-                            </children>
-                        </VBox>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnSalir" onAction="#cerrarSesion" mnemonicParsing="false" prefHeight="35.0" prefWidth="90.0" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-border-radius: 5; -fx-background-radius: 5;" text="[→ Salir" textFill="#ef4444">
-                            <font><Font name="System Bold" size="13.0" /></font>
-                        </Button>
+                        <Label text="Ventas del Día" textFill="#64748b">
+                            <font><Font size="13.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
+                        </Label>
+                        <Label fx:id="lblVentasDia" text="\$0.00" textFill="#1e293b">
+                            <font><Font name="System Bold" size="28.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
+                        </Label>
+                        <Label text="+15% vs ayer" textFill="#10b981">
+                            <font><Font size="11.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
+                        </Label>
                     </children>
-                </HBox>
+                </VBox>
 
-                <HBox spacing="30.0">
-                    <VBox.margin>
-                        <Insets left="40.0" right="40.0" top="40.0" />
-                    </VBox.margin>
+                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
+                    <effect>
+                        <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                    </effect>
                     <children>
-
-                        <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
-                            <effect>
-                                <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
-                            </effect>
-                            <children>
-                                <Label text="Ventas del Día" textFill="#64748b">
-                                    <font><Font size="13.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
-                                </Label>
-                                <Label fx:id="lblVentasDia" text="\$0.00" textFill="#1e293b">
-                                    <font><Font name="System Bold" size="28.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
-                                </Label>
-                                <Label text="+15% vs ayer" textFill="#10b981">
-                                    <font><Font size="11.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
-                                </Label>
-                            </children>
-                        </VBox>
-
-                        <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
-                            <effect>
-                                <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
-                            </effect>
-                            <children>
-                                <Label text="Productos en Stock" textFill="#64748b">
-                                    <font><Font size="13.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
-                                </Label>
-                                <Label fx:id="lblTotalStock" text="0" textFill="#1e293b">
-                                    <font><Font name="System Bold" size="28.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
-                                </Label>
-                                <Label text="5 con stock bajo" textFill="#f59e0b">
-                                    <font><Font size="11.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
-                                </Label>
-                            </children>
-                        </VBox>
-
-                        <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
-                            <effect>
-                                <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
-                            </effect>
-                            <children>
-                                <Label text="Usuarios Activos" textFill="#64748b">
-                                    <font><Font size="13.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
-                                </Label>
-                                <Label fx:id="lblTotalUsuarios" text="0" textFill="#1e293b">
-                                    <font><Font name="System Bold" size="28.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
-                                </Label>
-                                <Label text="de 7 usuarios" textFill="#64748b">
-                                    <font><Font size="11.0" /></font>
-                                    <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
-                                </Label>
-                            </children>
-                        </VBox>
-
+                        <Label text="Productos en Stock" textFill="#64748b">
+                            <font><Font size="13.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
+                        </Label>
+                        <Label fx:id="lblTotalStock" text="0" textFill="#1e293b">
+                            <font><Font name="System Bold" size="28.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
+                        </Label>
+                        <Label text="5 con stock bajo" textFill="#f59e0b">
+                            <font><Font size="11.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
+                        </Label>
                     </children>
-                </HBox>
+                </VBox>
+
+                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
+                    <effect>
+                        <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                    </effect>
+                    <children>
+                        <Label text="Usuarios Activos" textFill="#64748b">
+                            <font><Font size="13.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
+                        </Label>
+                        <Label fx:id="lblTotalUsuarios" text="0" textFill="#1e293b">
+                            <font><Font name="System Bold" size="28.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
+                        </Label>
+                        <Label text="de 7 usuarios" textFill="#64748b">
+                            <font><Font size="11.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin>
+                        </Label>
+                    </children>
+                </VBox>
+
             </children>
-        </VBox>
-    </center>
-</BorderPane>
+        </HBox>
+    </children>
+</VBox>

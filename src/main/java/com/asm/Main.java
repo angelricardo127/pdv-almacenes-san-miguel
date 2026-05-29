@@ -12,10 +12,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage escenarioPrincipal) throws Exception {
-        // 1. Dejamos una sola raíz apuntando al módulo que vas a trabajar ahora
-        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/Seguridad.fxml")));
+        // 1. Cargamos el CHASIS principal (que contiene la barra lateral y el hueco para inyectar)
+        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/ContenedorBase.fxml")));
 
-        // 2. Creamos la "Escena" con las dimensiones reales de tu Figma
+        // 2. Creamos la "Escena" con las dimensiones reales de tu diseño de Figma
         Scene escena = new Scene(raiz, 1366, 768);
 
         // 3. Configuramos la ventana de Windows
