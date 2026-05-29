@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!-- HBox Principal: Divide la pantalla en Izquierda (Menú) y Derecha (Contenido) -->
+<HBox prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.SeguridadController">
+
+    <!-- ========================================== -->
+    <!-- BARRA LATERAL OSCURA (Sidebar)             -->
+    <!-- ========================================== -->
+    <VBox prefWidth="250.0" style="-fx-background-color: #2c3e50;">
+        <padding>
+            <Insets bottom="0" left="0" right="0" top="30" />
+        </padding>
+
+        <!-- Logo / Título del Sistema -->
+        <Label text="ALMACENES&#10;SAN MIGUEL" textFill="WHITE">
+            <font>
+                <Font name="System Bold" size="20.0" />
+            </font>
+            <VBox.margin>
+                <Insets bottom="40.0" left="25.0" />
+            </VBox.margin>
+        </Label>
+
+        <!-- Botones del Menú -->
+        <Button alignment="BASELINE_LEFT" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-cursor: hand;" text="  Dashboard">
+            <padding>
+                <Insets bottom="15.0" left="30.0" top="15.0" />
+            </padding>
+            <font><Font size="14.0" /></font>
+        </Button>
+        <Button alignment="BASELINE_LEFT" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-cursor: hand;" text="  Ventas">
+            <padding>
+                <Insets bottom="15.0" left="30.0" top="15.0" />
+            </padding>
+            <font><Font size="14.0" /></font>
+        </Button>
+        <Button alignment="BASELINE_LEFT" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-cursor: hand;" text="  Inventario">
+            <padding>
+                <Insets bottom="15.0" left="30.0" top="15.0" />
+            </padding>
+            <font><Font size="14.0" /></font>
+        </Button>
+        <Button alignment="BASELINE_LEFT" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-cursor: hand;" text="  Caja">
+            <padding>
+                <Insets bottom="15.0" left="30.0" top="15.0" />
+            </padding>
+            <font><Font size="14.0" /></font>
+        </Button>
+        <Button alignment="BASELINE_LEFT" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-cursor: hand;" text="  Cambios">
+            <padding>
+                <Insets bottom="15.0" left="30.0" top="15.0" />
+            </padding>
+            <font><Font size="14.0" /></font>
+        </Button>
+        <Button alignment="BASELINE_LEFT" prefWidth="250.0" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-cursor: hand;" text="  Reportes">
+            <padding>
+                <Insets bottom="15.0" left="30.0" top="15.0" />
+            </padding>
+            <font><Font size="14.0" /></font>
+        </Button>
+
+        <!-- Botón Activo (Seguridad) -->
+        <Button alignment="BASELINE_LEFT" prefWidth="210.0" style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="  Seguridad">
+            <padding>
+                <Insets bottom="12.0" left="20.0" top="12.0" />
+            </padding>
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+            <VBox.margin>
+                <Insets left="20.0" right="20.0" top="5.0" />
+            </VBox.margin>
+        </Button>
+
+        <!-- Empuja el perfil de usuario hacia abajo -->
+        <Region VBox.vgrow="ALWAYS" />
+
+        <!-- Perfil de Usuario Inferior -->
+        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #34495e;">
+            <padding>
+                <Insets bottom="20.0" left="25.0" right="20.0" top="20.0" />
+            </padding>
+            <Label style="-fx-background-color: #7f8c8d; -fx-background-radius: 50; -fx-min-width: 35; -fx-min-height: 35; -fx-alignment: center;" text="👨‍💼" />
+            <VBox alignment="CENTER_LEFT">
+                <Label text="Roberto Sánchez" textFill="WHITE">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Label>
+                <Label text="Administrador" textFill="#bdc3c7">
+                    <font><Font size="11.0" /></font>
+                </Label>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- ========================================== -->
+    <!-- CONTENIDO PRINCIPAL (Gestión de Accesos)   -->
+    <!-- ========================================== -->
+    <VBox spacing="20.0" style="-fx-background-color: #f4f6f9;" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+        </padding>
+
+        <!-- Encabezado: Títulos y Botones -->
+        <HBox alignment="CENTER_LEFT" spacing="20.0">
+            <VBox HBox.hgrow="ALWAYS">
+                <Label text="Gestión de Accesos" textFill="#2c3e50">
+                    <font>
+                        <Font name="System Bold" size="28.0" />
+                    </font>
+                </Label>
+                <Label text="Administración de cuentas y permisos del sistema" textFill="#7f8c8d">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </VBox>
+            <Button fx:id="btnNuevoUsuario" style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand;" text="+ Registrar Nuevo Usuario">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+            </Button>
+            <Button style="-fx-background-color: transparent; -fx-border-color: #e74c3c; -fx-text-fill: #e74c3c; -fx-border-radius: 6; -fx-cursor: hand;" text="[→ Salir">
+                <padding>
+                    <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                </padding>
+            </Button>
+        </HBox>
+
+        <!-- Buscador -->
+        <TextField fx:id="txtBuscarUsuario" promptText="🔍 Buscar por nombre de usuario, nombre completo o rol..." style="-fx-background-radius: 6; -fx-border-color: #dcdde1; -fx-border-radius: 6; -fx-background-color: white;">
+            <padding>
+                <Insets bottom="12.0" left="15.0" right="15.0" top="12.0" />
+            </padding>
+        </TextField>
+
+        <!-- Tabla de Usuarios -->
+        <TableView fx:id="tablaUsuarios" style="-fx-background-color: white; -fx-border-color: #dcdde1; -fx-border-radius: 6;" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="80.0" text="Avatar/ID" />
+                <TableColumn fx:id="colUsername" prefWidth="180.0" text="Nombre de Usuario" />
+                <TableColumn fx:id="colNombreCompleto" prefWidth="250.0" text="Nombre Completo" />
+                <TableColumn fx:id="colRol" prefWidth="150.0" text="Rol" />
+                <TableColumn fx:id="colUltimoAcceso" prefWidth="150.0" text="Último Acceso" />
+                <TableColumn fx:id="colEstado" prefWidth="100.0" text="Estado" />
+                <TableColumn fx:id="colAcciones" prefWidth="130.0" text="Acciones" />
+            </columns>
+        </TableView>
+    </VBox>
+
+</HBox>
