@@ -37,4 +37,12 @@ public class Venta {
 
     public int getIdMetodoPago() { return idMetodoPago; }
     public void setIdMetodoPago(int idMetodoPago) { this.idMetodoPago = idMetodoPago; }
+
+    // --- Agregado para el Módulo de Devoluciones ---
+    @Column(name = "id_usuario", nullable = false)
+    private int idUsuario = 1; // Por defecto ponemos 1 (Admin) por si Víctor no lo manda en su código aún
+
+    public int getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+    // -----------------------------------------------
 }

@@ -13,7 +13,7 @@ public class Main extends Application {
     @Override
     public void start(Stage escenarioPrincipal) throws Exception {
         // 1. Cargamos DIRECTAMENTE tu archivo de inventario en la raíz
-        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/inventario.fxml")));
+        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/cambios.fxml")));
 
         // 2. Creamos la "Escena" con las dimensiones de tu diseño
         Scene escena = new Scene(raiz, 900, 600);
