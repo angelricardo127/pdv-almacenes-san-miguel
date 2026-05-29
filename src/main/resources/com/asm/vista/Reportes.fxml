@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Rectangle?>
+
+<BorderPane prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.ReportesController">
+
+    <left>
+        <VBox prefWidth="240.0" spacing="15.0" style="-fx-background-color: #2b3440;">
+            <children>
+                <VBox alignment="CENTER_LEFT" prefHeight="100.0">
+                    <children>
+                        <Label text="ALMACENES" textFill="WHITE"><font><Font name="System Bold" size="24.0" /></font></Label>
+                        <Label text="SAN MIGUEL" textFill="WHITE"><font><Font name="System Bold" size="24.0" /></font></Label>
+                    </children>
+                    <VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin>
+                </VBox>
+                <Button alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent;" text="  Dashboard" textFill="#a6adbb"><padding><Insets left="30.0" /></padding></Button>
+                <Button alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent;" text="  Ventas" textFill="#a6adbb"><padding><Insets left="30.0" /></padding></Button>
+                <Button alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent;" text="  Inventario" textFill="#a6adbb"><padding><Insets left="30.0" /></padding></Button>
+                <Button alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent;" text="  Caja" textFill="#a6adbb"><padding><Insets left="30.0" /></padding></Button>
+                <Button alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 8;" text="  Reportes" textFill="WHITE"><padding><Insets left="30.0" /></padding><font><Font name="System Bold" size="16.0" /></font></Button>
+                <Region VBox.vgrow="ALWAYS" />
+                <Button prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent;" text="Cerrar Sesión" textFill="#ef4444"><font><Font name="System Bold" size="14.0" /></font></Button>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane>
+            <children>
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #f3f4f6; -fx-border-color: transparent;">
+                    <content>
+                        <VBox spacing="25.0" style="-fx-padding: 30;">
+                            <children>
+
+                                <HBox alignment="CENTER_LEFT">
+                                    <VBox spacing="5.0">
+                                        <Label text="Reportes y Estadísticas" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font></Label>
+                                        <Label fx:id="lblBienvenida" text="Bienvenido, Administrador • Fecha actual" textFill="#64748b" />
+                                    </VBox>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button style="-fx-background-color: transparent; -fx-border-color: #ef4444; -fx-border-radius: 6; -fx-text-fill: #ef4444;" text="⮑ Salir">
+                                        <padding><Insets top="8" bottom="8" left="15" right="15"/></padding>
+                                    </Button>
+                                </HBox>
+
+                                <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                                    <Label text="Filtrar por Rango de Fechas" textFill="#1e293b"><font><Font name="System Bold" size="16.0" /></font></Label>
+                                    <HBox alignment="BOTTOM_LEFT" spacing="20.0">
+                                        <VBox spacing="8.0">
+                                            <Label text="Fecha Desde" textFill="#64748b"/>
+                                            <DatePicker fx:id="dpFechaDesde" prefHeight="45.0" prefWidth="250.0" promptText="dd/mm/aaaa" />
+                                        </VBox>
+                                        <VBox spacing="8.0">
+                                            <Label text="Fecha Hasta" textFill="#64748b"/>
+                                            <DatePicker fx:id="dpFechaHasta" prefHeight="45.0" prefWidth="250.0" promptText="dd/mm/aaaa" />
+                                        </VBox>
+                                        <Button onAction="#generarReporte" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 8; -fx-cursor: hand;" text="Generar Reporte" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font></Button>
+                                    </HBox>
+                                </VBox>
+
+                                <HBox spacing="20.0">
+                                    <VBox style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+                                        <Label text="Ventas Hoy" textFill="#64748b"/>
+                                        <Label fx:id="lblVentasHoy" text="\$ 0.00" textFill="#10b981"><font><Font name="System Bold" size="28.0" /></font></Label>
+                                    </VBox>
+                                    <VBox style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+                                        <Label text="Transacciones" textFill="#64748b"/>
+                                        <Label fx:id="lblTransacciones" text="0" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font></Label>
+                                    </VBox>
+                                    <VBox style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+                                        <Label text="Ticket Promedio" textFill="#64748b"/>
+                                        <Label fx:id="lblTicketPromedio" text="\$ 0.00" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font></Label>
+                                    </VBox>
+                                    <VBox style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+                                        <Label text="Devoluciones" textFill="#64748b"/>
+                                        <Label fx:id="lblDevoluciones" text="0" textFill="#f97316"><font><Font name="System Bold" size="28.0" /></font></Label>
+                                    </VBox>
+                                </HBox>
+
+                                <VBox fx:id="vboxCategorias" spacing="15.0" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                                    <Label text="Ventas por Categoría" textFill="#1e293b"><font><Font name="System Bold" size="18.0" /></font></Label>
+                                </VBox>
+
+                                <HBox spacing="20.0">
+                                    <VBox fx:id="vboxTopProductos" spacing="15.0" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);" HBox.hgrow="ALWAYS" prefWidth="500">
+                                        <Label text="Productos Más Vendidos" textFill="#1e293b"><font><Font name="System Bold" size="18.0" /></font></Label>
+                                    </VBox>
+
+                                    <VBox spacing="20.0" HBox.hgrow="ALWAYS" prefWidth="500">
+                                        <VBox fx:id="vboxMetodosPago" spacing="10" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                                            <Label text="Métodos de Pago" textFill="#1e293b"><font><Font name="System Bold" size="18.0" /></font></Label>
+                                        </VBox>
+                                        <VBox fx:id="vboxCajeros" spacing="10" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                                            <Label text="Rendimiento por Cajero" textFill="#1e293b"><font><Font name="System Bold" size="18.0" /></font></Label>
+                                        </VBox>
+                                    </VBox>
+                                </HBox>
+
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+
+                <StackPane fx:id="modalReporte" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false">
+                    <VBox maxHeight="600.0" maxWidth="1000.0" style="-fx-background-color: white; -fx-background-radius: 10;">
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 20; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+                            <Label text="Reporte de Ventas Filtradas" textFill="#1e293b"><font><Font name="System Bold" size="18.0" /></font></Label>
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button onAction="#cerrarModalReporte" style="-fx-background-color: transparent; -fx-cursor: hand;" text="✕" textFill="#64748b"><font><Font size="18.0" /></font></Button>
+                        </HBox>
+
+                        <VBox style="-fx-padding: 20;" VBox.vgrow="ALWAYS">
+                            <TableView fx:id="tablaReporte" prefHeight="400.0">
+                                <columns>
+                                    <TableColumn fx:id="colFolio" prefWidth="80.0" text="Folio" />
+                                    <TableColumn fx:id="colFecha" prefWidth="150.0" text="Fecha" />
+                                    <TableColumn fx:id="colCajero" prefWidth="150.0" text="Cajero" />
+                                    <TableColumn fx:id="colProductos" prefWidth="300.0" text="Productos" />
+                                    <TableColumn fx:id="colMetodo" prefWidth="100.0" text="Método" />
+                                    <TableColumn fx:id="colTotal" prefWidth="120.0" text="Total" />
+                                </columns>
+                            </TableView>
+                        </VBox>
+
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 20; -fx-background-color: #f8fafc; -fx-background-radius: 0 0 10 10;">
+                            <Label fx:id="lblTotalVentasEncontradas" text="Total de ventas encontradas: 0" textFill="#64748b" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Label text="Total: " textFill="#1e293b"><font><Font name="System Bold" size="18.0" /></font></Label>
+                            <Label fx:id="lblSumaTotal" text="\$ 0.00" textFill="#10b981"><font><Font name="System Bold" size="18.0" /></font></Label>
+
+                            <Button onAction="#imprimirReporte" style="-fx-background-color: #2563eb; -fx-background-radius: 6; -fx-cursor: hand;" text="↑ Exportar / Imprimir Reporte" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font><HBox.margin><Insets left="20.0" /></HBox.margin><padding><Insets top="10" bottom="10" left="20" right="20"/></padding></Button>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
+            </children>
+        </StackPane>
+    </center>
+</BorderPane>
