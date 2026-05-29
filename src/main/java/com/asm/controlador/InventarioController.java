@@ -55,6 +55,7 @@ public class InventarioController {
             //. configuracion de la conexión a MySQL usando Hibernate
             Configuration configuration = new Configuration();
             configuration.configure("com/asm/vista/hibernate.cfg.xml"); // lee credenciales y URL
+            configuration.configure("hibernate.cfg.xml");
 
             // registramos las clases que representan tablas en la base de datos
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);

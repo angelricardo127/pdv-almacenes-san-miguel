@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20.0" style="-fx-padding: 30; -fx-background-color: white; -fx-font-family: 'Segoe UI', sans-serif;" prefWidth="650.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.FormularioModificarProductoController">
+
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Modificar Producto" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A202C;" HBox.hgrow="ALWAYS"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label text="✕" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-text-fill: #4A5568;" onMouseClicked="#cerrarVentana"/>
+    </HBox>
+
+    <Separator style="-fx-background-color: #E2E8F0;"/>
+
+    <GridPane hgap="25.0" vgap="18.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+        </columnConstraints>
+
+        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="Código SKU *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <TextField fx:id="txtSku" style="-fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px;"/>
+        </VBox>
+        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="Nombre del Producto *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <TextField fx:id="txtNombre" style="-fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="Categoría *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="cmbCategoria" style="-fx-padding: 8; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px; -fx-background-color: white;" prefWidth="1000.0"/>
+        </VBox>
+        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="Talla" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <TextField fx:id="txtTalla" promptText="Ej: 28, 30, 32" style="-fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px; -fx-prompt-text-fill: #A0AEC0;"/>
+        </VBox>
+
+        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <Label text="Color" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <TextField fx:id="txtColor" promptText="Ej: Azul marino, Negro" style="-fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px; -fx-prompt-text-fill: #A0AEC0;"/>
+        </VBox>
+        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label text="Precio de Venta *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-background-color: white;">
+                <Label text="\$" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #4A5568;"/>
+                <TextField fx:id="txtPrecioVenta" style="-fx-background-color: transparent; -fx-font-size: 14px; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
+            <Label text="Stock Actual *" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <TextField fx:id="txtStockActual" style="-fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #CBD5E0; -fx-border-radius: 5; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <Label text="Estado (Calculado automáticamente)" style="-fx-text-fill: #4A5568; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <HBox alignment="CENTER_LEFT" style="-fx-padding: 9; -fx-background-radius: 5; -fx-border-color: #E2E8F0; -fx-border-radius: 5; -fx-background-color: #F7FAFC;">
+                <Label fx:id="lblEstado" text="Disponible" style="-fx-font-weight: bold; -fx-padding: 4 15; -fx-background-radius: 20; -fx-background-color: #E6FFFA; -fx-text-fill: #38A169; -fx-font-size: 12px;"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+
+    <HBox spacing="15.0" style="-fx-padding: 10 0 0 0;">
+        <Button text="Cancelar" onAction="#cerrarVentana" style="-fx-background-color: white; -fx-border-color: #CBD5E0; -fx-border-radius: 8; -fx-text-fill: #2D3748; -fx-font-weight: bold; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Button text="Guardar Cambios" onAction="#guardarCambios" style="-fx-background-color: #2B6CB0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(three-pass-box, rgba(43,108,176,0.3), 8, 0, 0, 2);" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+
+    <Button text="🗑 Dar de Baja Producto" onAction="#darDeBaja" style="-fx-background-color: #E53E3E; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(three-pass-box, rgba(229,62,62,0.3), 8, 0, 0, 2);" maxWidth="Infinity"/>
+
+</VBox>
