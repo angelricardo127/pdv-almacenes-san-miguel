@@ -14,6 +14,8 @@ public class Main extends Application {
     public void start(Stage escenarioPrincipal) throws Exception {
         // 1. Cargamos DIRECTAMENTE tu archivo de inventario en la raíz
         Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/PuntoVenta.fxml")));
+        // 1. Cargamos tu archivo visual de Login
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Login.fxml"));
 
         // 2. Creamos la "Escena" con las dimensiones de tu diseño
         Scene escena = new Scene(raiz, 900, 600);
