@@ -42,41 +42,37 @@ public class ContenedorBaseController {
 
     @FXML
     public void mostrarVentas() {
-        // En tu captura vi un PuntoVenta.fxml y un ReporteVenta.fxml,
-        // ajusta este nombre si tu pantalla de ventas se llama diferente.
         cargarVista("PuntoVenta.fxml");
     }
 
     @FXML
     public void mostrarInventario() {
-        cargarVista("inventario.fxml"); // Ajustado a minúscula según tu captura
+        cargarVista("inventario.fxml");
     }
 
     @FXML
     public void mostrarCaja() {
-        // Asumiendo que se llama Caja.fxml (ajusta si es necesario)
-        cargarVista("Caja.fxml");
+        // Apuntando correctamente al archivo que acabamos de crear
+        cargarVista("GestionCaja.fxml");
     }
 
     @FXML
     public void mostrarCambios() {
-        cargarVista("cambios.fxml"); // Ajustado a minúscula según tu captura
+        cargarVista("cambios.fxml");
     }
 
     @FXML
     public void mostrarReportes() {
-        cargarVista("Reportes.fxml"); // Ajustado a mayúscula según tu captura
+        cargarVista("Reportes.fxml");
     }
 
     @FXML
     public void mostrarSeguridad() {
-        cargarVista("Seguridad.fxml"); // Ajustado a mayúscula según tu captura
+        cargarVista("Seguridad.fxml");
     }
 
     @FXML
     public void cerrarSesion() {
-        // Por ahora lo dejamos como un mensaje en consola
-        // Más adelante conectaremos esto para que destruya el chasis y cargue Login.fxml
         System.out.println("Cerrando sesión... Redirigiendo al Login.");
     }
 }
