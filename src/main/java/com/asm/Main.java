@@ -10,20 +10,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage escenarioPrincipal) throws Exception {
+
         // 1. Cargamos tu archivo visual de Login
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Login.fxml"));
-
-        // ¡ESTA ERA LA LÍNEA QUE FALTABA PARA LEER EL ARCHIVO!
         Parent raiz = fxmlLoader.load();
 
-        // 2. Creamos la "Escena" (ajusta las medidas 900x600 si tu login es más pequeñito)
+        // 2. Creamos la "Escena" con las medidas de tu login
         Scene escena = new Scene(raiz, 900, 600);
 
         // 3. Configuramos la ventana de Windows con el título correcto
         escenarioPrincipal.setTitle("Almacenes San Miguel - Inicio de Sesión");
         escenarioPrincipal.setScene(escena);
 
-        // Usualmente la ventana de Login no se puede hacer grande/pequeña, la bloqueamos
+        // Bloqueamos redimensionar para cuidar el diseño del Login
         escenarioPrincipal.setResizable(false);
 
         // 4. ¡Luces, cámara, acción!

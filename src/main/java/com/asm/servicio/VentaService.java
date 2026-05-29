@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import java.util.List;
+import java.util.Map;
 
 public class VentaService {
 
@@ -105,5 +106,83 @@ public class VentaService {
         } finally {
             session.close();
         }
+
     }
+    public void registrarVenta(Map<Integer, Integer> carrito, double totalVenta) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            // 1. Crear el registro principal de la Venta
+            Venta nuevaVenta = new Venta();
+            nuevaVenta.setFecha(new java.util.Date());
+            nuevaVenta.setIdMetodoPago(1); // Asignamos 1 por defecto (Efectivo)
+
+            session.persist(nuevaVenta);
+            session.flush(); // Obligamos a MySQL a generar el ID de la venta en este instante
+
+            // 2. Recorrer el carrito para descontar stock y crear los detalles
+            for (Map.Entry<Integer, Integer> entry : carrito.entrySet()) {
+                int idProducto = entry.getKey();
+                int cantidadVendida = entry.getValue();
+
+                Producto producto = session.get(Producto.class, idProducto);
+
+                if (producto != null) {
+                    // --- A) DESCONTAR STOCK ---
+                    int nuevoStock = producto.getStock() - cantidadVendida;
+                    producto.setStock(nuevoStock);
+                    session.merge(producto);
+
+                    // --- B) GUARDAR EL DETALLE HISTÓRICO ---
+                    DetalleVenta detalle = new DetalleVenta();
+                    // Usamos los IDs enteros tal como los declaraste en tu modelo
+                    detalle.setIdVenta(nuevaVenta.getIdVenta());
+                    detalle.setIdProducto(producto.getIdProducto());
+                    detalle.setCantidad(cantidadVendida);
+                    detalle.setPrecioUnitario(producto.getPrecio());
+
+                    session.persist(detalle);
+                }
+            }
+
+            tx.commit();
+            System.out.println("💾 Transacción exitosa: Venta registrada y stock actualizado en MySQL.");
+
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            System.err.println("❌ Error crítico al registrar la venta: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+    // 1. Buscar la venta principal
+    public Venta obtenerVentaPorId(int idVenta) {
+        Session session = sessionFactory.openSession();
+        Venta v = session.get(Venta.class, idVenta);
+        session.close();
+        return v;
+    }
+
+    // 2. Buscar los detalles (qué productos compró en esa venta)
+    public java.util.List<DetalleVenta> obtenerDetallesPorVenta(int idVenta) {
+        Session session = sessionFactory.openSession();
+        java.util.List<DetalleVenta> detalles = session.createQuery("FROM DetalleVenta WHERE idVenta = :id", DetalleVenta.class)
+                .setParameter("id", idVenta)
+                .list();
+        session.close();
+        return detalles;
+    }
+
+    // 3. Buscar el producto individual para armar el ticket
+    public Producto obtenerProductoPorId(int idProducto) {
+        Session session = sessionFactory.openSession();
+        Producto p = session.get(Producto.class, idProducto);
+        session.close();
+        return p;
+    }
+
 }

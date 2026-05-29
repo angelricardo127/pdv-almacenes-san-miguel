@@ -16,6 +16,12 @@ import org.hibernate.cfg.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.control.TextField;
 
 public class PuntoVentaController {
 
@@ -24,15 +30,16 @@ public class PuntoVentaController {
     @FXML private VBox emptyStateCarrito;
     @FXML private VBox contenedorCarrito;
     @FXML private Label lblTotal;
-    @FXML private Button btnProcesarPago; // Nuestro nuevo botón conectado
+    @FXML private Button btnProcesarPago;
+    @FXML private TextField txtBuscarProducto;
 
     private double totalCompra = 0.0;
+    private List<Producto> listaProductos;
 
     // --- LA MEMORIA DEL CARRITO ---
-    // Guarda el ID del producto y cuántos llevamos (Ej: ID 1 -> 3 piezas)
     private Map<Integer, Integer> cantidadesCarrito = new HashMap<>();
-    // Guarda el ID y el objeto Producto completo para poder leer su nombre y precio
     private Map<Integer, Producto> productosCarrito = new HashMap<>();
+    private VentaService servicioVentas;
 
     @FXML
     public void initialize() {
@@ -47,18 +54,31 @@ public class PuntoVentaController {
             configuration.addAnnotatedClass(com.asm.modelo.DetalleVenta.class);
 
             SessionFactory factory = configuration.buildSessionFactory();
-            VentaService servicio = new VentaService(factory);
+            this.servicioVentas = new VentaService(factory);
 
-            List<Producto> listaProductos = servicio.obtenerProductos();
-
+            this.listaProductos = servicioVentas.obtenerProductos();
             for (Producto prod : listaProductos) {
-                // Ahora le mandamos el objeto Producto completo a la tarjeta
                 crearTarjetaProducto(prod);
             }
 
-            // Le decimos al botón de pago qué hacer cuando le den clic
+            // --- LÓGICA DEL BOTÓN DE PAGO (Hover y Click) ---
             if (btnProcesarPago != null) {
                 btnProcesarPago.setOnAction(event -> procesarPago());
+                actualizarEstadoBotonPago(); // Lo apagamos de inicio
+
+                // Efecto Hover
+                btnProcesarPago.setOnMouseEntered(e -> {
+                    if (!btnProcesarPago.isDisable()) {
+                        btnProcesarPago.setStyle("-fx-background-color: #149178; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;");
+                    }
+                });
+
+                // Se apaga al quitar el mouse
+                btnProcesarPago.setOnMouseExited(e -> {
+                    if (!btnProcesarPago.isDisable()) {
+                        btnProcesarPago.setStyle("-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
+                    }
+                });
             }
 
         } catch (Exception e) {
@@ -91,80 +111,159 @@ public class PuntoVentaController {
 
         tarjeta.getChildren().addAll(lblNombre, lblSku, lblPrecio, lblStock);
 
-        // Al darle clic, mandamos el objeto Producto a nuestra lógica del carrito
-        tarjeta.setOnMouseClicked(event -> {
-            agregarAlCarrito(prod);
-        });
-
+        tarjeta.setOnMouseClicked(event -> agregarAlCarrito(prod));
         contenedorProductos.getChildren().add(tarjeta);
     }
 
     private void agregarAlCarrito(Producto prod) {
         int id = prod.getIdProducto();
-
-        // Si el producto ya está en el carrito, le sumamos 1. Si es nuevo, empieza en 1.
         cantidadesCarrito.put(id, cantidadesCarrito.getOrDefault(id, 0) + 1);
         productosCarrito.put(id, prod);
+        actualizarVistaCarrito();
+    }
 
-        // Redibujamos la lista para que se vean los productos agrupados
+    public void cambiarCantidadProducto(Producto p, int cambio) {
+        int id = p.getIdProducto();
+        int nuevaCantidad = cantidadesCarrito.getOrDefault(id, 0) + cambio;
+
+        if (nuevaCantidad <= 0) {
+            eliminarProductoDelCarrito(p);
+        } else {
+            cantidadesCarrito.put(id, nuevaCantidad);
+            actualizarVistaCarrito();
+        }
+    }
+
+    public void eliminarProductoDelCarrito(Producto p) {
+        int id = p.getIdProducto();
+        cantidadesCarrito.remove(id);
+        productosCarrito.remove(id);
         actualizarVistaCarrito();
     }
 
     private void actualizarVistaCarrito() {
-        // 1. Limpiamos la lista visual y el total para recalcular desde cero
         contenedorCarrito.getChildren().clear();
         totalCompra = 0.0;
 
-        // 2. Ocultamos el Empty State porque sabemos que hay artículos
+        boolean carritoVacio = cantidadesCarrito.isEmpty();
+
         if (emptyStateCarrito != null) {
-            emptyStateCarrito.setVisible(false);
-            emptyStateCarrito.setManaged(false);
+            emptyStateCarrito.setVisible(carritoVacio);
+            emptyStateCarrito.setManaged(carritoVacio);
         }
 
-        // 3. Recorremos nuestra memoria para dibujar los renglones
         for (Integer id : cantidadesCarrito.keySet()) {
             Producto p = productosCarrito.get(id);
             int cantidad = cantidadesCarrito.get(id);
             double subtotal = cantidad * p.getPrecio();
+            totalCompra += subtotal;
 
-            totalCompra = totalCompra + subtotal;
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ElementoCarrito.fxml"));
+                Parent filaProducto = loader.load();
 
-            // Creamos el renglón agrupado (Ej: "3x Playera Tipo Polo   ---   $750.00")
-            Label item = new Label(cantidad + "x " + p.getNombreProducto() + "   ---   " + String.format("$%.2f", subtotal));
-            item.setFont(Font.font("System", 14));
-            item.setPadding(new Insets(5, 0, 5, 0));
+                ElementoCarritoController controller = loader.getController();
+                controller.configurarElemento(p, cantidad, this);
 
-            contenedorCarrito.getChildren().add(item);
+                contenedorCarrito.getChildren().add(filaProducto);
+            } catch (Exception e) {
+                System.err.println("Error al cargar diseño del carrito: " + e.getMessage());
+            }
         }
 
-        // 4. Actualizamos el texto gigante
         if (lblTotal != null) {
             lblTotal.setText(String.format("$%.2f", totalCompra));
+        }
+
+        actualizarEstadoBotonPago();
+    }
+
+    private void actualizarEstadoBotonPago() {
+        if (btnProcesarPago != null) {
+            boolean carritoVacio = cantidadesCarrito.isEmpty();
+            btnProcesarPago.setDisable(carritoVacio);
+
+            if (carritoVacio) {
+                btnProcesarPago.setStyle("-fx-background-color: #bdc3c7; -fx-text-fill: #7f8c8d; -fx-background-radius: 6; -fx-font-weight: bold;");
+            } else {
+                btnProcesarPago.setStyle("-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
+            }
         }
     }
 
     private void procesarPago() {
-        // Si no hay nada, no hacemos nada
-        if (cantidadesCarrito.isEmpty()) {
-            System.out.println("El carrito está vacío. Agrega productos primero.");
-            return;
+        if (cantidadesCarrito.isEmpty()) return;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModalPago.fxml"));
+            Parent root = loader.load();
+
+            ModalPagoController modalController = loader.getController();
+            modalController.setTotalAPagar(totalCompra);
+
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Procesar Pago");
+            modalStage.setScene(new Scene(root));
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.showAndWait();
+
+            if (modalController.isPagoAprobado()) {
+                double recibido = modalController.getMontoRecibido();
+                double cambio = recibido - totalCompra;
+
+                servicioVentas.registrarVenta(cantidadesCarrito, totalCompra);
+
+                FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/ModalTicket.fxml"));
+                Parent ticketRoot = ticketLoader.load();
+
+                ModalTicketController ticketController = ticketLoader.getController();
+                ticketController.cargarDatosTicket(cantidadesCarrito, productosCarrito, totalCompra, recibido, cambio, modalController.getMetodoPagoFinal());
+                Stage ticketStage = new Stage();
+                ticketStage.setTitle("Ticket de Venta");
+                ticketStage.setScene(new Scene(ticketRoot));
+                ticketStage.initModality(Modality.APPLICATION_MODAL);
+                ticketStage.showAndWait();
+
+                cantidadesCarrito.clear();
+                productosCarrito.clear();
+                actualizarVistaCarrito();
+
+                System.out.println(" ¡Venta completada con éxito! Sistema listo para el siguiente cliente.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al abrir la ventana de pago: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
 
-        System.out.println("💳 Procesando el pago por un total de: $" + totalCompra);
-        // NOTA: Aquí es donde conectaremos tu VentaService para descontar el stock en MySQL.
+    private void filtrarProductos(String busqueda) {
+        contenedorProductos.getChildren().clear();
+        String busquedaMinusculas = busqueda.toLowerCase();
 
-        // Simulamos que la venta fue un éxito y limpiamos el sistema para el siguiente cliente
-        cantidadesCarrito.clear();
-        productosCarrito.clear();
-        actualizarVistaCarrito();
-
-        // Regresamos el Empty State a la pantalla y dejamos el total en ceros
-        if (emptyStateCarrito != null) {
-            emptyStateCarrito.setVisible(true);
-            emptyStateCarrito.setManaged(true);
+        for (Producto prod : listaProductos) {
+            if (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas)) {
+                crearTarjetaProducto(prod);
+            }
         }
-        lblTotal.setText("$0.00");
+    }
 
-        System.out.println(" ¡Venta completada con éxito! Sistema listo para el siguiente cliente.");
+    @FXML
+    private void abrirVentanaReimprimir() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModalReimprimir.fxml"));
+            Parent root = loader.load();
+
+            ModalReimprimirController controller = loader.getController();
+            controller.setServicioVentas(this.servicioVentas);
+
+            Stage stage = new Stage();
+            stage.setTitle("Reimprimir Ticket");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.err.println("Error al abrir la ventana de reimpresión: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

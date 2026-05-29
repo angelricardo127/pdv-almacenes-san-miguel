@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="450.0" prefWidth="350.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.ModalPagoController">
+    <children>
+        <VBox layoutX="10.0" layoutY="10.0" prefHeight="430.0" prefWidth="330.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <Label text="Procesar Pago" textFill="#2c3e50">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" text="✕" textFill="#7f8c8d">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 10;">
+                    <children>
+                        <VBox>
+                            <children>
+                                <Label text="Total a Pagar:" textFill="#2c3e50">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Artículos en el carrito" textFill="#bdc3c7">
+                                    <font>
+                                        <Font size="10.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblTotalPagar" text="\$0.00" textFill="#1abc9c">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+
+                <VBox spacing="5.0">
+                    <children>
+                        <Label text="Método de Pago *" textFill="#7f8c8d">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="btnEfectivo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="35.0" style="-fx-background-color: #e8f8f5; -fx-text-fill: #1abc9c; -fx-border-color: #1abc9c; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand;" text="💵 Efectivo" HBox.hgrow="ALWAYS">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Button>
+                                <Button fx:id="btnTarjeta" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="35.0" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand;" text="💳 Tarjeta" HBox.hgrow="ALWAYS">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <VBox fx:id="cajaEfectivo" spacing="15.0">
+                    <children>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Monto Recibido" textFill="#7f8c8d">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="txtMontoRecibido" prefHeight="40.0" promptText="\$ 0.00" style="-fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </TextField>
+                            </children>
+                        </VBox>
+                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #eef2f5; -fx-background-radius: 8; -fx-padding: 15;">
+                            <children>
+                                <Label text="Cambio a Entregar:" textFill="#2c3e50">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="lblCambio" text="\$0.00" textFill="#3498db">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <VBox fx:id="cajaTarjeta" managed="false" spacing="5.0" visible="false">
+                    <children>
+                        <Label text="Folio de la terminal" textFill="#7f8c8d">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="txtFolio" prefHeight="40.0" promptText="Ej. 847291" style="-fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-background-radius: 6; -fx-background-color: white;">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </TextField>
+                    </children>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <HBox spacing="10.0">
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" style="-fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-background-radius: 6; -fx-text-fill: #7f8c8d; -fx-cursor: hand;" text="Cancelar" HBox.hgrow="ALWAYS">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnConfirmarPago" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 6; -fx-text-fill: white; -fx-cursor: hand;" text="Confirmar Pago (Enter)" HBox.hgrow="ALWAYS">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
