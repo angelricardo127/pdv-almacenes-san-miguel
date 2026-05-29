@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "productos")
 public class Producto {
 
-    // --- ATRIBUTOS ORIGINALES (Intocables por consistencia con el equipo) ---
+    // --- atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
@@ -27,7 +27,7 @@ public class Producto {
     @Column(name = "id_genero", nullable = false)
     private int idGenero;
 
-    // --- ATRIBUTOS NUEVOS DE FIGMA (Se agregan como opcionales sin romper el script base) ---
+    // --- atributos  como opcionales sin romper el script base
     @Column(name = "sku", length = 50, unique = true)
     private String sku;
 
@@ -51,7 +51,7 @@ public class Producto {
 
     public Producto() {}
 
-    // Constructor actualizado
+    // Constructor
     public Producto(String sku, String nombreProducto, String categoria, String variantes, double precio, Double costoCompra, int stock, Integer stockMinimo, String proveedor, String descripcion, int idTalla, int idGenero) {
         this.sku = sku;
         this.nombreProducto = nombreProducto;
@@ -63,11 +63,11 @@ public class Producto {
         this.stockMinimo = stockMinimo;
         this.proveedor = proveedor;
         this.descripcion = descripcion;
-        this.idTalla = idTalla; // Respetando la BD original
-        this.idGenero = idGenero; // Respetando la BD original
+        this.idTalla = idTalla;
+        this.idGenero = idGenero;
     }
 
-    // --- GETTERS Y SETTERS ---
+    // getters y setters
     public int getIdProducto() { return idProducto; }
     public void setIdProducto(int idProducto) { this.idProducto = idProducto; }
 

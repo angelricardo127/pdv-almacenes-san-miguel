@@ -1,62 +1,63 @@
-package com.asm.modelo;// define el paquete donde se encuentra la clase usuariotest
-import org.hibernate.Session;// importa la clase session de hibernate para manejar la conexión con la base de datos
-import org.hibernate.SessionFactory;// importa la clase sessionfactory que crea sesiones para conectarse a la base de datos
-import org.hibernate.Transaction;// importa la clase transaction para manejar transacciones en la base de datos
-import org.hibernate.cfg.Configuration;// importa la clase configuration para leer el archivo de configuración de hibernate
-import org.junit.jupiter.api.*;// importa las anotaciones de junit para definir pruebas unitarias
-import static org.junit.jupiter.api.Assertions.*;// importa los métodos de aserción para verificar resultados en las pruebas
+package com.asm.modelo;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.junit.jupiter.api.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UsuarioTest {
-    private static SessionFactory sessionFactory;// atributo estático que representa la fábrica de sesiones de hibernate
-    private Session session;// atributo que representa una sesión activa con la base de datos
-    private Transaction transaction;// atributo que representa una transacción en la base de datos
 
-    @BeforeAll// anotación que indica que el metodo se ejecuta una sola vez antes de todas las pruebas
+    private static SessionFactory sessionFactory;
+    private Session session;
+    private Transaction transaction;
 
+    @BeforeAll
     public static void setup() {
+        // Lee tu archivo hibernate.cfg.xml y prepara el motor
+        sessionFactory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
         // lee el archivo hibernate.cfg.xml y prepara el motor de hibernate
         sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
     }
 
-    @BeforeEach// anotación que indica que el metodo se ejecuta antes de cada prueba
-
+    @BeforeEach
     public void openSession() {
-        // abre una conexión a mysql antes de cada prueba
+        // Abre una conexión a MySQL antes de cada @Test
         session = sessionFactory.openSession();
         transaction = session.beginTransaction();
     }
 
-    @Test// anotación que indica que el metodo es una prueba unitaria
-    @DisplayName("Debería registrar un usuario administrador en la BD")// nombre descriptivo de la prueba
-
-    public void testGuardarUsuario() {// prueba para guardar un usuario en la base de datos
-        // preparar: creamos un usuario de prueba con rol administrador
+    @Test
+    @DisplayName("Debería registrar un usuario administrador en la BD")
+    public void testGuardarUsuario() {
+        // 1. Preparar: Creamos un usuario de prueba (Usamos idRol = 1 asumiendo que es Administrador)
         Usuario nuevoAdmin = new Usuario("admin_jefe", "secreto123", "Angel", "Hernandez", 1);
 
-        // ejecutar: le decimos a hibernate que lo guarde en mysql
+        // 2. Ejecutar: Le decimos a Hibernate que lo guarde en MySQL
         session.persist(nuevoAdmin);
         transaction.commit();
 
-        // verificar: comprobamos que se generó un id mayor a 0
-        assertTrue(nuevoAdmin.getIdUsuario() > 0, "el id no se generó. hubo un error al guardar.");
+        // 3. Verificar: Si se guardó, MySQL le debió asignar un ID mayor a 0
+        assertTrue(nuevoAdmin.getIdUsuario() > 0, "El ID no se generó. Hubo un error al guardar.");
 
-        // comprobación extra: buscamos el usuario directamente en la base de datos
+        // Comprobación extra: Lo buscamos directamente en la BD para estar 100% seguros
         Usuario usuarioGuardado = session.get(Usuario.class, nuevoAdmin.getIdUsuario());
-        assertNotNull(usuarioGuardado, "el usuario no se encontró en la base de datos.");
-        assertEquals("Angel", usuarioGuardado.getNombre(), "el nombre guardado no coincide.");
+        assertNotNull(usuarioGuardado, "El usuario no se encontró en la base de datos.");
+        assertEquals("Angel", usuarioGuardado.getNombre(), "El nombre guardado no coincide.");
     }
 
-    @AfterEach// anotacion que indica que el metodo se ejecuta después de cada prueba
+    @AfterEach
     public void closeSession() {
-        // cerramos la sesión para liberar recursos
+        // Limpiamos la conexión para no saturar la memoria
         if (session != null && session.isOpen()) {
             session.close();
         }
     }
 
-    @AfterAll// anotación que indica que el metodo se ejecuta una sola vez después de todas las pruebas
+    @AfterAll
     public static void tearDown() {
-        // apagamos el motor de hibernate al terminar todas las pruebas
+        // Apagamos el motor de Hibernate al terminar todas las pruebas
         if (sessionFactory != null) {
             sessionFactory.close();
         }

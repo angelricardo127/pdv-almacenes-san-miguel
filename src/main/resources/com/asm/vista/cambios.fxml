@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox prefWidth="1200.0" prefHeight="700.0" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-background-color: #F3F4F6;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.CambiosController">
+
+    <VBox prefWidth="250.0" style="-fx-background-color: #2D3748;" spacing="5">
+        <VBox style="-fx-padding: 30 20 40 20;">
+            <Label text="ALMACENES" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label text="SAN MIGUEL" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <Button text="  Dashboard" alignment="BASELINE_LEFT" prefWidth="250" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-padding: 15 20; -fx-font-size: 15px; -fx-cursor: hand;"/>
+        <Button text="  Ventas" alignment="BASELINE_LEFT" prefWidth="250" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-padding: 15 20; -fx-font-size: 15px; -fx-cursor: hand;"/>
+        <Button text="  Inventario" alignment="BASELINE_LEFT" prefWidth="250" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-padding: 15 20; -fx-font-size: 15px; -fx-cursor: hand;"/>
+        <Button text="  Caja" alignment="BASELINE_LEFT" prefWidth="250" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-padding: 15 20; -fx-font-size: 15px; -fx-cursor: hand;"/>
+
+        <Button text="  Cambios" alignment="BASELINE_LEFT" prefWidth="230" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-padding: 15 20; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 0 20 20 0; -fx-cursor: hand;">
+            <VBox.margin>
+                <Insets right="20.0"/>
+            </VBox.margin>
+        </Button>
+
+        <Button text="  Reportes" alignment="BASELINE_LEFT" prefWidth="250" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-padding: 15 20; -fx-font-size: 15px; -fx-cursor: hand;"/>
+        <Button text="  Seguridad" alignment="BASELINE_LEFT" prefWidth="250" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-padding: 15 20; -fx-font-size: 15px; -fx-cursor: hand;"/>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <HBox spacing="10" style="-fx-padding: 20; -fx-background-color: #1A202C;">
+            <Label text="👤" style="-fx-font-size: 24px;"/>
+            <VBox>
+                <Label text="Roberto Sánchez Pé..." style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                <Label text="Administrador" style="-fx-text-fill: #A0AEC0; -fx-font-size: 11px;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" spacing="20" style="-fx-padding: 30;">
+
+        <HBox alignment="CENTER_LEFT">
+            <VBox>
+                <Label text="Cambios y Devoluciones" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+                <Label fx:id="lblFechaActual" text="Bienvenido, Roberto Sánchez Pérez • jueves, 28 de mayo de 2026" style="-fx-text-fill: #6B7280; -fx-font-size: 14px;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="[→ Salir" style="-fx-background-color: transparent; -fx-border-color: #EF4444; -fx-text-fill: #EF4444; -fx-border-radius: 8; -fx-padding: 8 20; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        </HBox>
+
+        <HBox spacing="20">
+            <Button text="↻ Realizar Cambio de Producto" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 15; -fx-background-radius: 8; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#prepararCambio"/>
+            <Button text="⚠ Devolución de Producto" style="-fx-background-color: #EA580C; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 15; -fx-background-radius: 8; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#prepararDevolucion"/>
+        </HBox>
+
+        <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+            <VBox prefWidth="350.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;" spacing="15">
+                <Label text="Historial de Ventas" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                <Separator/>
+                <ListView fx:id="listaTickets" style="-fx-background-color: white; -fx-border-color: transparent;" VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <VBox fx:id="panelDetalle" alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 10;">
+                <Label text="↻" style="-fx-font-size: 80px; -fx-text-fill: #CBD5E1;"/>
+                <Label text="Seleccione un Ticket" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                <Label text="Elija una venta del historial para procesar su cambio o devolución" style="-fx-text-fill: #94A3B8; -fx-font-size: 14px;"/>
+            </VBox>
+
+        </HBox>
+    </VBox>
+
+</HBox>
