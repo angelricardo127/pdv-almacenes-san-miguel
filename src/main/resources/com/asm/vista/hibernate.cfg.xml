@@ -28,6 +28,7 @@
         <mapping class="com.asm.modelo.DetalleVenta"/>
         <mapping class="com.asm.modelo.Producto"/>
         <mapping class="com.asm.modelo.Usuario"/>
+        <mapping class="com.asm.modelo.CorteCaja"/>
 
     </session-factory>
 </hibernate-configuration>
