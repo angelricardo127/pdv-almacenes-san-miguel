@@ -18,8 +18,9 @@ public class UsuarioService {
         Session session = sessionFactory.openSession();
 
         try {
-            // Buscamos al usuario en MySQL usando HQL (Hibernate Query Language)
-            Query<Usuario> query = session.createQuery("FROM Usuario WHERE username = :user AND password = :pass", Usuario.class);
+            // 🚨 CORRECCIÓN AQUÍ: Cambiamos 'password' por 'contrasena' y agregamos el filtro de 'estatus = 1'
+            String hql = "FROM Usuario WHERE username = :user AND contrasena = :pass AND estatus = 1";
+            Query<Usuario> query = session.createQuery(hql, Usuario.class);
             query.setParameter("user", username);
             query.setParameter("pass", password);
 
