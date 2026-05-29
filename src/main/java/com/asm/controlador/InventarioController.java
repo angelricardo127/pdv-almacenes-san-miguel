@@ -45,7 +45,7 @@ public class InventarioController {
 
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("hibernate.cfg.xml");
+            configuration.configure("com/asm/vista/hibernate.cfg.xml"); // lee credenciales y URL
 
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);
             configuration.addAnnotatedClass(com.asm.modelo.Talla.class);
@@ -188,24 +188,28 @@ public class InventarioController {
 
     @FXML
     public void abrirAjusteStock() {
+        System.out.println("🚨 ¡BINGO! El botón sí conectó con el método.");
         try {
-            // 1. Cargamos el diseño
+            // 1. Cargamos el diseño visual del formulario
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioAjusteStock.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // 2. CONECTAMOS EL CEREBRO DE LA VENTANA (¡Paso crucial!)
+            // 2. CONECTAMOS EL CEREBRO DE LA VENTANA
+            // Aquí enlazamos tu InventarioController actual con el FormularioAjusteStockController
             FormularioAjusteStockController formCtrl = loader.getController();
             formCtrl.setDependencias(this, this.servicio);
 
-            // 3. Mostramos la ventana
+            // 3. Mostramos la ventana flotante
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Ajuste de Stock");
             stage.setScene(new javafx.scene.Scene(root));
+
+            // Esto congela la ventana de atrás para obligar al usuario a terminar el ajuste
             stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
         } catch (Exception e) {
-            System.err.println("❌ ERROR AL ABRIR STOCK:");
+            System.err.println("❌ ERROR AL ABRIR LA VENTANA DE AJUSTE DE STOCK:");
             e.printStackTrace();
         }
     }
