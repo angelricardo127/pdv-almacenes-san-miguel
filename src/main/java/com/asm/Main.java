@@ -6,25 +6,24 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage escenarioPrincipal) throws Exception {
-        // 1. Cargamos tu archivo visual de Login
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+        // 1. Cargamos DIRECTAMENTE tu archivo de inventario en la raíz
+        Parent raiz = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/asm/vista/inventario.fxml")));
 
-        // ¡ESTA ERA LA LÍNEA QUE FALTABA PARA LEER EL ARCHIVO!
-        Parent raiz = fxmlLoader.load();
-
-        // 2. Creamos la "Escena" (ajusta las medidas 900x600 si tu login es más pequeñito)
+        // 2. Creamos la "Escena" con las dimensiones de tu diseño
         Scene escena = new Scene(raiz, 900, 600);
 
-        // 3. Configuramos la ventana de Windows con el título correcto
-        escenarioPrincipal.setTitle("Almacenes San Miguel - Inicio de Sesión");
+        // 3. Configuramos la ventana de Windows con tus títulos
+        escenarioPrincipal.setTitle("Almacenes San Miguel - Almacén e Inventario");
         escenarioPrincipal.setScene(escena);
 
-        // Usualmente la ventana de Login no se puede hacer grande/pequeña, la bloqueamos
-        escenarioPrincipal.setResizable(false);
+        // Permitimos redimensionar temporalmente para ver que todo se acomode bien
+        escenarioPrincipal.setResizable(true);
 
         // 4. ¡Luces, cámara, acción!
         escenarioPrincipal.show();

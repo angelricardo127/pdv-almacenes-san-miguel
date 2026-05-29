@@ -48,7 +48,7 @@ public class PuntoVentaController {
 
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("hibernate.cfg.xml");
+            configuration.configure("com/asm/vista/hibernate.cfg.xml");
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);
             configuration.addAnnotatedClass(com.asm.modelo.Venta.class);
             configuration.addAnnotatedClass(com.asm.modelo.DetalleVenta.class);
@@ -160,7 +160,7 @@ public class PuntoVentaController {
             totalCompra += subtotal;
 
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ElementoCarrito.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/ElementoCarrito.fxml"));
                 Parent filaProducto = loader.load();
 
                 ElementoCarritoController controller = loader.getController();
@@ -196,7 +196,7 @@ public class PuntoVentaController {
         if (cantidadesCarrito.isEmpty()) return;
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModalPago.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalPago.fxml"));
             Parent root = loader.load();
 
             ModalPagoController modalController = loader.getController();
@@ -214,7 +214,7 @@ public class PuntoVentaController {
 
                 servicioVentas.registrarVenta(cantidadesCarrito, totalCompra);
 
-                FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/ModalTicket.fxml"));
+                FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalTicket.fxml"));
                 Parent ticketRoot = ticketLoader.load();
 
                 ModalTicketController ticketController = ticketLoader.getController();
@@ -251,7 +251,7 @@ public class PuntoVentaController {
     @FXML
     private void abrirVentanaReimprimir() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModalReimprimir.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalReimprimir.fxml"));
             Parent root = loader.load();
 
             ModalReimprimirController controller = loader.getController();

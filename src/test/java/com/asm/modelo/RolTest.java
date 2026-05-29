@@ -14,7 +14,7 @@ public class RolTest {
     @BeforeAll// anotación que indica que el metodo se ejecuta una sola vez antes de todas las pruebas
     public static void setup() {
         // lee el archivo hibernate.cfg.xml y prepara el motor de hibernate
-        sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+        sessionFactory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
     }
 
     @BeforeEach// anotación que indica que el metodo se ejecuta antes de cada prueba

@@ -25,7 +25,7 @@ public class LoginController {
     public void initialize() {
         // 1. Configuramos Hibernate (Asegúrate de registrar las clases de Ángel aquí)
         Configuration configuration = new Configuration();
-        configuration.configure("hibernate.cfg.xml");
+        configuration.configure("com/asm/vista/hibernate.cfg.xml");
         configuration.addAnnotatedClass(com.asm.modelo.Usuario.class);
         configuration.addAnnotatedClass(com.asm.modelo.Rol.class);
 
@@ -63,7 +63,7 @@ public class LoginController {
     private void abrirSistemaPrincipal() {
         try {
             // Cargar tu pantalla principal (NOTA: Cambia "/PuntoVenta.fxml" por el nombre real de tu pantalla base)
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PuntoVenta.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource( "/com/asm/vista/PuntoVenta.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();

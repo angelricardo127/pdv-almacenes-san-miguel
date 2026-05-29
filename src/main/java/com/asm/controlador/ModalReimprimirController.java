@@ -79,7 +79,7 @@ public class ModalReimprimirController {
             }
 
             // 4. Invocamos tu misma ventana de Ticket
-            FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/ModalTicket.fxml"));
+            FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalTicket.fxml"));
             Parent ticketRoot = ticketLoader.load();
 
             ModalTicketController ticketController = ticketLoader.getController();
