@@ -18,7 +18,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import com.asm.modelo.DetalleTicketPreview;
 import java.util.List;
-import com.asm.modelo.DetalleVenta;
 
 public class CambiosController {
 
@@ -37,7 +36,7 @@ public class CambiosController {
         // 1. Configuramos Hibernate igual que en el módulo de Inventario
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("hibernate.cfg.xml");
+            configuration.configure("com/asm/vista/hibernate.cfg.xml");
 
             // Aseguramos que la clase Venta esté registrada
             configuration.addAnnotatedClass(com.asm.modelo.Venta.class);
@@ -264,6 +263,26 @@ public class CambiosController {
         panelDetalle.getChildren().addAll(lblTitulo, infoCard, lblProdBox, listaProductosUI, lblMotivo, txtMotivo, cajaBotones);
     }
 
-    @FXML public void prepararCambio() { System.out.println("Flujo de Cambio"); }
+    @FXML
+    public void prepararCambio() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioCambio.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            // --- ESTO ES LO NUEVO: Le pasamos el túnel de MySQL a la ventana flotante ---
+            FormularioCambioController asistente = loader.getController();
+            asistente.setServicio(this.servicio);
+            // -------------------------------------------------------------------------
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Asistente de Cambios");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.err.println("Error al abrir Asistente de Cambios: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     @FXML public void prepararDevolucion() { System.out.println("Flujo de Devolución"); }
 }

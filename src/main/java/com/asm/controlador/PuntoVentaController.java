@@ -41,7 +41,7 @@ public class PuntoVentaController {
 
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("hibernate.cfg.xml");
+            configuration.configure("com/asm/vista/hibernate.cfg.xml");
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);
             configuration.addAnnotatedClass(com.asm.modelo.Venta.class);
             configuration.addAnnotatedClass(com.asm.modelo.DetalleVenta.class);

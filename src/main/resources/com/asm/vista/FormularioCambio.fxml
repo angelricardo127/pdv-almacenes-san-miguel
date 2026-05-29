@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="0" style="-fx-background-color: white; -fx-font-family: 'Segoe UI', sans-serif;" prefWidth="800.0" prefHeight="650.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.FormularioCambioController">
+
+    <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 30;">
+        <Label text="Cambio de Producto - Asistente" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1A202C;" HBox.hgrow="ALWAYS"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label text="✕" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-text-fill: #4A5568;" onMouseClicked="#cerrarVentana"/>
+    </HBox>
+    <Separator style="-fx-background-color: #E2E8F0;"/>
+
+    <StackPane VBox.vgrow="ALWAYS" style="-fx-padding: 20 30;">
+
+        <VBox fx:id="paso1" spacing="20" alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text=" 1 " style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 50; -fx-padding: 5 10; -fx-font-size: 16px;"/>
+                <Label text="Paso 1: Ingrese el folio del ticket original" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+            </HBox>
+
+            <HBox spacing="15">
+                <TextField fx:id="txtFolio" promptText="Ej: 1001" style="-fx-font-size: 16px; -fx-padding: 12; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" HBox.hgrow="ALWAYS"/>
+                <Button text="Buscar Ticket" onAction="#avanzarPaso2" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12 25; -fx-background-radius: 6; -fx-cursor: hand;"/>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Cancelar" onAction="#cerrarVentana" style="-fx-background-color: white; -fx-border-color: #94A3B8; -fx-border-radius: 6; -fx-padding: 12; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-cursor: hand;" maxWidth="Infinity"/>
+        </VBox>
+
+        <VBox fx:id="paso2" spacing="20" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text=" 2 " style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 50; -fx-padding: 5 10; -fx-font-size: 16px;"/>
+                <Label text="Paso 2: Seleccione el producto a cambiar" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+            </HBox>
+
+            <VBox style="-fx-background-color: #F8FAFC; -fx-padding: 15; -fx-background-radius: 8;">
+                <Label fx:id="lblInfoTicket" text="Ticket: #--- | Fecha: ---" style="-fx-font-size: 14px; -fx-text-fill: #475569;"/>
+            </VBox>
+
+            <ListView fx:id="listaProductosTicket" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 8;"/>
+
+            <HBox spacing="15">
+                <Button text="← Volver" onAction="#volverPaso1" style="-fx-background-color: white; -fx-border-color: #94A3B8; -fx-border-radius: 6; -fx-padding: 12; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button text="Continuar →" onAction="#avanzarPaso3" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </VBox>
+
+        <VBox fx:id="paso3" spacing="15" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text=" 3 " style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 50; -fx-padding: 5 10; -fx-font-size: 16px;"/>
+                <Label text="Paso 3: Busque y seleccione el nuevo producto" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+            </HBox>
+
+            <VBox style="-fx-background-color: #FEFCE8; -fx-border-color: #FDE047; -fx-border-radius: 8; -fx-padding: 15; -fx-background-radius: 8;">
+                <Label text="Producto a entregar (Devolución):" style="-fx-font-size: 12px; -fx-text-fill: #854D0E;"/>
+                <Label fx:id="lblProductoSale" text="---" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+            </VBox>
+
+            <TextField promptText="Buscar en catálogo..." style="-fx-font-size: 14px; -fx-padding: 10; -fx-border-color: #CBD5E1; -fx-border-radius: 6;"/>
+
+            <ListView fx:id="listaCatalogo" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 8;"/>
+
+            <HBox spacing="15">
+                <Button text="← Volver" onAction="#volverPaso2" style="-fx-background-color: white; -fx-border-color: #94A3B8; -fx-border-radius: 6; -fx-padding: 12; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button text="Calcular Diferencia →" onAction="#avanzarPaso4" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </VBox>
+
+        <VBox fx:id="paso4" spacing="15" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="4-6" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 50; -fx-padding: 5 10; -fx-font-size: 16px;"/>
+                <Label text="Confirmación de Cambio" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+            </HBox>
+
+            <HBox spacing="15">
+                <VBox style="-fx-background-color: #FEF2F2; -fx-border-color: #FECACA; -fx-border-radius: 8; -fx-padding: 15; -fx-background-radius: 8;" HBox.hgrow="ALWAYS">
+                    <Label text="Producto que regresa:" style="-fx-font-size: 12px; -fx-text-fill: #991B1B;"/>
+                    <Label fx:id="lblResumenRegresa" text="---" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    <Label fx:id="lblPrecioRegresa" text="\$0.00" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #DC2626;"/>
+                </VBox>
+                <VBox style="-fx-background-color: #F0FDF4; -fx-border-color: #BBF7D0; -fx-border-radius: 8; -fx-padding: 15; -fx-background-radius: 8;" HBox.hgrow="ALWAYS">
+                    <Label text="Producto nuevo:" style="-fx-font-size: 12px; -fx-text-fill: #166534;"/>
+                    <Label fx:id="lblResumenNuevo" text="---" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    <Label fx:id="lblPrecioNuevo" text="\$0.00" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #16A34A;"/>
+                </VBox>
+            </HBox>
+
+            <VBox style="-fx-background-color: #F0F9FF; -fx-border-color: #BAE6FD; -fx-border-radius: 8; -fx-padding: 15; -fx-background-radius: 8;">
+                <Label text="Paso 4: Diferencia de Precio" style="-fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                <Label fx:id="lblDiferencia" text="Saldo a favor: $0.00" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0284C7;"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <HBox spacing="15">
+                <Button text="← Volver" onAction="#volverPaso3" style="-fx-background-color: white; -fx-border-color: #94A3B8; -fx-border-radius: 6; -fx-padding: 12; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button text="Confirmar Cambio y Emitir Ticket" onAction="#generarTicketFinal" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </VBox>
+
+    </StackPane>
+</VBox>
