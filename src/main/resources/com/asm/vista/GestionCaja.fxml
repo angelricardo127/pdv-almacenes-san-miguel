@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="768.0" prefWidth="1126.0" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.GestionCajaController">
+    <children>
+
+        <!-- CABECERA -->
+        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0" style="-fx-background-color: white; -fx-padding: 0 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+            <children>
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="Caja Registradora" textFill="#1e293b"><font><Font name="System Bold" size="24.0" /></font></Label>
+                    <Label fx:id="lblBienvenida" text="Bienvenido, Roberto Sánchez Pérez • miércoles, 27 de mayo de 2026" textFill="#64748b" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#ejecutarApertura" style="-fx-background-color: #1abc9c; -fx-background-radius: 5; -fx-cursor: hand;" text="✔ Abrir Turno" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font><padding><Insets bottom="10.0" left="20.0" right="20.0" top="10.0" /></padding></Button>
+                <Button onAction="#ejecutarCierre" style="-fx-background-color: #f87171; -fx-background-radius: 5; -fx-cursor: hand;" text="✘ Cerrar Turno" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font><padding><Insets bottom="10.0" left="20.0" right="20.0" top="10.0" /></padding></Button>
+            </children>
+        </HBox>
+
+        <!-- ÁREA CENTRAL -->
+        <StackPane VBox.vgrow="ALWAYS">
+            <children>
+                <VBox alignment="CENTER" spacing="25.0">
+                    <children>
+                        <Label text="🏧" style="-fx-font-size: 80px;" />
+                        <Label text="Caja Registradora" textFill="#1e293b"><font><Font name="System Bold" size="36.0" /></font></Label>
+                        <Label text="Use los botones de arriba para abrir o cerrar turno" textFill="#64748b"><font><Font size="16.0" /></font></Label>
+                    </children>
+                </VBox>
+
+                <!-- MODAL APERTURA -->
+                <StackPane fx:id="modalApertura" style="-fx-background-color: rgba(0, 0, 0, 0.7);" visible="false">
+                    <VBox maxHeight="620.0" maxWidth="550.0" spacing="0.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 30, 0, 0, 0);">
+                        <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-padding: 0 30; -fx-border-color: #f1f5f9; -fx-border-width: 0 0 1 0;">
+                            <Label text="Apertura de Turno" textFill="#1e293b"><font><Font name="System Bold" size="22.0" /></font></Label>
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button onAction="#cerrarModalApertura" style="-fx-background-color: transparent; -fx-cursor: hand;" text="✕" textFill="#64748b"><font><Font size="22.0" /></font></Button>
+                        </HBox>
+                        <VBox spacing="20.0" style="-fx-padding: 30;">
+                            <GridPane hgap="20.0" vgap="15.0">
+                                <columnConstraints><ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" /><ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" /></columnConstraints>
+                                <VBox spacing="8.0"><Label text="Cajero" textFill="#64748b" /><Label fx:id="lblCajero" text="Roberto Sánchez Pérez" textFill="#1e293b"><font><Font name="System Bold" size="15.0" /></font></Label></VBox>
+                                <VBox spacing="8.0" GridPane.columnIndex="1"><Label text="Fecha" textFill="#64748b" /><Label fx:id="lblFecha" text="27/5/2026" textFill="#1e293b"><font><Font name="System Bold" size="15.0" /></font></Label></VBox>
+                                <VBox spacing="8.0" GridPane.columnSpan="2" GridPane.rowIndex="1"><Label text="Turno" textFill="#64748b" /><ComboBox fx:id="cbTurno" prefHeight="45.0" prefWidth="Infinity" promptText="Seleccione turno..." style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 8;" /></VBox>
+                            </GridPane>
+                            <VBox spacing="10.0">
+                                <Label text="Monto Inicial de Caja (Fondo Fijo) *" textFill="#1e293b"><font><Font name="System Bold" size="14.0" /></font></Label>
+                                <HBox alignment="CENTER_LEFT" prefHeight="60.0" spacing="10.0" style="-fx-border-color: #1abc9c; -fx-border-radius: 10; -fx-padding: 0 15; -fx-border-width: 2;">
+                                    <Label text="\$" textFill="#1abc9c"><font><Font name="System Bold" size="28.0" /></font></Label><TextField fx:id="txtFondoInicial" prefHeight="50.0" promptText="1000.00" style="-fx-background-color: transparent; -fx-padding: 0;"><font><Font name="System Bold" size="24.0" /></font></TextField>
+                                </HBox>
+                            </VBox>
+                            <TextArea fx:id="txtObservaciones" prefHeight="80.0" promptText="Registre cualquier observación..." style="-fx-background-radius: 8; -fx-border-color: #cbd5e1; -fx-border-radius: 8;" wrapText="true" />
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="90.0" spacing="20.0" style="-fx-padding: 0 30; -fx-background-color: #f8fafc; -fx-background-radius: 0 0 15 15;">
+                            <Button onAction="#cerrarModalApertura" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-cursor: hand;" text="Cancelar" textFill="#475569"><font><Font name="System Bold" size="14.0" /></font></Button>
+                            <Button onAction="#confirmarApertura" prefHeight="45.0" prefWidth="160.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 8; -fx-cursor: hand;" text="Abrir Turno" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font></Button>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
+                <!-- MODAL ÉXITO APERTURA -->
+                <StackPane fx:id="modalExitoApertura" style="-fx-background-color: rgba(0, 0, 0, 0.7);" visible="false">
+                    <VBox alignment="CENTER" maxHeight="450.0" maxWidth="450.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 30, 0, 0, 0);">
+                        <StackPane><Label style="-fx-background-color: #d1fae5; -fx-background-radius: 50px; -fx-min-width: 80px; -fx-min-height: 80px;" /><Label text="✔" textFill="#10b981" style="-fx-font-size: 40px; -fx-font-weight: bold;"/></StackPane>
+                        <Label text="¡Apertura Exitosa!" textFill="#1e293b"><font><Font name="System Bold" size="26.0" /></font></Label>
+                        <VBox spacing="15.0" style="-fx-background-color: #f8fafc; -fx-background-radius: 8; -fx-padding: 20; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 1;">
+                            <HBox><Label text="Cajero: " textFill="#64748b" prefWidth="130.0"><font><Font name="System Bold" size="14.0"/></font></Label><Label fx:id="lblExitoCajero" text="-" textFill="#1e293b"><font><Font size="14.0"/></font></Label></HBox>
+                            <HBox><Label text="Fondo Inicial: " textFill="#64748b" prefWidth="130.0"><font><Font name="System Bold" size="14.0"/></font></Label><Label fx:id="lblExitoFondo" text="\$0.00" textFill="#1e293b"><font><Font size="14.0"/></font></Label></HBox>
+                        </VBox>
+                        <Button onAction="#continuarAVentas" prefHeight="55.0" prefWidth="Infinity" style="-fx-background-color: #1abc9c; -fx-background-radius: 8; -fx-cursor: hand;" text="Continuar a Ventas" textFill="WHITE"><font><Font name="System Bold" size="16.0" /></font></Button>
+                    </VBox>
+                </StackPane>
+
+                <!-- MODAL CIERRE DE TURNO -->
+                <StackPane fx:id="modalCierre" style="-fx-background-color: rgba(0,0,0,0.55);" visible="false">
+                    <VBox maxWidth="430" maxHeight="620" spacing="0" style="-fx-background-color: white; -fx-background-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 25,0,0,5);">
+                        <HBox alignment="CENTER_LEFT" prefHeight="55" style="-fx-padding: 0 18; -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;">
+                            <Label text="Cierre de Turno - Arqueo de Caja" textFill="#1f2937"><font><Font name="System Bold" size="16"/></font></Label>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button onAction="#cerrarModalCierre" text="✕" style="-fx-background-color: transparent; -fx-font-size: 14; -fx-cursor: hand;" textFill="#6b7280"/>
+                        </HBox>
+                        <VBox spacing="12" style="-fx-padding: 16;">
+                            <Label fx:id="lblCierreFecha" visible="false" managed="false"/>
+                            <Label fx:id="lblCierreHora" visible="false" managed="false"/>
+                            <HBox spacing="10">
+                                <VBox spacing="5" HBox.hgrow="ALWAYS" style="-fx-background-color: #f3f4f6; -fx-padding: 12; -fx-background-radius: 6;">
+                                    <Label text="Cajero" textFill="#6b7280" style="-fx-font-size: 11px;"/>
+                                    <Label fx:id="lblCierreCajero" text="Roberto Sánchez" textFill="#111827"><font><Font name="System Bold" size="12"/></font></Label>
+                                </VBox>
+                                <VBox spacing="5" HBox.hgrow="ALWAYS" style="-fx-background-color: #f3f4f6; -fx-padding: 12; -fx-background-radius: 6;">
+                                    <Label text="Turno" textFill="#6b7280" style="-fx-font-size: 11px;"/>
+                                    <Label fx:id="lblCierreTurno" text="Matutino" textFill="#111827"><font><Font name="System Bold" size="12"/></font></Label>
+                                </VBox>
+                            </HBox>
+                            <VBox spacing="8">
+                                <Label text="Resumen del Turno" textFill="#111827"><font><Font name="System Bold" size="12"/></font></Label>
+                                <HBox spacing="8">
+                                    <!-- 🔥 LOS TRES NUEVOS CUADROS (Efectivo, Tarjeta, Total) -->
+                                    <VBox spacing="4" HBox.hgrow="ALWAYS" style="-fx-background-color: #eff6ff; -fx-border-color: #93c5fd; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;">
+                                        <Label text="Ventas Efectivo" textFill="#6b7280" style="-fx-font-size: 10px;"/>
+                                        <Label fx:id="lblCierreVentasEfectivo" text="\$0.00" textFill="#2563eb"><font><Font name="System Bold" size="16"/></font></Label>
+                                    </VBox>
+                                    <VBox spacing="4" HBox.hgrow="ALWAYS" style="-fx-background-color: #faf5ff; -fx-border-color: #d8b4fe; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;">
+                                        <Label text="Ventas con Tarjeta" textFill="#6b7280" style="-fx-font-size: 10px;"/>
+                                        <Label fx:id="lblCierreVentasTarjeta" text="\$0.00" textFill="#a855f7"><font><Font name="System Bold" size="16"/></font></Label>
+                                    </VBox>
+                                    <VBox spacing="4" HBox.hgrow="ALWAYS" style="-fx-background-color: #ecfdf5; -fx-border-color: #34d399; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;">
+                                        <Label text="Total de Ventas" textFill="#6b7280" style="-fx-font-size: 10px;"/>
+                                        <Label fx:id="lblCierreTotalVentas" text="\$0.00" textFill="#10b981"><font><Font name="System Bold" size="16"/></font></Label>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+                            <VBox spacing="10" style="-fx-background-color: #f9fafb; -fx-padding: 12; -fx-background-radius: 6; -fx-border-color: #d1d5db; -fx-border-radius: 6;">
+                                <Label text="Conteo Físico de Efectivo" textFill="#111827"><font><Font name="System Bold" size="12"/></font></Label>
+                                <VBox spacing="6">
+                                    <Label text="Efectivo Contado en Caja" textFill="#6b7280" style="-fx-font-size: 11px;"/>
+                                    <HBox alignment="CENTER_LEFT" spacing="6" prefHeight="40" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 0 10;">
+                                        <Label text="\$" textFill="#6b7280"><font><Font name="System Bold" size="14"/></font></Label>
+                                        <TextField fx:id="txtMontoCierre" onKeyReleased="#calcularDiferencia" promptText="0.00" style="-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 14; -fx-font-weight: bold;"/>
+                                    </HBox>
+                                </VBox>
+                            </VBox>
+                            <HBox alignment="CENTER_LEFT" style="-fx-background-color: #f3f4f6; -fx-border-color: #d1d5db; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 12;">
+                                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                    <Label text="Diferencia" textFill="#374151"><font><Font name="System Bold" size="12"/></font></Label>
+                                    <Label text="Diferencia entre lo esperado y lo contado." wrapText="true" textFill="#6b7280" style="-fx-font-size: 10px;"/>
+                                </VBox>
+                                <Label fx:id="lblCierreDiferencia" text="\$0.00" textFill="#374151"><font><Font name="System Bold" size="16"/></font></Label>
+                            </HBox>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="10" prefHeight="50" style="-fx-padding: 0 16; -fx-background-color: #f9fafb; -fx-background-radius: 0 0 14 14;">
+                            <Button text="Cancelar" onAction="#cerrarModalCierre" prefWidth="120" prefHeight="36" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-background-radius: 6; -fx-border-radius: 6;" textFill="#374151"/>
+                            <Button text="Cerrar Turno" onAction="#confirmarCierre" prefWidth="170" prefHeight="36" style="-fx-background-color: #ef4444; -fx-background-radius: 6;" textFill="WHITE"><font><Font name="System Bold" size="12"/></font></Button>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
+                <!-- MODALES DE ERROR Y AVISO -->
+                <StackPane fx:id="modalErrorApertura" style="-fx-background-color: rgba(0, 0, 0, 0.7);" visible="false">
+                    <VBox alignment="CENTER" maxHeight="250.0" maxWidth="350.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 25;">
+                        <Label text="⚠️" textFill="#f59e0b" style="-fx-font-size: 40px;"/>
+                        <Label text="¡Atención!" textFill="#1e293b"><font><Font name="System Bold" size="20.0" /></font></Label>
+                        <Label text="Por favor ingresa un monto válido y selecciona un turno." textAlignment="CENTER" textFill="#64748b" wrapText="true" />
+                        <Button onAction="#cerrarModalError" prefHeight="40.0" prefWidth="Infinity" style="-fx-background-color: #3b82f6; -fx-background-radius: 8;" text="Entendido" textFill="WHITE" />
+                    </VBox>
+                </StackPane>
+
+                <StackPane fx:id="modalExitoCierre" style="-fx-background-color: rgba(0, 0, 0, 0.7);" visible="false">
+                    <VBox alignment="CENTER" maxHeight="350.0" maxWidth="400.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 40;">
+                        <StackPane><Label style="-fx-background-color: #d1fae5; -fx-background-radius: 50px; -fx-min-width: 80px; -fx-min-height: 80px;" /><Label text="✔" textFill="#10b981" style="-fx-font-size: 40px; -fx-font-weight: bold;"/></StackPane>
+                        <Label text="¡Cierre Exitoso!" textFill="#1e293b"><font><Font name="System Bold" size="26.0" /></font></Label>
+                        <VBox spacing="15.0" style="-fx-background-color: #f8fafc; -fx-background-radius: 8; -fx-padding: 20; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 1;">
+                            <HBox><Label text="Diferencia: " textFill="#64748b" prefWidth="100.0"><font><Font name="System Bold" size="14.0"/></font></Label><Label fx:id="lblExitoDiferencia" text="\$0.00" textFill="#1e293b"><font><Font size="14.0"/></font></Label></HBox>
+                        </VBox>
+                        <HBox alignment="CENTER" spacing="15.0">
+                            <Button onAction="#generarReporte" prefHeight="45.0" prefWidth="160.0" style="-fx-background-color: #3b82f6; -fx-background-radius: 8; -fx-cursor: hand;" text="Imprimir Ticket" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font></Button>
+                            <Button onAction="#cerrarModalExitoCierre" prefHeight="45.0" prefWidth="160.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 8; -fx-cursor: hand;" text="Finalizar" textFill="WHITE"><font><Font name="System Bold" size="14.0" /></font></Button>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
+            </children>
+        </StackPane>
+    </children>
+</VBox>

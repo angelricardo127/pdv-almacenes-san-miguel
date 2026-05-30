@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="vistaContenido" prefHeight="768.0" prefWidth="1126.0" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.DashboardController">
+    <children>
+
+        <HBox alignment="CENTER_LEFT">
+            <VBox.margin>
+                <Insets left="40.0" right="40.0" top="30.0" />
+            </VBox.margin>
+            <children>
+                <VBox>
+                    <children>
+                        <Label text="Panel de Control" textFill="#1e293b">
+                            <font><Font name="System Bold" size="24.0" /></font>
+                        </Label>
+                        <Label fx:id="lblBienvenida" text="Cargando bienvenida..." textFill="#64748b">
+                            <font><Font size="12.0" /></font>
+                        </Label>
+                    </children>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+
+        <HBox spacing="30.0">
+            <VBox.margin>
+                <Insets left="40.0" right="40.0" top="40.0" />
+            </VBox.margin>
+            <children>
+
+                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
+                    <effect><DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" /></effect>
+                    <children>
+                        <Label text="Ventas del Día" textFill="#64748b"><VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin></Label>
+                        <Label fx:id="lblVentasDia" text="\$0.00" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                    </children>
+                </VBox>
+
+                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
+                    <effect><DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" /></effect>
+                    <children>
+                        <Label text="Productos en Stock" textFill="#64748b"><VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin></Label>
+                        <Label fx:id="lblProductosStock" text="0" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                    </children>
+                </VBox>
+
+                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
+                    <effect><DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" /></effect>
+                    <children>
+                        <Label text="Usuarios Activos" textFill="#64748b"><VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin></Label>
+                        <Label fx:id="lblUsuariosActivos" text="0" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                        <Label fx:id="lblTotalUsuarios" text="de 0 usuarios" textFill="#64748b"><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</VBox>

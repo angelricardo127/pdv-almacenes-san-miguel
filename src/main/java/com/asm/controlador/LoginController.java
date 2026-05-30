@@ -23,62 +23,74 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        // 1. Configuramos Hibernate (Asegúrate de registrar las clases de Ángel aquí)
-        Configuration configuration = new Configuration();
-        configuration.configure("com/asm/vista/hibernate.cfg.xml");
-        configuration.addAnnotatedClass(com.asm.modelo.Usuario.class);
-        configuration.addAnnotatedClass(com.asm.modelo.Rol.class);
+        try {
+            // 1. Configuramos Hibernate mapeando correctamente las clases
+            Configuration configuration = new Configuration();
+            configuration.configure("/com/asm/vista/hibernate.cfg.xml");
+            configuration.addAnnotatedClass(com.asm.modelo.Usuario.class);
+            configuration.addAnnotatedClass(com.asm.modelo.Rol.class);
 
-        SessionFactory factory = configuration.buildSessionFactory();
-        this.usuarioService = new UsuarioService(factory);
+            SessionFactory factory = configuration.buildSessionFactory();
+            this.usuarioService = new UsuarioService(factory);
 
-        // 2. Le damos la acción al botón
-        btnIngresar.setOnAction(event -> iniciarSesion());
+            // ❌ Quitamos el btnIngresar.setOnAction(...) porque tu FXML ya hace ese trabajo con el onAction.
+
+        } catch (Exception e) {
+            System.err.println("❌ Error crítico al inicializar Hibernate en el Login: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    private void iniciarSesion() {
+    // 🔥 Agregamos el @FXML aquí para que el archivo FXML lo pueda ver
+    @FXML
+    public void iniciarSesion() {
         String user = txtUsuario.getText();
         String pass = txtPassword.getText();
+
+        // Limpiar estilos previos
+        txtPassword.setStyle("-fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 6;");
 
         if (user.isEmpty() || pass.isEmpty()) {
             System.out.println("⚠️ Por favor, llena ambos campos.");
             return;
         }
 
-        System.out.println("⏳ Validando credenciales en MySQL...");
+        System.out.println("⏳ Validando credenciales de [" + user + "] en MySQL...");
 
-        // Vamos a la base de datos a preguntar
+        // Vamos a la base de datos a preguntar usando el servicio existente
         Usuario usuarioValidado = usuarioService.validarUsuario(user, pass);
 
         if (usuarioValidado != null) {
-            System.out.println("✅ ¡Bienvenido! Acceso concedido.");
+            System.out.println("✅ ¡Bienvenido " + usuarioValidado.getNombre() + "! Acceso concedido.");
             abrirSistemaPrincipal();
         } else {
             System.out.println("❌ Credenciales incorrectas. Intenta de nuevo.");
-            txtPassword.clear(); // Limpiamos la contraseña para que la vuelva a escribir
-            txtPassword.setStyle("-fx-border-color: red; -fx-border-radius: 6;"); // La pintamos de rojo
+            txtPassword.clear();
+            // Ponemos el borde rojo para alertar visualmente al usuario
+            txtPassword.setStyle("-fx-background-color: white; -fx-border-color: red; -fx-border-radius: 6; -fx-background-radius: 6;");
         }
     }
 
     private void abrirSistemaPrincipal() {
         try {
-            // Cargar tu pantalla principal (NOTA: Cambia "/PuntoVenta.fxml" por el nombre real de tu pantalla base)
-            FXMLLoader loader = new FXMLLoader(getClass().getResource( "/com/asm/vista/PuntoVenta.fxml"));
+            // Aquí cargamos el FXML del MARCO
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/ContenedorBase.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("Almacenes San Miguel - Sistema POS");
             stage.setScene(new Scene(root));
+            stage.setMaximized(true); // Se abre en pantalla completa ideal para puntos de venta
 
             // Mostramos el sistema principal
             stage.show();
 
-            // Cerramos la ventana de Login
+            // Cerramos la ventana de Login actual
             Stage loginStage = (Stage) btnIngresar.getScene().getWindow();
             loginStage.close();
 
         } catch (Exception e) {
-            System.err.println("❌ Error al abrir el sistema: " + e.getMessage());
+            System.err.println("❌ Error al abrir el sistema principal: " + e.getMessage());
             e.printStackTrace();
         }
     }

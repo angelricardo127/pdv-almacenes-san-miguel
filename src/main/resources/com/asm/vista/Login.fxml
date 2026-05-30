@@ -96,7 +96,7 @@
                     </VBox.margin>
                 </PasswordField>
 
-                <Button fx:id="btnIngresar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 6; -fx-cursor: hand;" text="Ingresar al Sistema" textFill="WHITE">
+                <Button fx:id="btnIngresar" onAction="#iniciarSesion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 6; -fx-cursor: hand;" text="Ingresar al Sistema" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>
@@ -105,26 +105,6 @@
                     </VBox.margin>
                 </Button>
 
-                <VBox style="-fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; -fx-border-radius: 6; -fx-background-radius: 6;">
-                    <padding>
-                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
-                    </padding>
-                    <children>
-                        <Label text="Usuarios de ejemplo:" textFill="#6c757d">
-                            <font>
-                                <Font name="System Bold" size="12.0" />
-                            </font>
-                            <VBox.margin>
-                                <Insets bottom="8.0" />
-                            </VBox.margin>
-                        </Label>
-                        <Label lineSpacing="3.0" text="• admin.principal (Administrador - acceso total)&#10;• maria.gonzalez (Cajero - debe abrir caja primero)&#10;• ana.martinez (Cajero - debe abrir caja primero)&#10;• jorge.almacen (Almacenista - inventario/reportes)" textFill="#6c757d">
-                            <font>
-                                <Font size="12.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </VBox>
             </children>
         </VBox>
     </children>

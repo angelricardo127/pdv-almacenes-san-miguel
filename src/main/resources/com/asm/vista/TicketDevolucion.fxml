@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Line?>
+
+<VBox alignment="CENTER" prefWidth="420.0" spacing="20.0" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 5); -fx-font-family: 'Segoe UI', sans-serif;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.TicketDevolucionController">
+
+    <!-- Icono de Éxito -->
+    <StackPane>
+        <Label style="-fx-background-color: #D1FAE5; -fx-background-radius: 50px; -fx-min-width: 70px; -fx-min-height: 70px;" />
+        <Label text="✔" textFill="#10B981" style="-fx-font-size: 35px; -fx-font-weight: bold;"/>
+    </StackPane>
+
+    <Label text="¡Devolución Exitosa!" textFill="#1E293B" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <!-- Simulación del Ticket Físico -->
+    <VBox spacing="15" style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 25;">
+
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="ALMACENES SAN MIGUEL" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #334155;"/>
+            <Label text="COMPROBANTE DE DEVOLUCIÓN" style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+        </VBox>
+
+        <!-- Línea punteada divisoria -->
+        <Line endX="310" style="-fx-stroke: #CBD5E1; -fx-stroke-dash-array: 5 5;"/>
+
+        <!-- Datos Dinámicos -->
+        <GridPane vgap="12" hgap="10">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="45" />
+                <ColumnConstraints percentWidth="55" halignment="RIGHT" />
+            </columnConstraints>
+
+            <Label text="Ticket Original:" textFill="#64748B" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label fx:id="lblTicket" text="#1003" style="-fx-font-weight: bold; -fx-text-fill: #1E293B;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+            <Label text="Artículos Devueltos:" textFill="#64748B" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="lblCantidad" text="1" style="-fx-font-weight: bold; -fx-text-fill: #1E293B;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Label text="Motivo:" textFill="#64748B" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.valignment="TOP"/>
+            <Label fx:id="lblMotivo" text="ola" wrapText="true" style="-fx-text-fill: #1E293B; -fx-text-alignment: right;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+
+        <Line endX="310" style="-fx-stroke: #CBD5E1; -fx-stroke-dash-array: 5 5;"/>
+
+        <!-- Total -->
+        <HBox alignment="CENTER_LEFT">
+            <Label text="REEMBOLSO" style="-fx-font-weight: bold; -fx-text-fill: #1E293B;" HBox.hgrow="ALWAYS"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblReembolso" text="\$1,350.00" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #10B981;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Botones de Acción -->
+    <HBox spacing="15" style="-fx-padding: 10 0 0 0;">
+        <Button text="🖨️ Imprimir Ticket" onAction="#imprimirTicket" style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Button text="Cerrar" onAction="#cerrarVentana" style="-fx-background-color: white; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 12; -fx-cursor: hand;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+
+</VBox>

@@ -50,10 +50,21 @@ public class SeguridadController {
             return new SimpleStringProperty(u.getNombre() + " " + u.getApellidoPaterno());
         });
 
-        // 3. Traducir el ID del Rol a Texto
+        // ========================================================
+        // Traducir el ID del Rol a Texto (Soporta Almacenista)
+        // ========================================================
         colRol.setCellValueFactory(cellData -> {
             int rolId = cellData.getValue().getIdRol();
-            String nombreRol = (rolId == 1) ? "Administrador" : "Cajero";
+            String nombreRol = "Desconocido";
+
+            if (rolId == 1) {
+                nombreRol = "Administrador";
+            } else if (rolId == 2) {
+                nombreRol = "Cajero";
+            } else if (rolId == 3) {
+                nombreRol = "Almacenista";
+            }
+
             return new SimpleStringProperty(nombreRol);
         });
 

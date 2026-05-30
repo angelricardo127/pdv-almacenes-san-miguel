@@ -26,8 +26,8 @@ public class ModalNuevoUsuarioController {
 
     @FXML
     public void initialize() {
-        // Cargar las opciones del ComboBox
-        cmbRol.setItems(FXCollections.observableArrayList("Administrador", "Cajero"));
+        // 🔥 CORRECCIÓN: Agregar "Almacenista" a las opciones del ComboBox
+        cmbRol.setItems(FXCollections.observableArrayList("Administrador", "Cajero", "Almacenista"));
         cmbRol.getSelectionModel().selectFirst();
 
         // Conectar Hibernate
@@ -46,6 +46,7 @@ public class ModalNuevoUsuarioController {
         btnCancelar.setOnAction(e -> cerrarModal());
         btnCerrarIcono.setOnAction(e -> cerrarModal());
     }
+
     public void setSeguridadControllerPadre(SeguridadController padre) {
         this.seguridadControllerPadre = padre;
     }
@@ -73,8 +74,15 @@ public class ModalNuevoUsuarioController {
         // Si escribió dos palabras, la segunda se va a apellido_paterno
         String apellido = (partesNombre.length > 1) ? partesNombre[1] : "";
 
-        // 3. Obtener el ID del Rol (1 = Administrador, 2 = Cajero)
-        int idRol = rolSeleccionado.equals("Administrador") ? 1 : 2;
+        // 🔥 CORRECCIÓN: Obtener el ID del Rol (1 = Administrador, 2 = Cajero, 3 = Almacenista)
+        int idRol;
+        if (rolSeleccionado.equals("Administrador")) {
+            idRol = 1;
+        } else if (rolSeleccionado.equals("Cajero")) {
+            idRol = 2;
+        } else {
+            idRol = 3; // Almacenista
+        }
 
         // 4. Crear el objeto Usuario (Ajustado a tu clase Usuario.java)
         Usuario nuevoUsuario = new Usuario();
