@@ -41,7 +41,7 @@ public class LoginController {
         }
     }
 
-    // 🔥 Agregamos el @FXML aquí para que el archivo FXML lo pueda ver
+    //  Agregamos el @FXML aquí para que el archivo FXML lo pueda ver
     @FXML
     public void iniciarSesion() {
         String user = txtUsuario.getText();

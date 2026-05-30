@@ -26,7 +26,7 @@ public class ModalNuevoUsuarioController {
 
     @FXML
     public void initialize() {
-        // 🔥 CORRECCIÓN: Agregar "Almacenista" a las opciones del ComboBox
+        //  Agregar "Almacenista" a las opciones del ComboBox
         cmbRol.setItems(FXCollections.observableArrayList("Administrador", "Cajero", "Almacenista"));
         cmbRol.getSelectionModel().selectFirst();
 
@@ -74,7 +74,7 @@ public class ModalNuevoUsuarioController {
         // Si escribió dos palabras, la segunda se va a apellido_paterno
         String apellido = (partesNombre.length > 1) ? partesNombre[1] : "";
 
-        // 🔥 CORRECCIÓN: Obtener el ID del Rol (1 = Administrador, 2 = Cajero, 3 = Almacenista)
+        // Obtener el ID del Rol (1 = Administrador, 2 = Cajero, 3 = Almacenista)
         int idRol;
         if (rolSeleccionado.equals("Administrador")) {
             idRol = 1;

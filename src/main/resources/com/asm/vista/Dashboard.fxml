@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.HBox?>
@@ -8,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="vistaContenido" prefHeight="768.0" prefWidth="1126.0" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.DashboardController">
+<VBox fx:id="vistaContenido" prefHeight="768.0" prefWidth="1126.0" style="-fx-background-color: #f1f5f9;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asm.controlador.DashboardController">
     <children>
 
         <HBox alignment="CENTER_LEFT">
@@ -18,11 +21,12 @@
             <children>
                 <VBox>
                     <children>
-                        <Label text="Panel de Control" textFill="#1e293b">
-                            <font><Font name="System Bold" size="24.0" /></font>
+                        <Label text="Resumen del Sistema" textFill="#0f172a">
+                            <font><Font name="System Bold" size="26.0" /></font>
                         </Label>
                         <Label fx:id="lblBienvenida" text="Cargando bienvenida..." textFill="#64748b">
-                            <font><Font size="12.0" /></font>
+                            <font><Font size="13.0" /></font>
+                            <VBox.margin><Insets top="2.0" /></VBox.margin>
                         </Label>
                     </children>
                 </VBox>
@@ -30,37 +34,141 @@
             </children>
         </HBox>
 
-        <HBox spacing="30.0">
+        <HBox spacing="25.0">
             <VBox.margin>
-                <Insets left="40.0" right="40.0" top="40.0" />
+                <Insets left="40.0" right="40.0" top="35.0" />
             </VBox.margin>
             <children>
 
-                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
-                    <effect><DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" /></effect>
+                <VBox prefHeight="130.0" prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: transparent transparent transparent #10b981; -fx-border-width: 0 0 0 5; -fx-border-radius: 10;">
+                    <effect><DropShadow color="#0000000d" height="20.0" radius="9.5" width="20.0" /></effect>
                     <children>
-                        <Label text="Ventas del Día" textFill="#64748b"><VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin></Label>
-                        <Label fx:id="lblVentasDia" text="\$0.00" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                        <HBox alignment="CENTER_LEFT">
+                            <VBox.margin><Insets left="20.0" right="20.0" top="20.0" /></VBox.margin>
+                            <children>
+                                <Label text="Ventas del Día" textFill="#64748b">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label text="💰" textFill="#10b981"><font><Font size="18.0" /></font></Label>
+                            </children>
+                        </HBox>
+                        <Label fx:id="lblVentasDia" text="\$0.00" textFill="#0f172a">
+                            <font><Font name="System Bold" size="32.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="10.0" /></VBox.margin>
+                        </Label>
                     </children>
                 </VBox>
 
-                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
-                    <effect><DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" /></effect>
+                <VBox prefHeight="130.0" prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: transparent transparent transparent #3b82f6; -fx-border-width: 0 0 0 5; -fx-border-radius: 10;">
+                    <effect><DropShadow color="#0000000d" height="20.0" radius="9.5" width="20.0" /></effect>
                     <children>
-                        <Label text="Productos en Stock" textFill="#64748b"><VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin></Label>
-                        <Label fx:id="lblProductosStock" text="0" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                        <HBox alignment="CENTER_LEFT">
+                            <VBox.margin><Insets left="20.0" right="20.0" top="20.0" /></VBox.margin>
+                            <children>
+                                <Label text="Uniformes en Stock" textFill="#64748b">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label text="👕" textFill="#3b82f6"><font><Font size="18.0" /></font></Label>
+                            </children>
+                        </HBox>
+                        <Label fx:id="lblProductosStock" text="0" textFill="#0f172a">
+                            <font><Font name="System Bold" size="32.0" /></font>
+                            <VBox.margin><Insets left="20.0" top="10.0" /></VBox.margin>
+                        </Label>
                     </children>
                 </VBox>
 
-                <VBox prefHeight="130.0" prefWidth="250.0" style="-fx-background-color: #ffffff; -fx-background-radius: 8;">
-                    <effect><DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" /></effect>
+                <VBox prefHeight="130.0" prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: transparent transparent transparent #8b5cf6; -fx-border-width: 0 0 0 5; -fx-border-radius: 10;">
+                    <effect><DropShadow color="#0000000d" height="20.0" radius="9.5" width="20.0" /></effect>
                     <children>
-                        <Label text="Usuarios Activos" textFill="#64748b"><VBox.margin><Insets left="20.0" top="20.0" /></VBox.margin></Label>
-                        <Label fx:id="lblUsuariosActivos" text="0" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
-                        <Label fx:id="lblTotalUsuarios" text="de 0 usuarios" textFill="#64748b"><VBox.margin><Insets left="20.0" top="5.0" /></VBox.margin></Label>
+                        <HBox alignment="CENTER_LEFT">
+                            <VBox.margin><Insets left="20.0" right="20.0" top="20.0" /></VBox.margin>
+                            <children>
+                                <Label text="Usuarios Activos" textFill="#64748b">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label text="👤" textFill="#8b5cf6"><font><Font size="18.0" /></font></Label>
+                            </children>
+                        </HBox>
+                        <HBox alignment="BOTTOM_LEFT">
+                            <VBox.margin><Insets left="20.0" top="10.0" /></VBox.margin>
+                            <children>
+                                <Label fx:id="lblUsuariosActivos" text="0" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="32.0" /></font>
+                                </Label>
+                                <Label fx:id="lblTotalUsuarios" text="de 0 en total" textFill="#94a3b8">
+                                    <font><Font size="13.0" /></font>
+                                    <HBox.margin><Insets bottom="6.0" left="8.0" /></HBox.margin>
+                                </Label>
+                            </children>
+                        </HBox>
                     </children>
                 </VBox>
+
             </children>
         </HBox>
+
+        <HBox spacing="25.0" VBox.vgrow="ALWAYS">
+            <VBox.margin>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="25.0" />
+            </VBox.margin>
+            <children>
+
+                <VBox prefWidth="625.0" style="-fx-background-color: white; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+                    <effect><DropShadow color="#0000000d" height="20.0" radius="9.5" width="20.0" /></effect>
+                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                    <children>
+                        <Label text="Actividad de Ventas (Ejemplo)" textFill="#334155">
+                            <font><Font name="System Bold" size="16.0" /></font>
+                            <VBox.margin><Insets bottom="15.0" /></VBox.margin>
+                        </Label>
+                        <LineChart prefHeight="350.0" createSymbols="false" legendVisible="false">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" />
+                            </yAxis>
+                        </LineChart>
+                    </children>
+                </VBox>
+
+                <VBox prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10;">
+                    <effect><DropShadow color="#0000000d" height="20.0" radius="9.5" width="20.0" /></effect>
+                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                    <children>
+                        <Label text="Avisos Recientes" textFill="#334155">
+                            <font><Font name="System Bold" size="16.0" /></font>
+                            <VBox.margin><Insets bottom="20.0" /></VBox.margin>
+                        </Label>
+
+                        <VBox spacing="15.0">
+                            <children>
+                                <HBox spacing="10.0">
+                                    <Label text="🟢" />
+                                    <VBox>
+                                        <Label text="Caja Abierta" textFill="#0f172a"><font><Font name="System Bold" size="13.0" /></font></Label>
+                                        <Label text="Turno matutino iniciado correctamente." textFill="#64748b" wrapText="true"><font><Font size="12.0" /></font></Label>
+                                    </VBox>
+                                </HBox>
+                                <HBox spacing="10.0">
+                                    <Label text="⚠️" />
+                                    <VBox>
+                                        <Label text="Inventario Bajo" textFill="#0f172a"><font><Font name="System Bold" size="13.0" /></font></Label>
+                                        <Label text="Revisar stock de Jumper Escolar." textFill="#64748b" wrapText="true"><font><Font size="12.0" /></font></Label>
+                                    </VBox>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                    </children>
+                </VBox>
+
+            </children>
+        </HBox>
+
     </children>
 </VBox>

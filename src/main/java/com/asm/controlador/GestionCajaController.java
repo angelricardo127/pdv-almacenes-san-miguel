@@ -21,7 +21,7 @@ public class GestionCajaController {
     @FXML private Label lblBienvenida, lblCajero, lblFecha, lblExitoCajero, lblExitoFondo;
     @FXML private Label lblCierreCajero, lblCierreTurno, lblCierreFecha, lblCierreHora, lblCierreDiferencia, lblExitoDiferencia;
 
-    // 🔥 NUEVOS ETIQUETADOS PARA TUS 3 CAJITAS
+    //  NUEVOS ETIQUETADOS PARA TUS 3 CAJITAS
     @FXML private Label lblCierreVentasEfectivo, lblCierreVentasTarjeta, lblCierreTotalVentas;
 
     @FXML private ComboBox<String> cbTurno;
