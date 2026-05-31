@@ -19,31 +19,31 @@ public class FormularioCambioController {
 
     private DevolucionesService servicio;
 
-    // --- CONTENEDORES DE LOS PASOS ---
+    // cajas de los pasos
     @FXML private VBox paso1;
     @FXML private VBox paso2;
     @FXML private VBox paso3;
     @FXML private VBox paso4;
 
-    // --- ELEMENTOS DEL PASO 1 y 2 ---
+    // elementos del paso uno y dos
     @FXML private TextField txtFolio;
     @FXML private Label lblInfoTicket;
 
-    // ¡Ojo aquí! Cambiamos String por tu modelo real
+    // ojo aqui cambiamos string por tu modelo real
     @FXML private ListView<DetalleTicketPreview> listaProductosTicket;
 
-    // --- ELEMENTOS DEL PASO 3 ---
+    // elementos del paso tres
     @FXML private Label lblProductoSale;
     @FXML private ListView<String> listaCatalogo;
 
-    // --- ELEMENTOS DEL PASO 4 ---
+    // elementos del paso cuatro
     @FXML private Label lblResumenRegresa;
     @FXML private Label lblPrecioRegresa;
     @FXML private Label lblResumenNuevo;
     @FXML private Label lblPrecioNuevo;
     @FXML private Label lblDiferencia;
 
-    // Método para recibir el servicio desde la ventana principal
+    // metodo para recibir el servicio de la ventana principal
     public void setServicio(DevolucionesService servicio) {
         this.servicio = servicio;
     }
@@ -55,7 +55,7 @@ public class FormularioCambioController {
     }
 
     private void configurarDisenoListaProductos() {
-        // Le enseñamos a la lista cómo dibujar la tarjeta igual a tu diseño de Figma
+        // configuramos la lista para que se vea como en figma
         listaProductosTicket.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(DetalleTicketPreview item, boolean empty) {
@@ -92,6 +92,7 @@ public class FormularioCambioController {
     }
 
     private void mostrarPaso(VBox pasoMostrar) {
+        // mostramos el paso que queremos y escondemos los demas
         paso1.setVisible(false); paso1.setManaged(false);
         paso2.setVisible(false); paso2.setManaged(false);
         paso3.setVisible(false); paso3.setManaged(false);
@@ -105,19 +106,19 @@ public class FormularioCambioController {
     public void avanzarPaso2() {
         String folio = txtFolio.getText();
         if (folio.isEmpty()) {
-            System.err.println("Debe ingresar un folio.");
+            System.err.println("debe ingresar un folio");
             return;
         }
 
-        // 1. Vamos a MySQL a buscar los detalles del ticket
+        // 1. vamos a mysql a buscar los detalles del ticket
         List<DetalleTicketPreview> productos = servicio.obtenerDetallesVenta(folio);
 
         if (productos.isEmpty()) {
-            System.err.println("Ticket no encontrado o está vacío.");
+            System.err.println("ticket no encontrado o esta vacio");
             return;
         }
 
-        // 2. Llenamos la pantalla con los datos reales
+        // 2. llenamos la pantalla con los datos reales
         lblInfoTicket.setText("Ticket: #" + folio + " | Productos encontrados: " + productos.size());
         listaProductosTicket.getItems().clear();
         listaProductosTicket.getItems().addAll(productos);
@@ -127,22 +128,23 @@ public class FormularioCambioController {
 
     @FXML
     public void avanzarPaso3() {
-        // Obtenemos qué producto seleccionó el usuario de la lista
+        // vemos que producto selecciono el usuario
         DetalleTicketPreview productoSeleccionado = listaProductosTicket.getSelectionModel().getSelectedItem();
 
         if(productoSeleccionado == null) {
-            System.err.println("Debe seleccionar un producto para cambiar.");
+            System.err.println("debe seleccionar un producto para cambiar");
             return;
         }
 
-        // Lo mostramos en la etiqueta amarilla del Paso 3
+        // lo mostramos en la etiqueta del paso tres
         lblProductoSale.setText(productoSeleccionado.getNombreProducto() + " - $" + productoSeleccionado.getPrecioUnitario());
         mostrarPaso(paso3);
     }
 
     @FXML
     public void avanzarPaso4() {
-        System.out.println("Calculando diferencias...");
+        // calculando diferencias
+        System.out.println("calculando diferencias...");
         mostrarPaso(paso4);
     }
 
@@ -152,7 +154,8 @@ public class FormularioCambioController {
 
     @FXML
     public void generarTicketFinal() {
-        System.out.println("🖨️ Imprimiendo ticket negro de cambio...");
+        // imprimiendo ticket de cambio
+        System.out.println("imprimiendo ticket negro de cambio...");
         cerrarVentana();
     }
 

@@ -15,18 +15,18 @@ import java.util.List;
 
 public class FormularioVariantesController {
 
-    // Contenedores de los pasos
+    // cajas de los pasos
     @FXML private VBox paso1;
     @FXML private VBox paso2;
 
-    // Componentes del Paso 1
+    // cosas del paso uno
     @FXML private TableView<Producto> tablaProductos;
     @FXML private TableColumn<Producto, String> colNombre;
     @FXML private TableColumn<Producto, String> colSku;
     @FXML private TableColumn<Producto, String> colCategoria;
     @FXML private TableColumn<Producto, Void> colAccion;
 
-    // Componentes del Paso 2
+    // cosas del paso dos
     @FXML private Label lblNombreProducto;
     @FXML private Label lblDetallesProducto;
     @FXML private TextField txtTalla;
@@ -38,8 +38,9 @@ public class FormularioVariantesController {
     private InventarioController controladorPadre;
     private InventarioService servicio;
     private Producto productoSeleccionado;
-    private StringBuilder bufferVariantes; // Para ir guardando el texto de las variantes
+    private StringBuilder bufferVariantes;
 
+    // metodo para recibir el servicio de la ventana principal
     public void setDependencias(InventarioController padre, InventarioService servicio) {
         this.controladorPadre = padre;
         this.servicio = servicio;
@@ -54,7 +55,7 @@ public class FormularioVariantesController {
         colSku.setCellValueFactory(new PropertyValueFactory<>("sku"));
         colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
 
-        // Botón morado "Seleccionar" en la tabla
+        // boton para seleccionar en la tabla
         colAccion.setCellFactory(param -> new TableCell<>() {
             private final Button btnSeleccionar = new Button("Seleccionar");
             {
@@ -75,6 +76,7 @@ public class FormularioVariantesController {
     }
 
     private void cargarProductosEnTabla() {
+        // traemos todos los productos de la base de datos
         List<Producto> productos = servicio.obtenerCatalogoCompleto();
         if (productos != null) {
             ObservableList<Producto> lista = FXCollections.observableArrayList(productos);
@@ -83,11 +85,11 @@ public class FormularioVariantesController {
     }
 
     private void avanzarAlPaso2() {
-        // Llenamos los textos de la tarjeta
+        // llenamos los textos de la tarjeta
         lblNombreProducto.setText(productoSeleccionado.getNombreProducto());
         lblDetallesProducto.setText("SKU: " + productoSeleccionado.getSku() + " • Categoría: " + productoSeleccionado.getCategoria());
 
-        // Si el producto ya tenía variantes, las cargamos en el buffer
+        // si el producto ya tenia variantes las cargamos
         if (productoSeleccionado.getVariantes() != null) {
             bufferVariantes = new StringBuilder(productoSeleccionado.getVariantes());
             lblVariantesAcumuladas.setText("Variantes actuales:\n" + bufferVariantes.toString());
@@ -96,7 +98,7 @@ public class FormularioVariantesController {
             lblVariantesAcumuladas.setText("Variantes por guardar: Ninguna");
         }
 
-        // Magia de JavaFX: Ocultamos la tabla y mostramos el formulario
+        // cambiamos de paso
         paso1.setVisible(false);
         paso1.setManaged(false);
         paso2.setVisible(true);
@@ -114,7 +116,7 @@ public class FormularioVariantesController {
 
     @FXML
     public void agregarVariante() {
-        // Tomamos los datos y los armamos en un solo string
+        // juntamos los datos
         String nueva = String.format("[%s - %s | $%s | Stock: %s]",
                 txtTalla.getText(), txtColor.getText(), txtPrecio.getText(), txtStock.getText());
 
@@ -123,20 +125,20 @@ public class FormularioVariantesController {
         }
         bufferVariantes.append(nueva);
 
-        // Actualizamos la etiqueta para que el usuario vea que sí se agregó
+        // actualizamos la etiqueta para que se vea el cambio
         lblVariantesAcumuladas.setText("Variantes acumuladas:\n" + bufferVariantes.toString());
 
-        // Limpiamos los campos para la siguiente
+        // limpiamos los campos
         txtTalla.clear(); txtColor.clear(); txtPrecio.clear(); txtStock.clear();
     }
 
     @FXML
     public void guardarEnBaseDeDatos() {
         if (productoSeleccionado != null) {
-            // Guardamos todo el texto acumulado en el objeto
+            // guardamos el texto en el objeto
             productoSeleccionado.setVariantes(bufferVariantes.toString());
 
-            // Mandamos a Hibernate
+            // mandamos a guardar
             servicio.actualizarProducto(productoSeleccionado);
             System.out.println("✅ Variantes guardadas en texto: " + bufferVariantes.toString());
 
