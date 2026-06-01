@@ -69,10 +69,13 @@
         </VBox>
     </GridPane>
 
-    <HBox spacing="15.0">
-        <Button fx:id="btnCancelar" prefHeight="45.0" prefWidth="Infinity" style="-fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-text-fill: #2c3e50; -fx-cursor: hand;" text="Cancelar" HBox.hgrow="ALWAYS">
-            <font><Font size="14.0" /></font></Button>
-        <Button fx:id="btnCrearUsuario" prefHeight="45.0" prefWidth="Infinity" style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Crear Usuario (Ctrl+S)" HBox.hgrow="ALWAYS">
-            <font><Font size="14.0" /></font></Button>
+    <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 10 0 0 0;">
+        <Button fx:id="btnCancelar" text="Cancelar" style="-fx-background-color: white; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 10 25; -fx-cursor: hand;">
+            <font><Font size="14.0" /></font>
+        </Button>
+        <Button fx:id="btnCrearUsuario" text="Registrar Usuario" style="-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 10 25; -fx-cursor: hand;">
+            <font><Font size="14.0" /></font>
+        </Button>
     </HBox>
+
 </VBox>

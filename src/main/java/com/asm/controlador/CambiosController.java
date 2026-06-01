@@ -17,6 +17,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import com.asm.modelo.DetalleTicketPreview;
+
 import java.util.List;
 
 public class CambiosController {
@@ -32,18 +33,18 @@ public class CambiosController {
         System.out.println("Módulo de Cambios y Devoluciones iniciado.");
         configurarDisenoLista();
 
-        // configuramos la conexion a la base de datos
+        // 1. Configuramos Hibernate igual que en el módulo de Inventario
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("com/asm/vista/hibernate.cfg.xml");
+            configuration.configure("/com/asm/vista/hibernate.cfg.xml"); // Asegura la diagonal inicial
 
-            // agregamos la clase de venta para que hibernate la reconozca
+            // Aseguramos que la clase Venta esté registrada
             configuration.addAnnotatedClass(com.asm.modelo.Venta.class);
 
             SessionFactory factory = configuration.buildSessionFactory();
             servicio = new DevolucionesService(factory);
 
-            // traemos la info de los tickets
+            // 2. Cargamos los datos reales
             cargarDatosReales();
 
         } catch (Exception e) {
@@ -52,7 +53,7 @@ public class CambiosController {
     }
 
     /**
-     * metodo para dar forma a las tarjetas que salen en la lista
+     * Esta es la magia que transforma un dato simple en la tarjeta de Figma.
      */
     private void configurarDisenoLista() {
         listaTickets.setCellFactory(param -> new ListCell<>() {
@@ -64,7 +65,7 @@ public class CambiosController {
                     setGraphic(null);
                     setStyle("-fx-background-color: transparent;");
                 } else {
-                    // linea uno con el numero de venta y la fecha
+                    // --- FILA 1: Ticket y Fecha ---
                     Label lblTicket = new Label("Ticket #" + ticket.getNumeroTicket());
                     lblTicket.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #111827;");
 
@@ -75,7 +76,7 @@ public class CambiosController {
                     HBox.setHgrow(spacer1, Priority.ALWAYS);
                     HBox fila1 = new HBox(lblTicket, spacer1, lblFecha);
 
-                    // linea dos con el nombre del usuario y el dinero total
+                    // --- FILA 2: Cajero y Total (En verde) ---
                     Label lblCajero = new Label("Cajero: " + ticket.getNombreCajero());
                     lblCajero.setStyle("-fx-text-fill: #4B5563; -fx-font-size: 13px;");
 
@@ -86,15 +87,15 @@ public class CambiosController {
                     HBox.setHgrow(spacer2, Priority.ALWAYS);
                     HBox fila2 = new HBox(lblCajero, spacer2, lblTotal);
 
-                    // linea tres con la cantidad de cosas y como pago el cliente
+                    // --- FILA 3: Detalles (Gris pequeñito) ---
                     Label lblDetalles = new Label(ticket.getCantidadProductos() + " productos • " + ticket.getMetodoPago());
                     lblDetalles.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 11px;");
 
-                    // juntamos todo en un bloque
+                    // Juntamos todas las filas en una caja vertical (La tarjeta)
                     VBox tarjeta = new VBox(8, fila1, fila2, lblDetalles);
                     tarjeta.setStyle("-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15; -fx-cursor: hand;");
 
-                    // efecto para que cambie de color cuando pasa el raton
+                    // Efecto Hover
                     tarjeta.setOnMouseEntered(e -> tarjeta.setStyle("-fx-background-color: #F9FAFB; -fx-border-color: #D1D5DB; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15; -fx-cursor: hand;"));
                     tarjeta.setOnMouseExited(e -> tarjeta.setStyle("-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15; -fx-cursor: hand;"));
 
@@ -104,7 +105,7 @@ public class CambiosController {
             }
         });
 
-        // detecta cuando el usuario le pica a una tarjeta
+        // Evento para cuando el usuario hace clic en una tarjeta
         listaTickets.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 mostrarDetalleTicket(newValue);
@@ -113,27 +114,29 @@ public class CambiosController {
     }
 
     private void cargarDatosReales() {
-        List<TicketPreview> ticketsBD = servicio.obtenerHistorialTickets();
+        if (servicio != null) {
+            List<TicketPreview> ticketsBD = servicio.obtenerHistorialTickets();
 
-        if (ticketsBD != null && !ticketsBD.isEmpty()) {
-            listaTickets.getItems().addAll(ticketsBD);
-            System.out.println("✅ Se cargaron " + ticketsBD.size() + " tickets desde MySQL.");
-        } else {
-            System.out.println("⚠️ No hay ventas registradas en la base de datos.");
+            if (ticketsBD != null && !ticketsBD.isEmpty()) {
+                listaTickets.getItems().addAll(ticketsBD);
+                System.out.println("✅ Se cargaron " + ticketsBD.size() + " tickets desde MySQL.");
+            } else {
+                System.out.println("⚠️ No hay ventas registradas en la base de datos.");
+            }
         }
     }
 
     private void mostrarDetalleTicket(TicketPreview ticket) {
-        // limpiamos la pantalla derecha y acomodamos los espacios
+        // 1. Limpiamos el panel derecho y le damos espaciado
         panelDetalle.getChildren().clear();
         panelDetalle.setSpacing(15);
         panelDetalle.setAlignment(Pos.TOP_LEFT);
 
-        // titulo del ticket seleccionado
+        // 2. Título (Ticket #1001)
         Label lblTitulo = new Label("Ticket #" + ticket.getNumeroTicket());
         lblTitulo.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
 
-        // cuadro con el resumen de la compra
+        // 3. Tarjeta Gris de Resumen
         HBox fila1Info = new HBox(40);
         Label lblFecha = new Label("Fecha: " + ticket.getFecha());
         Label lblCajero = new Label("Cajero: " + ticket.getNombreCajero());
@@ -145,7 +148,7 @@ public class CambiosController {
         Label lblTotalTxt = new Label("Total: ");
         lblTotalTxt.setStyle("-fx-text-fill: #475569; -fx-font-size: 14px;");
         Label lblTotalVal = new Label(String.format("$%.2f", ticket.getTotal()));
-        lblTotalVal.setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-font-size: 14px;");
+        lblTotalVal.setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-font-size: 14px;"); // Verde
         HBox cajaTotal = new HBox(lblTotalTxt, lblTotalVal);
 
         Label lblMetodo = new Label("Método: " + ticket.getMetodoPago());
@@ -155,48 +158,50 @@ public class CambiosController {
         VBox infoCard = new VBox(10, fila1Info, fila2Info);
         infoCard.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-padding: 20;");
 
-        // lista de cosas que se van a regresar
+        // 4. Sección "Productos a Devolver:"
         Label lblProdBox = new Label("Productos a Devolver:");
         lblProdBox.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #1E293B;");
 
         VBox listaProductosUI = new VBox(10);
         List<DetalleTicketPreview> productos = servicio.obtenerDetallesVenta(ticket.getNumeroTicket());
 
-        // aqui guardamos lo que el usuario va seleccionando
+        // MAPA MÁGICO: Aquí guardaremos la relación entre el CheckBox visual y los datos del producto
         java.util.Map<CheckBox, DetalleTicketPreview> mapaSeleccion = new java.util.HashMap<>();
 
-        for(DetalleTicketPreview prod : productos) {
-            HBox tarjetaProd = new HBox(15);
-            tarjetaProd.setAlignment(Pos.CENTER_LEFT);
-            tarjetaProd.setStyle("-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-padding: 15; -fx-background-color: white;");
+        if(productos != null) {
+            for(DetalleTicketPreview prod : productos) {
+                HBox tarjetaProd = new HBox(15);
+                tarjetaProd.setAlignment(Pos.CENTER_LEFT);
+                tarjetaProd.setStyle("-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-padding: 15; -fx-background-color: white;");
 
-            CheckBox chkBox = new CheckBox();
-            chkBox.setStyle("-fx-scale-x: 1.3; -fx-scale-y: 1.3; -fx-cursor: hand;");
+                CheckBox chkBox = new CheckBox();
+                chkBox.setStyle("-fx-scale-x: 1.3; -fx-scale-y: 1.3; -fx-cursor: hand;");
 
-            // vinculamos la casilla con el producto
+            // Guardamos este checkbox y su producto en el mapa
             mapaSeleccion.put(chkBox, prod);
 
-            Label icono = new Label("📦");
-            icono.setStyle("-fx-font-size: 24px;");
+                Label icono = new Label("📦");
+                icono.setStyle("-fx-font-size: 24px;");
 
-            VBox infoProd = new VBox(3);
-            Label lblNom = new Label(prod.getNombreProducto());
-            lblNom.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #0F172A;");
-            Label lblDet = new Label(String.format("$%.2f x %d", prod.getPrecioUnitario(), prod.getCantidad()));
-            lblDet.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px;");
-            infoProd.getChildren().addAll(lblNom, lblDet);
+                VBox infoProd = new VBox(3);
+                Label lblNom = new Label(prod.getNombreProducto());
+                lblNom.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #0F172A;");
+                Label lblDet = new Label(String.format("$%.2f x %d", prod.getPrecioUnitario(), prod.getCantidad()));
+                lblDet.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px;");
+                infoProd.getChildren().addAll(lblNom, lblDet);
 
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            Label lblSub = new Label(String.format("$%.2f", prod.getSubtotal()));
-            lblSub.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0F172A;");
+                Label lblSub = new Label(String.format("$%.2f", prod.getSubtotal()));
+                lblSub.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0F172A;");
 
-            tarjetaProd.getChildren().addAll(chkBox, icono, infoProd, spacer, lblSub);
-            listaProductosUI.getChildren().add(tarjetaProd);
+                tarjetaProd.getChildren().addAll(chkBox, icono, infoProd, spacer, lblSub);
+                listaProductosUI.getChildren().add(tarjetaProd);
+            }
         }
 
-        // cuadro para escribir la razon del cambio
+        // 5. Motivo del Cambio/Devolución
         Label lblMotivo = new Label("Motivo del Cambio/Devolución *");
         lblMotivo.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0F172A;");
         TextArea txtMotivo = new TextArea();
@@ -204,7 +209,7 @@ public class CambiosController {
         txtMotivo.setPrefRowCount(3);
         txtMotivo.setStyle("-fx-border-color: #CBD5E1; -fx-border-radius: 5; -fx-font-family: 'Segoe UI';");
 
-        // botones para cancelar o confirmar
+        // 6. Botones de Acción
         HBox cajaBotones = new HBox(15);
         Button btnCancelar = new Button("Cancelar");
         btnCancelar.setStyle("-fx-background-color: white; -fx-border-color: #94A3B8; -fx-border-radius: 6; -fx-padding: 12 20; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-cursor: hand;");
@@ -224,40 +229,74 @@ public class CambiosController {
         btnConfirmar.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnConfirmar, Priority.ALWAYS);
 
-        // proceso para guardar la devolucion
+        // LA LÓGICA DE DEVOLUCIÓN
         btnConfirmar.setOnAction(e -> {
             String motivo = txtMotivo.getText();
             if (motivo == null || motivo.trim().isEmpty()) {
                 System.err.println("⚠️ Debe escribir un motivo para la devolución.");
+                // Aquí en el futuro puedes poner una alerta visual (Dialog)
                 return;
             }
 
             boolean seDevolvioAlgo = false;
             int idVenta = Integer.parseInt(ticket.getNumeroTicket());
+            int cantidadProductosTotal = 0;
+            double totalReembolsoCalculado = 0.0;
 
-            // revisamos cuales productos marco el usuario
+            // Revisamos cada checkbox del mapa
             for (java.util.Map.Entry<CheckBox, DetalleTicketPreview> entrada : mapaSeleccion.entrySet()) {
                 if (entrada.getKey().isSelected()) {
                     DetalleTicketPreview prod = entrada.getValue();
 
-                    // guardamos el cambio en la base de datos
+                    // Mandamos a la BD
                     servicio.registrarDevolucion(idVenta, prod.getIdProducto(), motivo, prod.getSubtotal());
                     System.out.println("✅ Devolución registrada: " + prod.getNombreProducto());
                     seDevolvioAlgo = true;
+
+                    // Sumamos para el ticket impreso
+                    cantidadProductosTotal += prod.getCantidad();
+                    totalReembolsoCalculado += prod.getSubtotal();
                 }
             }
 
             if (!seDevolvioAlgo) {
                 System.err.println("⚠️ Seleccione al menos un producto de la lista.");
             } else {
-                System.out.println("🎉 ¡Proceso de devolución completado exitosamente!");
+                System.out.println("🎉 ¡Proceso de devolución completado exitosamente en BD!");
+
+                // Levantamos la ventana del ticket elegante
+                try {
+                    javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/TicketDevolucion.fxml"));
+                    javafx.scene.Parent root = loader.load();
+
+                    // Le pasamos los datos calculados al modal
+                    TicketDevolucionController ticketCtrl = loader.getController();
+                    ticketCtrl.setDatosTicket(
+                            ticket.getNumeroTicket(),
+                            cantidadProductosTotal,
+                            motivo,
+                            totalReembolsoCalculado
+                    );
+
+                    javafx.stage.Stage stage = new javafx.stage.Stage();
+                    stage.setTitle("Comprobante de Devolución");
+                    stage.setScene(new javafx.scene.Scene(root));
+                    stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+                    stage.showAndWait();
+
+                } catch (Exception ex) {
+                    System.err.println("❌ Error al abrir el ticket elegante: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+
+                // Limpiamos la pantalla derecha tras confirmar todo
                 btnCancelar.fire();
             }
         });
 
         cajaBotones.getChildren().addAll(btnCancelar, btnConfirmar);
 
-        // acomodamos todo en la pantalla
+        // 7. Ensamblaje Final
         panelDetalle.getChildren().addAll(lblTitulo, infoCard, lblProdBox, listaProductosUI, lblMotivo, txtMotivo, cajaBotones);
     }
 
@@ -267,7 +306,7 @@ public class CambiosController {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioCambio.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // le pasamos la conexion a la otra ventanita
+            // --- ESTO ES LO NUEVO: Le pasamos el túnel de MySQL a la ventana flotante ---
             FormularioCambioController asistente = loader.getController();
             asistente.setServicio(this.servicio);
 
@@ -281,5 +320,9 @@ public class CambiosController {
             e.printStackTrace();
         }
     }
-    @FXML public void prepararDevolucion() { System.out.println("Flujo de Devolución"); }
+
+    @FXML
+    public void prepararDevolucion() {
+        System.out.println("ℹ️ Seleccione un ticket de la lista para proceder con la devolución.");
+    }
 }
