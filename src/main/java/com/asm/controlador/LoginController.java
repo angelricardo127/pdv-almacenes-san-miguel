@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label; // IMPORTANTE: Agregamos la importación del Label
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -18,6 +19,9 @@ public class LoginController {
     @FXML private TextField txtUsuario;
     @FXML private PasswordField txtPassword;
     @FXML private Button btnIngresar;
+
+    // Nuestro nuevo Label para mostrar los mensajes de error dinámicos
+    @FXML private Label lblError;
 
     private UsuarioService usuarioService;
 
@@ -33,40 +37,50 @@ public class LoginController {
             SessionFactory factory = configuration.buildSessionFactory();
             this.usuarioService = new UsuarioService(factory);
 
-            // ❌ Quitamos el btnIngresar.setOnAction(...) porque tu FXML ya hace ese trabajo con el onAction.
-
         } catch (Exception e) {
             System.err.println("❌ Error crítico al inicializar Hibernate en el Login: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    //  Agregamos el @FXML aquí para que el archivo FXML lo pueda ver
     @FXML
     public void iniciarSesion() {
         String user = txtUsuario.getText();
         String pass = txtPassword.getText();
 
-        // Limpiar estilos previos
+        // Limpiar estilos y mensajes previos por si es el segundo intento del usuario
         txtPassword.setStyle("-fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 6;");
+        if (lblError != null) {
+            lblError.setText("");
+        }
 
         if (user.isEmpty() || pass.isEmpty()) {
             System.out.println("⚠️ Por favor, llena ambos campos.");
+            if (lblError != null) lblError.setText("Por favor, llena ambos campos.");
             return;
         }
 
         System.out.println("⏳ Validando credenciales de [" + user + "] en MySQL...");
 
-        // Vamos a la base de datos a preguntar usando el servicio existente
-        Usuario usuarioValidado = usuarioService.validarUsuario(user, pass);
+        try {
+            // Usamos el método detallado que lanza las excepciones precisas
+            Usuario usuarioValidado = usuarioService.validarUsuarioDetallado(user, pass);
 
-        if (usuarioValidado != null) {
+            // Si llegamos a esta línea, el login fue exitoso
             System.out.println("✅ ¡Bienvenido " + usuarioValidado.getNombre() + "! Acceso concedido.");
             abrirSistemaPrincipal();
-        } else {
-            System.out.println("❌ Credenciales incorrectas. Intenta de nuevo.");
+
+        } catch (Exception e) {
+            // Si algo falló en MySQL (usuario no existe, contraseña mal, inactivo) lo atrapamos aquí
+            System.out.println("❌ Error de login: " + e.getMessage());
+
+            // Le pintamos el texto rojo exacto al usuario en pantalla
+            if (lblError != null) {
+                lblError.setText(e.getMessage());
+            }
+
             txtPassword.clear();
-            // Ponemos el borde rojo para alertar visualmente al usuario
+            // Mantenemos tu alerta visual del borde rojo
             txtPassword.setStyle("-fx-background-color: white; -fx-border-color: red; -fx-border-radius: 6; -fx-background-radius: 6;");
         }
     }

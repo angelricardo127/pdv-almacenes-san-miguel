@@ -92,11 +92,21 @@
                         <Font size="14.0" />
                     </font>
                     <VBox.margin>
-                        <Insets bottom="35.0" />
+                        <Insets bottom="10.0" />
                     </VBox.margin>
                 </PasswordField>
 
-                <Button fx:id="btnIngresar" onAction="#iniciarSesion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 6; -fx-cursor: hand;" text="Ingresar al Sistema" textFill="WHITE">
+                <!-- 🔥 AQUÍ ESTÁ EL NUEVO LABEL DE ERROR 🔥 -->
+                <Label fx:id="lblError" alignment="CENTER" maxWidth="1.7976931348623157E308" textFill="#e74c3c" wrapText="true">
+                    <font>
+                        <Font name="System Bold" size="13.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="15.0" />
+                    </VBox.margin>
+                </Label>
+
+                <Button fx:id="btnIngresar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#iniciarSesion" prefHeight="50.0" style="-fx-background-color: #1abc9c; -fx-background-radius: 6; -fx-cursor: hand;" text="Ingresar al Sistema" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>

@@ -4,8 +4,10 @@ import com.asm.modelo.Producto;
 import com.asm.servicio.VentaService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -21,7 +23,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.TextField;
 
 public class PuntoVentaController {
 
@@ -62,23 +63,28 @@ public class PuntoVentaController {
                 crearTarjetaProducto(prod);
             }
 
+            // --- MAGIA DEL BUSCADOR EN TIEMPO REAL ---
+            if (txtBuscarProducto != null) {
+                txtBuscarProducto.textProperty().addListener((observable, oldValue, newValue) -> {
+                    filtrarProductos(newValue);
+                });
+            }
+
             // --- LÓGICA DEL BOTÓN DE PAGO (Hover y Click) ---
             if (btnProcesarPago != null) {
                 btnProcesarPago.setOnAction(event -> procesarPago());
-                actualizarEstadoBotonPago(); // Lo apagamos de inicio
+                actualizarEstadoBotonPago(); // Lo apagamos (visualmente) de inicio
 
-                // Efecto Hover
+                // Efecto Hover condicionado a que el carrito NO esté vacío
                 btnProcesarPago.setOnMouseEntered(e -> {
-                    if (!btnProcesarPago.isDisable()) {
+                    if (!cantidadesCarrito.isEmpty()) {
                         btnProcesarPago.setStyle("-fx-background-color: #149178; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;");
                     }
                 });
 
-                // Se apaga al quitar el mouse
+                // Se apaga al quitar el mouse (recalcula su color base)
                 btnProcesarPago.setOnMouseExited(e -> {
-                    if (!btnProcesarPago.isDisable()) {
-                        btnProcesarPago.setStyle("-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
-                    }
+                    actualizarEstadoBotonPago();
                 });
             }
 
@@ -118,14 +124,37 @@ public class PuntoVentaController {
 
     private void agregarAlCarrito(Producto prod) {
         int id = prod.getIdProducto();
-        cantidadesCarrito.put(id, cantidadesCarrito.getOrDefault(id, 0) + 1);
+        int cantidadActual = cantidadesCarrito.getOrDefault(id, 0);
+
+        // --- VALIDACIÓN DE STOCK AL HACER CLIC EN LA TARJETA ---
+        if ((cantidadActual + 1) > prod.getStock()) {
+            Alert alerta = new Alert(Alert.AlertType.WARNING);
+            alerta.setTitle("Stock Insuficiente");
+            alerta.setHeaderText("Límite de inventario alcanzado");
+            alerta.setContentText("No puedes agregar más unidades. Solo quedan " + prod.getStock() + " de '" + prod.getNombreProducto() + "' en el almacén.");
+            alerta.showAndWait();
+            return; // Se cancela la operación
+        }
+
+        cantidadesCarrito.put(id, cantidadActual + 1);
         productosCarrito.put(id, prod);
         actualizarVistaCarrito();
     }
 
     public void cambiarCantidadProducto(Producto p, int cambio) {
         int id = p.getIdProducto();
-        int nuevaCantidad = cantidadesCarrito.getOrDefault(id, 0) + cambio;
+        int cantidadActual = cantidadesCarrito.getOrDefault(id, 0);
+        int nuevaCantidad = cantidadActual + cambio;
+
+        // --- VALIDACIÓN DE STOCK AL SUMAR DESDE EL CARRITO (+1) ---
+        if (cambio > 0 && nuevaCantidad > p.getStock()) {
+            Alert alerta = new Alert(Alert.AlertType.WARNING);
+            alerta.setTitle("Stock Insuficiente");
+            alerta.setHeaderText("Límite de inventario alcanzado");
+            alerta.setContentText("Solo quedan " + p.getStock() + " de '" + p.getNombreProducto() + "' en el almacén.");
+            alerta.showAndWait();
+            return; // Se cancela la operación
+        }
 
         if (nuevaCantidad <= 0) {
             eliminarProductoDelCarrito(p);
@@ -182,18 +211,27 @@ public class PuntoVentaController {
     private void actualizarEstadoBotonPago() {
         if (btnProcesarPago != null) {
             boolean carritoVacio = cantidadesCarrito.isEmpty();
-            btnProcesarPago.setDisable(carritoVacio);
 
+            // ELIMINAMOS el btnProcesarPago.setDisable(true) para que siempre reaccione al clic.
+            // Solo cambiamos el color y el cursor para dar la ilusión de inactividad.
             if (carritoVacio) {
-                btnProcesarPago.setStyle("-fx-background-color: #bdc3c7; -fx-text-fill: #7f8c8d; -fx-background-radius: 6; -fx-font-weight: bold;");
+                btnProcesarPago.setStyle("-fx-background-color: #bdc3c7; -fx-text-fill: #7f8c8d; -fx-background-radius: 6; -fx-font-weight: bold; -fx-cursor: default;");
             } else {
-                btnProcesarPago.setStyle("-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
+                btnProcesarPago.setStyle("-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold; -fx-cursor: hand;");
             }
         }
     }
 
     private void procesarPago() {
-        if (cantidadesCarrito.isEmpty()) return;
+        // --- 🔥 LA NUEVA ALERTA DE CARRITO VACÍO 🔥 ---
+        if (cantidadesCarrito.isEmpty()) {
+            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+            alerta.setTitle("Carrito Vacío");
+            alerta.setHeaderText("No hay productos para cobrar");
+            alerta.setContentText("Por favor, selecciona al menos un artículo del catálogo antes de procesar el pago.");
+            alerta.showAndWait();
+            return; // Detiene el código para que no abra la ventana de pago
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalPago.fxml"));
@@ -227,6 +265,11 @@ public class PuntoVentaController {
 
                 cantidadesCarrito.clear();
                 productosCarrito.clear();
+
+                // Actualizamos el inventario visual para que refleje el nuevo stock
+                this.listaProductos = servicioVentas.obtenerProductos();
+                filtrarProductos(txtBuscarProducto != null ? txtBuscarProducto.getText() : "");
+
                 actualizarVistaCarrito();
 
                 System.out.println(" ¡Venta completada con éxito! Sistema listo para el siguiente cliente.");
@@ -237,12 +280,23 @@ public class PuntoVentaController {
         }
     }
 
+    // --- MÉTODO ACTUALIZADO PARA EL BUSCADOR ---
     private void filtrarProductos(String busqueda) {
         contenedorProductos.getChildren().clear();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            for (Producto prod : listaProductos) {
+                crearTarjetaProducto(prod);
+            }
+            return;
+        }
+
         String busquedaMinusculas = busqueda.toLowerCase();
 
         for (Producto prod : listaProductos) {
-            if (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas)) {
+            // Busca tanto por nombre como por ID del producto
+            if (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas) ||
+                    String.valueOf(prod.getIdProducto()).contains(busquedaMinusculas)) {
                 crearTarjetaProducto(prod);
             }
         }
