@@ -3,6 +3,7 @@ package com.asm.controlador;
 import com.asm.modelo.Producto;
 import com.asm.servicio.InventarioService;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert; // ¡Importante agregar esto!
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -60,11 +61,31 @@ public class FormularioAjusteStockController {
         try {
             Producto productoSeleccionado = cmbProducto.getValue();
             String tipoAjuste = cmbTipoAjuste.getValue();
-            int cantidadAjuste = Integer.parseInt(txtCantidad.getText());
+            String textoCantidad = txtCantidad.getText();
 
-            if (productoSeleccionado == null || tipoAjuste == null || cantidadAjuste <= 0) {
-                System.err.println("Por favor llena todos los campos correctamente.");
-                return; // Aquí podrías poner una alerta visual después
+            // 1. Validar que SÍ hayan elegido un producto
+            if (productoSeleccionado == null) {
+                mostrarAlerta("Seleccione producto por favor antes de aplicar el ajuste.");
+                return;
+            }
+
+            // 2. Validar que SÍ hayan elegido el tipo de ajuste
+            if (tipoAjuste == null) {
+                mostrarAlerta("Por favor seleccione el Tipo de Ajuste.");
+                return;
+            }
+
+            // 3. Validar que la cantidad no esté vacía
+            if (textoCantidad == null || textoCantidad.trim().isEmpty()) {
+                mostrarAlerta("Ingrese la cantidad a ajustar.");
+                return;
+            }
+
+            int cantidadAjuste = Integer.parseInt(textoCantidad);
+
+            if (cantidadAjuste <= 0) {
+                mostrarAlerta("La cantidad debe ser mayor a cero.");
+                return;
             }
 
             // Hacemos las matemáticas según el tipo de ajuste
@@ -75,7 +96,7 @@ public class FormularioAjusteStockController {
             } else {
                 // Para salidas o mermas, restamos (verificando que no quede en negativo)
                 if (stockActual - cantidadAjuste < 0) {
-                    System.err.println("No puedes restar más stock del que existe.");
+                    mostrarAlerta("No puedes restar más stock del que existe en inventario.");
                     return;
                 }
                 productoSeleccionado.setStock(stockActual - cantidadAjuste);
@@ -92,8 +113,18 @@ public class FormularioAjusteStockController {
             cerrarVentana();
 
         } catch (NumberFormatException e) {
-            System.err.println("La cantidad debe ser un número entero válido.");
+            // Si el usuario escribe letras en lugar de números en la cantidad
+            mostrarAlerta("La cantidad debe ser un número entero válido (Ej. 5, 10, 20).");
         }
+    }
+
+    // --- MÉTODO AUXILIAR PARA NO REPETIR EL CÓDIGO DE LAS ALERTAS ---
+    private void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle("Aviso de Validación");
+        alerta.setHeaderText(null); // Lo dejamos en null para que el diseño se vea más limpio
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 
     @FXML
