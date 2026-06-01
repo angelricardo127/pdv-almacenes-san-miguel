@@ -3,6 +3,7 @@ package com.asm.controlador;
 import com.asm.modelo.Producto;
 import com.asm.servicio.InventarioService;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert; // ¡Importante agregar esto!
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -23,10 +24,10 @@ public class FormularioAjusteStockController {
 
     @FXML
     public void initialize() {
-        // configuramos las opciones del tipo de ajuste
+        // Configuramos las opciones del tipo de ajuste
         cmbTipoAjuste.getItems().addAll("Entrada (Suma al stock)", "Salida (Resta al stock)", "Merma / Daño (Resta al stock)");
 
-        // configuramos como se van a ver los productos en la lista
+        // Configuramos cómo se van a leer los productos en la lista desplegable
         cmbProducto.setConverter(new StringConverter<Producto>() {
             @Override
             public String toString(Producto producto) {
@@ -36,7 +37,7 @@ public class FormularioAjusteStockController {
 
             @Override
             public Producto fromString(String string) {
-                return null; // no hace falta para este caso
+                return null; // No lo necesitamos para este caso
             }
         });
     }
@@ -48,7 +49,7 @@ public class FormularioAjusteStockController {
     }
 
     private void cargarProductosEnLista() {
-        // traemos todos los productos de la base de datos y los ponemos en la lista
+        // Traemos todos los productos activos de MySQL y los metemos al ComboBox
         List<Producto> productos = servicio.obtenerCatalogoCompleto();
         if (productos != null) {
             cmbProducto.getItems().addAll(productos);
@@ -60,40 +61,70 @@ public class FormularioAjusteStockController {
         try {
             Producto productoSeleccionado = cmbProducto.getValue();
             String tipoAjuste = cmbTipoAjuste.getValue();
-            int cantidadAjuste = Integer.parseInt(txtCantidad.getText());
+            String textoCantidad = txtCantidad.getText();
 
-            if (productoSeleccionado == null || tipoAjuste == null || cantidadAjuste <= 0) {
-                System.err.println("Por favor llena todos los campos correctamente.");
+            // 1. Validar que SÍ hayan elegido un producto
+            if (productoSeleccionado == null) {
+                mostrarAlerta("Seleccione producto por favor antes de aplicar el ajuste.");
                 return;
             }
 
-            // hacemos las cuentas segun el tipo de ajuste
+            // 2. Validar que SÍ hayan elegido el tipo de ajuste
+            if (tipoAjuste == null) {
+                mostrarAlerta("Por favor seleccione el Tipo de Ajuste.");
+                return;
+            }
+
+            // 3. Validar que la cantidad no esté vacía
+            if (textoCantidad == null || textoCantidad.trim().isEmpty()) {
+                mostrarAlerta("Ingrese la cantidad a ajustar.");
+                return;
+            }
+
+            int cantidadAjuste = Integer.parseInt(textoCantidad);
+
+            if (cantidadAjuste <= 0) {
+                mostrarAlerta("La cantidad debe ser mayor a cero.");
+                return;
+            }
+
+            // Hacemos las matemáticas según el tipo de ajuste
             int stockActual = productoSeleccionado.getStock();
 
             if (tipoAjuste.contains("Entrada")) {
                 productoSeleccionado.setStock(stockActual + cantidadAjuste);
             } else {
-                // para salidas o mermas restamos y revisamos que no quede negativo
+                // Para salidas o mermas, restamos (verificando que no quede en negativo)
                 if (stockActual - cantidadAjuste < 0) {
-                    System.err.println("No puedes restar más stock del que existe.");
+                    mostrarAlerta("No puedes restar más stock del que existe en inventario.");
                     return;
                 }
                 productoSeleccionado.setStock(stockActual - cantidadAjuste);
             }
 
-            // pendiente: guardar el motivo en el historial
+            // TODO: (Opcional a futuro) Guardar el txtMotivo en una tabla de 'Historial_Movimientos'
 
-            // mandamos la actualizacion a la base de datos
+            // Mandamos el UPDATE a MySQL
             servicio.actualizarProducto(productoSeleccionado);
             System.out.println("✅ Ajuste aplicado exitosamente");
 
-            // recargamos la tabla de la pantalla principal y cerramos
+            // Recargamos la tabla principal y cerramos
             controladorPadre.cargarDatosEnTabla();
             cerrarVentana();
 
         } catch (NumberFormatException e) {
-            System.err.println("la cantidad tiene que ser un numero entero");
+            // Si el usuario escribe letras en lugar de números en la cantidad
+            mostrarAlerta("La cantidad debe ser un número entero válido (Ej. 5, 10, 20).");
         }
+    }
+
+    // --- MÉTODO AUXILIAR PARA NO REPETIR EL CÓDIGO DE LAS ALERTAS ---
+    private void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle("Aviso de Validación");
+        alerta.setHeaderText(null); // Lo dejamos en null para que el diseño se vea más limpio
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 
     @FXML

@@ -224,7 +224,7 @@ public class CambiosController {
             panelDetalle.setAlignment(Pos.CENTER);
         });
 
-        Button btnConfirmar = new Button("Confirmar Devolución (F10)");
+        Button btnConfirmar = new Button("Confirmar Devolución");
         btnConfirmar.setStyle("-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 6; -fx-padding: 12 20; -fx-cursor: hand;");
         btnConfirmar.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnConfirmar, Priority.ALWAYS);
