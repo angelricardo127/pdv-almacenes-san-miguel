@@ -14,7 +14,7 @@ public class UsuarioService {
     }
 
     // -------------------------------------------------------------------------
-    // MÉTODO 1: El original (Lo dejamos intacto para las pruebas de JUnit)
+    // metodo 1: El original (Lo dejamos intacto para las pruebas de JUnit)
     // -------------------------------------------------------------------------
     public Usuario validarUsuario(String username, String password) {
         Session session = sessionFactory.openSession();
@@ -37,13 +37,13 @@ public class UsuarioService {
     }
 
     // -------------------------------------------------------------------------
-    // MÉTODO 2: El detallado (Especial para la pantalla de Login en JavaFX)
+    // metodo 2: El detallado (Especial para la pantalla de Login en JavaFX)
     // -------------------------------------------------------------------------
     public Usuario validarUsuarioDetallado(String username, String password) throws Exception {
         Session session = sessionFactory.openSession();
 
         try {
-            // 1. Buscamos SOLO por el nombre de usuario
+            // 1. Buscamos solo por el nombre de usuario
             String hql = "FROM Usuario WHERE username = :user";
             Query<Usuario> query = session.createQuery(hql, Usuario.class);
             query.setParameter("user", username);

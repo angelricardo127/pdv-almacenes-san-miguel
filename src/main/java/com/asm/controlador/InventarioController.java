@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,7 +24,8 @@ import java.util.List;
  */
 public class InventarioController {
 
-    // ---inyeccion de componentes fxml
+    // --- inyeccion de componentes fxml
+    @FXML private Label lblBienvenida; // <-- AQUÍ DECLARAMOS EL LABEL DEL SALUDO
     @FXML private TableView<Producto> tablaInventario;
     @FXML private TableColumn<Producto, String> colSku;
     @FXML private TableColumn<Producto, String> colProducto;
@@ -42,6 +44,17 @@ public class InventarioController {
     @FXML
     public void initialize() {
         System.out.println("Iniciando el Módulo de Inventario");
+
+        // --- INICIO: LÓGICA PARA ACTUALIZAR EL NOMBRE Y FECHA ---
+        String fechaHoy = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new java.util.Locale("es", "ES")));
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+
+        if (lblBienvenida != null && usuarioLogueado != null) {
+            lblBienvenida.setText("Bienvenido, " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno() + " • " + fechaHoy);
+        } else if (lblBienvenida != null) {
+            lblBienvenida.setText("Bienvenido • " + fechaHoy);
+        }
+        // --- FIN: LÓGICA DEL NOMBRE ---
 
         try {
             Configuration configuration = new Configuration();
@@ -188,36 +201,30 @@ public class InventarioController {
 
     @FXML
     public void abrirAjusteStock() {
-        System.out.println("🚨 ¡BINGO! El botón sí conectó con el método.");
+        System.out.println(" El botón sí conectó con el método.");
         try {
-            // 1. Cargamos el diseño visual del formulario
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioAjusteStock.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // 2. CONECTAMOS EL CEREBRO DE LA VENTANA
-            // Aquí enlazamos tu InventarioController actual con el FormularioAjusteStockController
             FormularioAjusteStockController formCtrl = loader.getController();
             formCtrl.setDependencias(this, this.servicio);
 
-            // 3. Mostramos la ventana flotante
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Ajuste de Stock");
             stage.setScene(new javafx.scene.Scene(root));
 
-            // Esto congela la ventana de atrás para obligar al usuario a terminar el ajuste
             stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
         } catch (Exception e) {
-            System.err.println("❌ ERROR AL ABRIR LA VENTANA DE AJUSTE DE STOCK:");
+            System.err.println(" ERROR AL ABRIR LA VENTANA DE AJUSTE DE STOCK:");
             e.printStackTrace();
         }
     }
 
-    @FXML //metodo para gestionar variantes
+    @FXML
     public void abrirGestionVariantes() {
         try {
-            // Revisa si tu archivo se llama exactamente así en tu carpeta resources
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioVariantes.fxml"));
             javafx.scene.Parent root = loader.load();
 

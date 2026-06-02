@@ -223,18 +223,18 @@ public class CambiosController {
             panelDetalle.setAlignment(Pos.CENTER);
         });
 
-        Button btnConfirmar = new Button("Confirmar Devolución (F10)");
+        Button btnConfirmar = new Button("Confirmar Devolución");
         btnConfirmar.setStyle("-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 6; -fx-padding: 12 20; -fx-cursor: hand;");
         btnConfirmar.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnConfirmar, Priority.ALWAYS);
 
         // ====================================================================
-        // 🔥 LA LÓGICA DE DEVOLUCIÓN (NUEVA CONEXIÓN AL TICKET MODAL)
+        //  LA LÓGICA DE DEVOLUCIÓN (NUEVA CONEXIÓN AL TICKET MODAL)
         // ====================================================================
         btnConfirmar.setOnAction(e -> {
             String motivo = txtMotivo.getText();
             if (motivo == null || motivo.trim().isEmpty()) {
-                System.err.println("⚠️ Debe escribir un motivo para la devolución.");
+                System.err.println(" Debe escribir un motivo para la devolución.");
                 return;
             }
 
@@ -260,9 +260,9 @@ public class CambiosController {
             }
 
             if (!seDevolvioAlgo) {
-                System.err.println("⚠️ Seleccione al menos un producto de la lista.");
+                System.err.println(" Seleccione al menos un producto de la lista.");
             } else {
-                System.out.println("🎉 ¡Proceso de devolución completado exitosamente en BD!");
+                System.out.println(" ¡Proceso de devolución completado exitosamente en BD!");
 
                 // Levantamos la ventana del ticket elegante
                 try {

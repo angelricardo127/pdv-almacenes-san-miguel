@@ -12,7 +12,7 @@
 
         <VBox HBox.hgrow="ALWAYS">
             <Label text="Gestión de Inventario" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2D3748;"/>
-            <Label text="Bienvenido, Roberto Sánchez Pérez • lunes, 25 de mayo de 2026" style="-fx-font-size: 13px; -fx-text-fill: #718096;"/>
+            <Label fx:id="lblBienvenida" text="Bienvenido, Roberto Sánchez Pérez • lunes, 25 de mayo de 2026" textFill="#6b7280" />
         </VBox>
 
         <HBox alignment="CENTER_RIGHT" spacing="12.0">
