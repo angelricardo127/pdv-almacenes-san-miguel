@@ -10,7 +10,7 @@
     <HBox alignment="CENTER_LEFT">
         <VBox>
             <Label text="Cambios y Devoluciones" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
-            <Label fx:id="lblFechaActual" text="Bienvenido, Roberto Sánchez Pérez • jueves, 28 de mayo de 2026" style="-fx-text-fill: #6B7280; -fx-font-size: 14px;"/>
+            <Label fx:id="lblBienvenida" text="Cargando usuario activo..." style="-fx-text-fill: #6B7280; -fx-font-size: 14px;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
     </HBox>

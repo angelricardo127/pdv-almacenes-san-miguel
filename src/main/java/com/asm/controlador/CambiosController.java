@@ -18,11 +18,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import com.asm.modelo.DetalleTicketPreview;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class CambiosController {
 
-    @FXML private Label lblFechaActual;
+    // Cambiamos lblFechaActual por lblBienvenida para conectar con la vista corregida
+    @FXML private Label lblBienvenida;
     @FXML private ListView<TicketPreview> listaTickets;
     @FXML private VBox panelDetalle;
 
@@ -31,6 +35,18 @@ public class CambiosController {
     @FXML
     public void initialize() {
         System.out.println("Módulo de Cambios y Devoluciones iniciado.");
+
+        // --- LÓGICA DE SESIÓN Y FECHA ---
+        String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+
+        if (lblBienvenida != null && usuarioLogueado != null) {
+            lblBienvenida.setText("Usuario activo: " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno() + " - " + fechaHoy);
+        } else if (lblBienvenida != null) {
+            lblBienvenida.setText("Usuario activo - " + fechaHoy);
+        }
+        // --------------------------------
+
         configurarDisenoLista();
 
         // 1. Configuramos Hibernate igual que en el módulo de Inventario

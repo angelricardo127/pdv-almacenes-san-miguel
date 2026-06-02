@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
 import javafx.scene.layout.HBox;
 import org.hibernate.Transaction;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
@@ -38,6 +39,9 @@ public class SeguridadController {
     private SessionFactory factory;
     private ObservableList<Usuario> listaUsuariosObservable = FXCollections.observableArrayList();
 
+    // Lista maestra para guardar todos los usuarios en memoria y poder filtrarlos
+    private List<Usuario> todosLosUsuarios = new ArrayList<>();
+
     @FXML
     public void initialize() {
         // 1. Configurar columnas directas
@@ -50,9 +54,7 @@ public class SeguridadController {
             return new SimpleStringProperty(u.getNombre() + " " + u.getApellidoPaterno());
         });
 
-        // ========================================================
-        // Traducir el ID del Rol a Texto (Soporta Almacenista)
-        // ========================================================
+        // 3. Traducir el ID del Rol a Texto
         colRol.setCellValueFactory(cellData -> {
             int rolId = cellData.getValue().getIdRol();
             String nombreRol = "Desconocido";
@@ -71,7 +73,7 @@ public class SeguridadController {
         // 4. Último acceso (Por ahora texto estático)
         colUltimoAcceso.setCellValueFactory(cellData -> new SimpleStringProperty("2026-05-29"));
 
-        // 5. Traducir Estatus (1 o 0) a "Activo" o "Inactivo"
+        // 5. Traducir Estatus (1 o 0) a Activo o Inactivo
         colEstado.setCellValueFactory(cellData -> {
             int estatus = cellData.getValue().getEstatus();
             String estadoTexto = (estatus == 1) ? "🟢 Activo" : "🔴 Inactivo";
@@ -85,7 +87,7 @@ public class SeguridadController {
             private final HBox panelAcciones = new HBox(10, btnBaja, btnLlave);
 
             {
-                // Estilos para los botones (transparentes como iconos)
+                // Estilos para los botones
                 btnBaja.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 14px;");
                 btnLlave.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 14px;");
 
@@ -120,12 +122,18 @@ public class SeguridadController {
         if (btnNuevoUsuario != null) {
             btnNuevoUsuario.setOnAction(e -> abrirModalRegistro());
         }
+
+        // 9. Evento de búsqueda en tiempo real
+        if (txtBuscarUsuario != null) {
+            txtBuscarUsuario.textProperty().addListener((observable, oldValue, newValue) -> {
+                filtrarUsuarios(newValue);
+            });
+        }
     }
 
     private void conectarHibernate() {
         try {
             Configuration configuration = new Configuration().configure("/com/asm/vista/hibernate.cfg.xml");
-            // Nota: Si esto te da error de duplicado en el futuro, solo comenta las siguientes dos líneas.
             configuration.addAnnotatedClass(com.asm.modelo.Usuario.class);
             configuration.addAnnotatedClass(com.asm.modelo.Rol.class);
             factory = configuration.buildSessionFactory();
@@ -136,31 +144,63 @@ public class SeguridadController {
         }
     }
 
-    // Este método ahora es PUBLIC para que el modal pueda llamarlo al terminar de guardar
+    // Consulta la base de datos y llena la lista maestra
     public void cargarUsuarios() {
-        listaUsuariosObservable.clear();
         try (Session session = factory.openSession()) {
-            List<Usuario> usuariosBD = session.createQuery("from Usuario", Usuario.class).list();
-            listaUsuariosObservable.addAll(usuariosBD);
-            tablaUsuarios.setItems(listaUsuariosObservable);
+            todosLosUsuarios = session.createQuery("from Usuario", Usuario.class).list();
+
+            // Mandamos llamar al filtro para que rellene la tabla
+            // Si la barra de búsqueda está vacía, mostrará todos los usuarios
+            filtrarUsuarios(txtBuscarUsuario != null ? txtBuscarUsuario.getText() : "");
+
         } catch (Exception e) {
             System.err.println("Error al consultar usuarios: " + e.getMessage());
         }
     }
 
-    // Método que levanta la ventana flotante de registro
+    // Metodo encargado de filtrar la tabla
+    private void filtrarUsuarios(String busqueda) {
+        listaUsuariosObservable.clear();
+
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            // Si no hay texto, mostramos todos
+            listaUsuariosObservable.addAll(todosLosUsuarios);
+        } else {
+            String busquedaMinusculas = busqueda.toLowerCase();
+
+            for (Usuario u : todosLosUsuarios) {
+                String nombreCompleto = (u.getNombre() + " " + u.getApellidoPaterno()).toLowerCase();
+                String username = u.getUsername().toLowerCase();
+
+                String rol = "";
+                if (u.getIdRol() == 1) rol = "administrador";
+                else if (u.getIdRol() == 2) rol = "cajero";
+                else if (u.getIdRol() == 3) rol = "almacenista";
+
+                // Comparamos si lo que se escribió coincide con algún campo
+                if (nombreCompleto.contains(busquedaMinusculas) ||
+                        username.contains(busquedaMinusculas) ||
+                        rol.contains(busquedaMinusculas)) {
+
+                    listaUsuariosObservable.add(u);
+                }
+            }
+        }
+
+        tablaUsuarios.setItems(listaUsuariosObservable);
+    }
+
     private void abrirModalRegistro() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalNuevoUsuario.fxml"));
             Parent root = loader.load();
 
-            // Pasamos la referencia de este controlador para que el modal pueda actualizar la tabla
             ModalNuevoUsuarioController modalController = loader.getController();
             modalController.setSeguridadControllerPadre(this);
 
             Stage modalStage = new Stage();
             modalStage.setTitle("Registrar Nuevo Usuario");
-            modalStage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atrás hasta que se cierre el modal
+            modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.setResizable(false);
             modalStage.setScene(new Scene(root));
             modalStage.showAndWait();
@@ -171,11 +211,6 @@ public class SeguridadController {
         }
     }
 
-    // ==========================================
-    // MÉTODOS DE ACCIONES PARA LA TABLA
-    // ==========================================
-
-    // Método para Inactivar (Dar de baja)
     private void darDeBajaUsuario(Usuario usuario) {
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Baja");
@@ -186,17 +221,16 @@ public class SeguridadController {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try (Session session = factory.openSession()) {
                 Transaction tx = session.beginTransaction();
-                usuario.setEstatus(0); // 0 = Inactivo
-                session.merge(usuario); // Actualiza en BD
+                usuario.setEstatus(0);
+                session.merge(usuario);
                 tx.commit();
-                cargarUsuarios(); // Refresca la tabla automáticamente
+                cargarUsuarios();
             } catch (Exception e) {
                 System.err.println("Error al dar de baja: " + e.getMessage());
             }
         }
     }
 
-    // Método para Restablecer Contraseña
     private void restablecerContrasena(Usuario usuario) {
         TextInputDialog dialogo = new TextInputDialog();
         dialogo.setTitle("Restablecer Contraseña");
