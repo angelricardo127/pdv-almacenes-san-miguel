@@ -4,12 +4,15 @@ import com.asm.modelo.Producto;
 import com.asm.servicio.InventarioService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField; // Importamos el TextField
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import org.hibernate.SessionFactory;
@@ -24,6 +27,8 @@ import java.util.List;
  */
 public class InventarioController {
 
+    // ---inyeccion de componentes fxml
+    @FXML private TextField txtBuscador; // 🔍 AQUI DECLARAMOS TU BARRA DE BÚSQUEDA
     // --- inyeccion de componentes fxml
     @FXML private Label lblBienvenida; // <-- AQUÍ DECLARAMOS EL LABEL DEL SALUDO
     @FXML private TableView<Producto> tablaInventario;
@@ -170,11 +175,48 @@ public class InventarioController {
             System.out.println(" Módulo Inventario: ¡La lista que regresó Hibernate es NULL!");
         } else {
             System.out.println(" Módulo Inventario: Hibernate encontró " + productosBD.size() + " productos en MySQL.");
-        }
 
-        if (productosBD != null) {
             listaProductos = FXCollections.observableArrayList(productosBD);
-            tablaInventario.setItems(listaProductos);
+
+            // 🔎 MAGIA DEL BUSCADOR EN TIEMPO REAL
+            if (txtBuscador != null) {
+                // 1. Envolvemos nuestra lista original en una lista filtrable
+                FilteredList<Producto> productosFiltrados = new FilteredList<>(listaProductos, b -> true);
+
+                // 2. Escuchamos cada vez que cambia el texto en la barra de búsqueda
+                txtBuscador.textProperty().addListener((observable, oldValue, newValue) -> {
+                    productosFiltrados.setPredicate(producto -> {
+                        // Si la barra está vacía, mostramos todo
+                        if (newValue == null || newValue.isEmpty()) {
+                            return true;
+                        }
+
+                        String busqueda = newValue.toLowerCase();
+
+                        // Buscamos por Nombre (Ej. "Playera") o por SKU (Ej. "PROD-001")
+                        if (producto.getNombreProducto().toLowerCase().contains(busqueda)) {
+                            return true;
+                        } else if (producto.getSku() != null && producto.getSku().toLowerCase().contains(busqueda)) {
+                            return true;
+                        }
+
+                        return false; // No hubo coincidencia
+                    });
+                });
+
+                // 3. Envolvemos la lista filtrada en una lista ordenable (por si el usuario da clic en las cabeceras de la tabla)
+                SortedList<Producto> productosOrdenados = new SortedList<>(productosFiltrados);
+
+                // 4. Conectamos la lista ordenable con la tabla visual
+                productosOrdenados.comparatorProperty().bind(tablaInventario.comparatorProperty());
+
+                // 5. Metemos finalmente los datos a la tabla
+                tablaInventario.setItems(productosOrdenados);
+
+            } else {
+                // Si por alguna razón olvidaste ponerle el ID al txtBuscador en el FXML, cargamos normal
+                tablaInventario.setItems(listaProductos);
+            }
         }
     }
 
