@@ -32,11 +32,11 @@ public class GestionCajaController {
     private SessionFactory factory;
     private CorteCajaService service;
 
-    // --- VARIABLES DE ESTADO Y ARQUEO ---
-    private boolean turnoAbierto = false; // 🔥 NUEVO: Candado para saber si hay turno activo
+    // variables de estado y arqueo
+    // eliminamos la variable local turnoAbierto porque ahora usaremos la memoria global
     private double fondoInicialGuardado = 0.0;
 
-    // NOTA: Estas variables eventualmente las llenarás consultando tu VentaService
+    // NOTA: estas variables eventualmente las llenaras consultando tu servicio de ventas
     private double ventasEfectivoDemo = 1500.50;
     private double ventasTarjetaDemo = 840.00;
 
@@ -51,7 +51,18 @@ public class GestionCajaController {
 
         String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-        if (lblBienvenida != null) lblBienvenida.setText("Bienvenido, Roberto Sánchez Pérez • " + fechaHoy);
+        // extraemos el empleado desde la memoria general
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+
+        // borramos el nombre estatico y asignamos el empleado real a los textos de la interfaz
+        if (usuarioLogueado != null) {
+            String nombreCompleto = usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno();
+
+            if (lblBienvenida != null) lblBienvenida.setText("Usuario Activo: " + nombreCompleto + " - " + fechaHoy);
+            if (lblCajero != null) lblCajero.setText(nombreCompleto);
+            if (lblCierreCajero != null) lblCierreCajero.setText(nombreCompleto);
+        }
+
         if (lblFecha != null) lblFecha.setText(fechaHoy);
 
         if (cbTurno != null) {
@@ -59,10 +70,11 @@ public class GestionCajaController {
         }
     }
 
-    // --- MÉTODOS DE NAVEGACIÓN DE MODALES ---
+    // metodos de navegacion de modales
     @FXML private void ejecutarApertura() {
-        if (turnoAbierto) {
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Aviso", "Ya existe un turno abierto. Por favor ciérrelo antes de abrir uno nuevo.");
+        // consultamos la memoria global en lugar de la variable local
+        if (com.asm.modelo.SesionGlobal.isTurnoAbierto()) {
+            mostrarAlerta(Alert.AlertType.INFORMATION, "AVISO", "Ya existe un turno abierto. Por favor cierrelo antes de abrir uno nuevo.");
             return;
         }
         if (modalApertura != null) modalApertura.setVisible(true);
@@ -72,33 +84,30 @@ public class GestionCajaController {
     @FXML private void cerrarModalCierre() { if (modalCierre != null) modalCierre.setVisible(false); }
     @FXML private void cerrarModalError() { if (modalErrorApertura != null) modalErrorApertura.setVisible(false); }
 
-    // --- LÓGICA DE APERTURA DE TURNO ---
+    // logica de apertura de turno
     @FXML
     private void confirmarApertura() {
-        // 1. Validamos que hayan elegido el turno
         if (cbTurno.getValue() == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Falta Información", "Por favor, seleccione un turno (Matutino/Vespertino).");
+            mostrarAlerta(Alert.AlertType.WARNING, "FALTA DE INFORMACIÓN", "Por favor seleccione un turno");
             return;
         }
 
-        // 2. Validamos el dinero
         String textoFondo = txtFondoInicial.getText();
         if (textoFondo.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Monto Vacío", "Por favor, ingrese el fondo inicial de la caja.");
+            mostrarAlerta(Alert.AlertType.WARNING, "MONTO VACIO", "Por favor ingrese el fondo inicial de la caja.");
             return;
         }
 
         try {
-            // Intentamos convertir el texto a número. Si hay letras, saltará al "catch"
             fondoInicialGuardado = Double.parseDouble(textoFondo);
 
             if (fondoInicialGuardado < 0) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Monto Inválido", "El monto inicial no puede ser negativo.");
+                mostrarAlerta(Alert.AlertType.WARNING, "MONTO INVALIDO", "El monto inicial no puede ser negativo.");
                 return;
             }
 
-            // Si llegamos aquí, los datos son perfectos.
-            turnoAbierto = true; // 🔥 ABRIMOS EL CANDADO
+            // activamos el candado en el sistema completo
+            com.asm.modelo.SesionGlobal.setTurnoAbierto(true);
 
             lblExitoCajero.setText(lblCajero.getText());
             lblExitoFondo.setText(String.format("$%.2f", fondoInicialGuardado));
@@ -107,17 +116,16 @@ public class GestionCajaController {
             modalExitoApertura.setVisible(true);
 
         } catch (NumberFormatException e) {
-            // Si el cajero tecleó "100a" o "cien", salta esta alerta
-            mostrarAlerta(Alert.AlertType.ERROR, "Formato Inválido", "Favor de ingresar un monto válido (solo números).");
+            mostrarAlerta(Alert.AlertType.ERROR, "FORMATO INVALIDO", "Favor de ingresar un monto valido solo numeros");
         }
     }
 
-    // --- LÓGICA DE CIERRE DE TURNO ---
+    // logica de cierre de turno
     @FXML
     private void ejecutarCierre() {
-        // 🔥 VERIFICACIÓN: No puedes cerrar lo que no está abierto
-        if (!turnoAbierto) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Operación Inválida", "No hay ningún turno abierto actualmente. Abra un turno para poder operar.");
+        // verificamos con la memoria global si hay turno para cerrar
+        if (!com.asm.modelo.SesionGlobal.isTurnoAbierto()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "OPERACION INVALIDA", "No hay ningun turno abierto actualmente.");
             return;
         }
 
@@ -128,7 +136,6 @@ public class GestionCajaController {
             lblCierreVentasTarjeta.setText(String.format("$%.2f", ventasTarjetaDemo));
             lblCierreTotalVentas.setText(String.format("$%.2f", totalVentas));
 
-            // Limpiamos los campos por si tenían datos de un cierre anterior
             txtMontoCierre.clear();
             lblCierreDiferencia.setText("$0.00");
             lblCierreDiferencia.setTextFill(Color.web("#374151"));
@@ -148,7 +155,6 @@ public class GestionCajaController {
             }
             double contado = Double.parseDouble(input);
 
-            // El cajón físico debe tener el fondo + las ventas cobradas solo en billetes/monedas
             double efectivoEsperado = fondoInicialGuardado + ventasEfectivoDemo;
             double diferencia = contado - efectivoEsperado;
 
@@ -160,7 +166,7 @@ public class GestionCajaController {
                 lblCierreDiferencia.setTextFill(Color.web("#10b981"));
             }
         } catch (NumberFormatException e) {
-            lblCierreDiferencia.setText("Error");
+            lblCierreDiferencia.setText("error");
             lblCierreDiferencia.setTextFill(Color.RED);
         }
     }
@@ -168,65 +174,61 @@ public class GestionCajaController {
     @FXML
     private void confirmarCierre() {
         if (txtMontoCierre.getText().isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Falta Efectivo Físico", "Por favor ingrese cuánto efectivo hay físicamente en la caja.");
+            mostrarAlerta(Alert.AlertType.WARNING, "FALTA EFECTIVO", "Ingrese cuanto efectivo hay fisicamente en la caja.");
             return;
         }
 
         lblExitoDiferencia.setText(lblCierreDiferencia.getText());
 
-        // 🔥 CERRAMOS EL CANDADO DEL TURNO
-        turnoAbierto = false;
+        // apagamos el candado en el sistema completo
+        com.asm.modelo.SesionGlobal.setTurnoAbierto(false);
 
         modalCierre.setVisible(false);
 
-        // Alerta de éxito antes de pasar a la ventana final
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Cierre de Caja Exitoso", "El turno se ha cerrado correctamente en el sistema.");
+        mostrarAlerta(Alert.AlertType.INFORMATION, "CIERRE EXITOSO", "El turno se ha cerrado correctamente.");
 
         modalExitoCierre.setVisible(true);
     }
 
-    // --- LÓGICA DE IMPRESIÓN Y SALIDA ---
+    // logica de impresion y salida intacta
     @FXML
     private void generarReporte() {
         PrinterJob job = PrinterJob.createPrinterJob();
         if (job != null) {
-            // Esto lanza la ventana de impresión nativa de Windows
             boolean continuar = job.showPrintDialog(modalExitoCierre.getScene().getWindow());
             if (continuar) {
-                // Creamos el diseño del ticket "invisible" para mandarlo a la impresora
                 Node ticketResumen = armarDiseñoImpresion();
                 boolean exito = job.printPage(ticketResumen);
 
                 if (exito) {
                     job.endJob();
-                    System.out.println("✅ Reporte enviado a la impresora exitosamente.");
+                    System.out.println("Reporte enviado a la impresora");
                 } else {
-                    System.err.println("❌ Fallo al intentar imprimir la página.");
+                    System.err.println("Fallo al intentar imprimir");
                 }
             }
         }
     }
 
-    // Método oculto que "dibuja" el ticket para que salga bien alineado en el papel
     private Node armarDiseñoImpresion() {
         VBox ticket = new VBox(10);
         ticket.setStyle("-fx-padding: 20px; -fx-background-color: white;");
 
-        Text titulo = new Text("ALMACENES SAN MIGUEL\nResumen de Cierre de Caja");
+        Text titulo = new Text("ALMACENES SAN MIGUEL\nResumen de cierre de caja");
         titulo.setFont(Font.font("Monospaced", 16));
 
         Text datos = new Text(
                 "--------------------------------\n" +
                         "Fecha: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
                         "Turno: " + cbTurno.getValue() + "\n" +
-                        "Fondo Inicial: $" + fondoInicialGuardado + "\n" +
-                        "Ventas Efectivo: $" + ventasEfectivoDemo + "\n" +
-                        "Ventas Tarjeta: $" + ventasTarjetaDemo + "\n" +
+                        "Fondo inicial: $" + fondoInicialGuardado + "\n" +
+                        "Ventas efectivo: $" + ventasEfectivoDemo + "\n" +
+                        "Ventas tarjeta: $" + ventasTarjetaDemo + "\n" +
                         "--------------------------------\n" +
-                        "Total en Caja Esperado: $" + (fondoInicialGuardado + ventasEfectivoDemo) + "\n" +
-                        "Diferencia Reportada: " + lblCierreDiferencia.getText() + "\n" +
+                        "Total en caja esperado: $" + (fondoInicialGuardado + ventasEfectivoDemo) + "\n" +
+                        "Diferencia reportada: " + lblCierreDiferencia.getText() + "\n" +
                         "--------------------------------\n" +
-                        "Firma del Cajero:\n\n______________________"
+                        "Firma del cajero:\n\n______________________"
         );
         datos.setFont(Font.font("Monospaced", 12));
 
@@ -246,17 +248,16 @@ public class GestionCajaController {
                 areaTrabajo.getChildren().add(vistaDashboard);
             }
         } catch (Exception e) {
-            System.err.println("Error al regresar al Dashboard: " + e.getMessage());
+            System.err.println("Error al regresar al menu central");
         }
     }
 
     @FXML
     private void continuarAVentas() {
         modalExitoApertura.setVisible(false);
-        System.out.println("Redirigiendo a Ventas...");
+        System.out.println("Redirigiendo a ventas");
     }
 
-    // --- MÉTODO REUTILIZABLE PARA ALERTAS ---
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);

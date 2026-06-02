@@ -32,9 +32,9 @@ public class ContenedorBaseController implements Initializable {
         com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
 
         if (usuarioLogueado != null) {
-            // Actualizar textos del perfil
+            // Actualizar textos del perfil con la capitalización correcta
             if (lblNombreUsuario != null) {
-                lblNombreUsuario.setText("👤 " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno());
+                lblNombreUsuario.setText("Usuario activo: " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno());
             }
             if (lblRolUsuario != null) {
                 String nombreRol = "";
@@ -122,7 +122,25 @@ public class ContenedorBaseController implements Initializable {
     }
 
     @FXML public void mostrarDashboard() { resaltarBoton(btnDashboard); cargarVista("Dashboard.fxml"); }
-    @FXML public void mostrarVentas() { resaltarBoton(btnVentas); cargarVista("PuntoVenta.fxml"); }
+
+    // Candado para el módulo de ventas
+    @FXML
+    public void mostrarVentas() {
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+
+        if (usuarioLogueado != null && usuarioLogueado.getIdRol() == 2 && !com.asm.modelo.SesionGlobal.isTurnoAbierto()) {
+            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+            alerta.setTitle("Acceso Denegado");
+            alerta.setHeaderText("Caja Cerrada");
+            alerta.setContentText("Necesitas abrir tu turno en el módulo de Caja para poder vender.");
+            alerta.showAndWait();
+            return;
+        }
+
+        resaltarBoton(btnVentas);
+        cargarVista("PuntoVenta.fxml");
+    }
+
     @FXML public void mostrarInventario() { resaltarBoton(btnInventario); cargarVista("inventario.fxml"); }
     @FXML public void mostrarCaja() { resaltarBoton(btnCaja); cargarVista("GestionCaja.fxml"); }
     @FXML public void mostrarCambios() { resaltarBoton(btnCambios); cargarVista("cambios.fxml"); }

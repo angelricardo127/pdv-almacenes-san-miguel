@@ -15,8 +15,11 @@ import javafx.scene.text.FontWeight;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,6 +30,7 @@ import javafx.stage.Stage;
 public class PuntoVentaController {
 
     // --- CONEXIONES CON LA INTERFAZ VISUAL (FXML) ---
+    @FXML private Label lblBienvenida; // Añadido: Etiqueta para borrar el nombre estático
     @FXML private TilePane contenedorProductos;
     @FXML private VBox emptyStateCarrito;
     @FXML private VBox contenedorCarrito;
@@ -45,6 +49,18 @@ public class PuntoVentaController {
     @FXML
     public void initialize() {
         System.out.println("Cargando el Punto de Venta desde la BD...");
+
+        // --- NUEVO: LÓGICA PARA EXTRAER AL USUARIO DE LA SESIÓN GLOBAL ---
+        String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+
+        if (lblBienvenida != null && usuarioLogueado != null) {
+            lblBienvenida.setText("Usuario activo: " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno() + " - " + fechaHoy);
+        } else if (lblBienvenida != null) {
+            lblBienvenida.setText("Usuario activo - " + fechaHoy);
+        }
+        // -----------------------------------------------------------------
+
         contenedorProductos.getChildren().clear();
 
         try {
