@@ -9,31 +9,31 @@ import javafx.stage.Stage;
 
 public class FormularioProductoController {
 
-    // --- CONEXIONES FXML (Nuevas matching Figma) ---
+    // conexiones con la pantalla
     @FXML private TextField txtSku;
     @FXML private TextField txtNombre;
-    @FXML private ComboBox<String> cmbCategoria; // Usamos ComboBox
+    @FXML private ComboBox<String> cmbCategoria;
     @FXML private TextField txtVariantes;
     @FXML private TextField txtPrecioVenta;
     @FXML private TextField txtCostoCompra;
     @FXML private TextField txtStockInicial;
     @FXML private TextField txtStockMinimo;
     @FXML private TextField txtProveedor;
-    @FXML private TextArea txtDescripcion; // Usamos TextArea
+    @FXML private TextArea txtDescripcion;
 
     private InventarioController ventanaPrincipal;
     private InventarioService servicio;
 
-    // Se ejecuta automáticamente al cargar la ventana
+    // se ejecuta al cargar la ventana
     @FXML
     public void initialize() {
-        // Llenamos el ComboBox con categorías de prueba (esto debería venir de BD luego)
+        // llenamos la lista con las opciones
         cmbCategoria.setItems(FXCollections.observableArrayList(
                 "Pantalones", "Camisas", "Zapatos", "Accesorios", "Uniformes Escolares"
         ));
     }
 
-    // Recibimos las herramientas de la ventana grande
+    // recibimos las herramientas de la ventana principal
     public void setDependencias(InventarioController principal, InventarioService srv) {
         this.ventanaPrincipal = principal;
         this.servicio = srv;
@@ -42,45 +42,45 @@ public class FormularioProductoController {
     @FXML
     private void guardarProducto() {
         try {
-            // 1. VALIDACIÓN BÁSICA (Campos obligatorios * en Figma)
+            // revisamos que no falte nada
             if (txtNombre.getText().isEmpty() || cmbCategoria.getValue() == null ||
                     txtPrecioVenta.getText().isEmpty() || txtStockInicial.getText().isEmpty()) {
                 mostrarError("Por favor, llena todos los campos obligatorios marcados con *.");
                 return;
             }
 
-            // 2. EXTRACCIÓN Y CONVERSIÓN DE DATOS
+            // sacamos y acomodamos los datos
             String sku = txtSku.getText();
             String nombre = txtNombre.getText();
             String categoria = cmbCategoria.getValue();
             String variantes = txtVariantes.getText();
 
-            // Conversión de números (manejando errores)
+            // convertimos los textos a numeros
             double precioVenta = Double.parseDouble(txtPrecioVenta.getText().replace("$", "").trim());
 
-            // Campos opcionales (por defecto 0 si están vacíos)
+            // datos opcionales
             double costoCompra = txtCostoCompra.getText().isEmpty() ? 0 :
                     Double.parseDouble(txtCostoCompra.getText().replace("$", "").trim());
             int stockInicial = Integer.parseInt(txtStockInicial.getText());
-            int stockMinimo = txtStockMinimo.getText().isEmpty() ? 5 : // 5 por defecto si no ponen
+            int stockMinimo = txtStockMinimo.getText().isEmpty() ? 5 :
                     Integer.parseInt(txtStockMinimo.getText());
 
             String proveedor = txtProveedor.getText();
             String descripcion = txtDescripcion.getText();
 
-            // 3. CREACIÓN DEL OBJETO PRODUCTO (Usando el nuevo constructor)
-            // Pasamos un 1 directo a idTalla e idGenero para cumplir con la BD de Víctor y Andre
+            // creamos el producto nuevo
+            // datos fijos para que jale la base de datos
             Producto nuevoProducto = new Producto(
                     sku, nombre, categoria, variantes, precioVenta,
                     costoCompra, stockInicial, stockMinimo, proveedor, descripcion, 1, 1
             );
 
-            // 4. MANDAR A MYSQL USANDO EL SERVICIO
+            // guardamos en la base de datos
             boolean exito = servicio.registrarNuevoProducto(nuevoProducto);
 
             if (exito) {
-                System.out.println(" ¡Producto '" + nombre + "' registrado con éxito!");
-                // Actualizamos la tabla grande y cerramos esta
+                System.out.println(" producto '" + nombre + "' registrado con exito!");
+                // refrescamos la tabla y cerramos
                 ventanaPrincipal.cargarDatosEnTabla();
                 cerrarVentana();
             } else {
@@ -88,16 +88,16 @@ public class FormularioProductoController {
             }
 
         } catch (NumberFormatException e) {
-            mostrarError("Asegúrate de poner solo números en Precio, Costo y Stocks.\nError técnico: " + e.getMessage());
+            mostrarError("Asegurate de poner solo numeros en Precio, Costo y Stocks.\nError tecnico: " + e.getMessage());
         } catch (Exception e) {
-            mostrarError("Ocurrió un error inesperado al guardar.\nError técnico: " + e.getMessage());
+            mostrarError("Ocurrio un error inesperado al guardar.\nError tecnico: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
     private void cerrarVentana() {
-        // Obtenemos la ventana actual y la cerramos
+        // cerramos la ventana
         Stage stage = (Stage) txtNombre.getScene().getWindow();
         stage.close();
     }

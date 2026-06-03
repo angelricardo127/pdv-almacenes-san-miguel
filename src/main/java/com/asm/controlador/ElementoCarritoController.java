@@ -17,12 +17,12 @@ public class ElementoCarritoController {
     @FXML private Button btnEliminar;
 
     public void configurarElemento(Producto producto, int cantidad, PuntoVentaController padreController) {
-        // Llenar los textos visuales
+        // ponemos la info en la pantalla
         lblNombre.setText(producto.getNombreProducto());
         lblPrecio.setText(String.format("$%.2f", producto.getPrecio()));
         lblCantidad.setText(String.valueOf(cantidad));
 
-        // Asignarle la acción a cada botón usando los métodos nuevos de PuntoVentaController
+        // activamos los botones para que hagan su trabajo
         btnMas.setOnAction(e -> padreController.cambiarCantidadProducto(producto, 1));
 
         btnMenos.setOnAction(e -> padreController.cambiarCantidadProducto(producto, -1));

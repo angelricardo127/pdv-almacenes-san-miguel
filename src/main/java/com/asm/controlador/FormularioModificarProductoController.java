@@ -21,34 +21,33 @@ public class FormularioModificarProductoController {
 
     private InventarioController controladorPadre;
     private InventarioService servicio;
-    private Producto productoEdicion; // El producto que estamos modificando
+    private Producto productoEdicion;
 
     @FXML
     public void initialize() {
-        // Llenamos el ComboBox con opciones de prueba (puedes ajustar esto luego)
+        // llenamos la lista con opciones de ejemplo
         cmbCategoria.getItems().addAll("Uniformes Secundaria", "Uniformes Preparatoria", "Deportivos", "Accesorios");
     }
 
-    // Este método lo llama el InventarioController justo antes de mostrar la ventana
+    // el controlador padre llama a esto antes de abrir la ventana
     public void cargarDatosProducto(Producto producto, InventarioController padre, InventarioService servicio) {
         this.productoEdicion = producto;
         this.controladorPadre = padre;
         this.servicio = servicio;
 
-        // Rellenamos los campos con la información actual de la base de datos
+        // ponemos la info actual en las cajitas
         txtSku.setText(producto.getSku());
         txtNombre.setText(producto.getNombreProducto());
         cmbCategoria.setValue(producto.getCategoria());
         txtPrecioVenta.setText(String.valueOf(producto.getPrecio()));
         txtStockActual.setText(String.valueOf(producto.getStock()));
 
-        // Calculamos el estado visual para la píldora
+        // calculamos el color de la etiqueta de estado
         actualizarPildoraEstado(producto.getStock());
 
-        // Como Talla y Color están guardados juntos en "variantes", los separamos para mostrarlos
+        // separamos la talla y el color
         if (producto.getVariantes() != null && !producto.getVariantes().isEmpty()) {
             txtTalla.setText(producto.getVariantes());
-            // Podrías usar un split("-") si los guardaste con un guión para separar talla y color
         }
     }
 
@@ -69,41 +68,41 @@ public class FormularioModificarProductoController {
     @FXML
     public void guardarCambios() {
         try {
-            // 1. Actualizamos el objeto con lo que el usuario escribió
+            // actualizamos los datos con lo que escribio el usuario
             productoEdicion.setSku(txtSku.getText());
             productoEdicion.setNombreProducto(txtNombre.getText());
             productoEdicion.setCategoria(cmbCategoria.getValue());
             productoEdicion.setPrecio(Double.parseDouble(txtPrecioVenta.getText()));
             productoEdicion.setStock(Integer.parseInt(txtStockActual.getText()));
 
-            // Unimos Talla y Color en el campo "variantes" para respetar el script MySQL original
+            // juntamos la talla y color
             String tallaColorUnidos = "Talla: " + txtTalla.getText() + " | Color: " + txtColor.getText();
             productoEdicion.setVariantes(tallaColorUnidos);
 
-            // llamada al metodo de tu servicio para hacer el UPDATE en Hibernate
+            // guardamos los cambios en la base de datos
             servicio.actualizarProducto(productoEdicion);
             System.out.println(" Producto modificado exitosamente");
 
-            // 3. Le avisamos a la tabla principal que se recargue y cerramos
+            // recargamos la tabla y cerramos
             controladorPadre.cargarDatosEnTabla();
             cerrarVentana();
 
         } catch (NumberFormatException e) {
-            System.err.println("Error: Asegúrate de que el precio y stock sean números válidos.");
+            System.err.println("error: asegura que el precio y stock sean numeros validos");
         }
     }
 
-    @FXML //metodo para dar de baja
+    @FXML // metodo para borrar o dar de baja
     public void darDeBaja() {
-        System.out.println("Dando de baja el producto: " + productoEdicion.getNombreProducto());
+        System.out.println("dando de baja el producto: " + productoEdicion.getNombreProducto());
 
-        // Ejecutamos el soft delete
+        // borramos el producto
         servicio.darDeBajaProducto(productoEdicion);
 
-        // Recargamos la tabla (ahora el producto ya no saldrá por el filtro que pusimos)
+        // refrescamos la tabla
         controladorPadre.cargarDatosEnTabla();
 
-        // Cerramos la ventana
+        // cerramos la ventana
         cerrarVentana();
     }
 
