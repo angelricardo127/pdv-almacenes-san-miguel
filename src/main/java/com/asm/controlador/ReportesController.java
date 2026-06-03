@@ -57,7 +57,7 @@ public class ReportesController {
 
     @FXML
     public void initialize() {
-        // sescion global y fecha
+        // Sesión global y fecha
         String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
         com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
 
@@ -67,9 +67,7 @@ public class ReportesController {
         } else if (lblBienvenida != null) {
             lblBienvenida.setText("Bienvenido • " + fechaHoy);
         }
-        // ------------------------------------
 
-        // Configuramos la tabla para que lea el arreglo de Strings
         colFolio.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue()[0]));
         colFecha.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue()[1]));
         colCajero.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue()[2]));
@@ -77,13 +75,11 @@ public class ReportesController {
         colMetodo.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue()[4]));
         colTotal.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue()[5]));
 
-        // conectamos a al base  de datos
         try {
             factory = new Configuration().configure("com/asm/vista/hibernate.cfg.xml").buildSessionFactory();
             service = new ReportesService(factory);
             System.out.println(" Conexión a BD en Reportes exitosa");
 
-            // Precargamos las fechas de hoy en los calendarios
             dpFechaDesde.setValue(LocalDate.now());
             dpFechaHasta.setValue(LocalDate.now());
 
@@ -105,7 +101,6 @@ public class ReportesController {
             lblVentasHoy.setText("$ " + String.format("%.2f", ventasHoy));
             lblTransacciones.setText(String.valueOf(transaccionesHoy));
             lblTicketPromedio.setText("$ " + String.format("%.2f", ticketPromedio));
-            // Devoluciones se queda en 0 por ahora hasta conectar el módulo real
             lblDevoluciones.setText("0");
         } catch (Exception e) {
             System.err.println("⚠️ Error al cargar KPIs superiores: " + e.getMessage());
@@ -114,7 +109,6 @@ public class ReportesController {
 
     private void cargarEstadisticasSecundarias() {
         try {
-            // 1. CARGAR PRODUCTOS MÁS VENDIDOS
             List<Object[]> topProductos = service.obtenerTopProductos();
             vboxTopProductos.getChildren().removeIf(node -> node instanceof Label && !((Label) node).getText().equals("Productos Más Vendidos"));
 
@@ -130,7 +124,6 @@ public class ReportesController {
                 }
             }
 
-            // 2. CARGAR MÉTODOS DE PAGO
             List<Object[]> metodosPago = service.obtenerVentasPorMetodoPago();
             vboxMetodosPago.getChildren().removeIf(node -> node instanceof HBox);
             for (Object[] row : metodosPago) {
@@ -145,7 +138,6 @@ public class ReportesController {
                 vboxMetodosPago.getChildren().add(hbox);
             }
 
-            // 3. CARGAR RENDIMIENTO POR CAJERO
             List<Object[]> cajeros = service.obtenerRendimientoCajeros();
             vboxCajeros.getChildren().removeIf(node -> node instanceof HBox);
             for (Object[] row : cajeros) {
@@ -160,7 +152,6 @@ public class ReportesController {
                 vboxCajeros.getChildren().add(hbox);
             }
 
-            // Ocultamos la categoría vacía por ahora para mantener el diseño limpio
             vboxCategorias.setVisible(false);
             vboxCategorias.setManaged(false);
 
@@ -181,21 +172,21 @@ public class ReportesController {
         }
 
         try {
-            // Aquí es donde está ocurriendo el problema de la tabla vacía
             List<Object[]> resultadosBD = service.obtenerVentasPorRango(dpFechaDesde.getValue(), dpFechaHasta.getValue());
             ObservableList<String[]> datosReales = FXCollections.observableArrayList();
             double sumaTotal = 0.0;
 
             for (Object[] fila : resultadosBD) {
                 String folio = String.valueOf(fila[0]);
-                String fecha = String.valueOf(fila[1]);
+                // Reemplazamos la "T" que pone LocalDateTime por un espacio para que se vea bonito
+                String fecha = String.valueOf(fila[1]).replace("T", " ").substring(0, 16);
                 String cajero = String.valueOf(fila[2]);
                 String metodo = String.valueOf(fila[3]);
                 double total = Double.parseDouble(String.valueOf(fila[4]));
 
                 sumaTotal += total;
 
-                datosReales.add(new String[]{"#" + folio, fecha, cajero, "Resumen de ticket", metodo, "$ " + String.format("%.2f", total)});
+                datosReales.add(new String[]{"#" + folio, fecha, cajero, "Resumen", metodo, "$ " + String.format("%.2f", total)});
             }
 
             tablaReporte.setItems(datosReales);

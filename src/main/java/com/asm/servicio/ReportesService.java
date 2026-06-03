@@ -16,10 +16,9 @@ public class ReportesService {
         this.sessionFactory = sessionFactory;
     }
 
-    // 1. Obtener las ventas filtradas (Mucho más rápido leyendo el campo Total)
+    // 1. Obtener las ventas filtradas
     public List<Object[]> obtenerVentasPorRango(LocalDate inicio, LocalDate fin) {
         try (Session session = sessionFactory.openSession()) {
-            // Abarcamos desde el primer segundo del día inicio, hasta el último segundo del día fin
             LocalDateTime fechaInicio = inicio.atStartOfDay();
             LocalDateTime fechaFin = fin.atTime(LocalTime.MAX);
 
@@ -27,7 +26,7 @@ public class ReportesService {
                     "FROM Venta v, Usuario u, MetodoPago mp " +
                     "WHERE v.idUsuario = u.idUsuario " +
                     "AND v.idMetodoPago = mp.idMetodoPago " +
-                    "AND v.fecha BETWEEN :inicio AND :fin " +
+                    "AND v.fecha >= :inicio AND v.fecha <= :fin " +
                     "ORDER BY v.fecha DESC";
 
             return session.createQuery(hql, Object[].class)
@@ -46,13 +45,14 @@ public class ReportesService {
             LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
             LocalDateTime finDia = LocalDate.now().atTime(LocalTime.MAX);
 
-            String hql = "SELECT SUM(v.total) FROM Venta v WHERE v.fecha BETWEEN :inicio AND :fin";
+            String hql = "SELECT SUM(v.total) FROM Venta v WHERE v.fecha >= :inicio AND v.fecha <= :fin";
             Double total = session.createQuery(hql, Double.class)
                     .setParameter("inicio", inicioDia)
                     .setParameter("fin", finDia)
                     .uniqueResult();
             return total != null ? total : 0.0;
         } catch (Exception e) {
+            System.err.println("Error total HOY: " + e.getMessage());
             return 0.0;
         }
     }
@@ -63,13 +63,14 @@ public class ReportesService {
             LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
             LocalDateTime finDia = LocalDate.now().atTime(LocalTime.MAX);
 
-            String hql = "SELECT COUNT(v.idVenta) FROM Venta v WHERE v.fecha BETWEEN :inicio AND :fin";
+            String hql = "SELECT COUNT(v.idVenta) FROM Venta v WHERE v.fecha >= :inicio AND v.fecha <= :fin";
             Long conteo = session.createQuery(hql, Long.class)
                     .setParameter("inicio", inicioDia)
                     .setParameter("fin", finDia)
                     .uniqueResult();
             return conteo != null ? conteo : 0;
         } catch (Exception e) {
+            System.err.println("Error tickets HOY: " + e.getMessage());
             return 0;
         }
     }
@@ -106,7 +107,7 @@ public class ReportesService {
         }
     }
 
-    // 6. ¡ACTUALIZADO! Productos Más Vendidos
+    // 6. Productos Más Vendidos
     public List<Object[]> obtenerTopProductos() {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT p.nombreProducto, SUM(dv.cantidad) " +

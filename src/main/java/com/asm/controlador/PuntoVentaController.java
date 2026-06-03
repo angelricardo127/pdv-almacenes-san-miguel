@@ -29,8 +29,7 @@ import javafx.stage.Stage;
 
 public class PuntoVentaController {
 
-    // --- CONEXIONES CON LA INTERFAZ VISUAL (FXML) ---
-    @FXML private Label lblBienvenida; // Añadido: Etiqueta para borrar el nombre estático
+    @FXML private Label lblBienvenida;
     @FXML private TilePane contenedorProductos;
     @FXML private VBox emptyStateCarrito;
     @FXML private VBox contenedorCarrito;
@@ -41,7 +40,6 @@ public class PuntoVentaController {
     private double totalCompra = 0.0;
     private List<Producto> listaProductos;
 
-    // --- LA MEMORIA DEL CARRITO ---
     private Map<Integer, Integer> cantidadesCarrito = new HashMap<>();
     private Map<Integer, Producto> productosCarrito = new HashMap<>();
     private VentaService servicioVentas;
@@ -50,7 +48,6 @@ public class PuntoVentaController {
     public void initialize() {
         System.out.println("Cargando el Punto de Venta desde la BD...");
 
-        // --- NUEVO: LÓGICA PARA EXTRAER AL USUARIO DE LA SESIÓN GLOBAL ---
         String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
         com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
 
@@ -59,7 +56,6 @@ public class PuntoVentaController {
         } else if (lblBienvenida != null) {
             lblBienvenida.setText("Usuario activo - " + fechaHoy);
         }
-        // -----------------------------------------------------------------
 
         contenedorProductos.getChildren().clear();
 
@@ -79,26 +75,21 @@ public class PuntoVentaController {
                 crearTarjetaProducto(prod);
             }
 
-            // --- MAGIA DEL BUSCADOR EN TIEMPO REAL ---
             if (txtBuscarProducto != null) {
                 txtBuscarProducto.textProperty().addListener((observable, oldValue, newValue) -> {
                     filtrarProductos(newValue);
                 });
             }
 
-            // --- LÓGICA DEL BOTÓN DE PAGO (Hover y Click) ---
             if (btnProcesarPago != null) {
                 btnProcesarPago.setOnAction(event -> procesarPago());
-                actualizarEstadoBotonPago(); // Lo apagamos (visualmente) de inicio
+                actualizarEstadoBotonPago();
 
-                // Efecto Hover condicionado a que el carrito NO esté vacío
                 btnProcesarPago.setOnMouseEntered(e -> {
                     if (!cantidadesCarrito.isEmpty()) {
                         btnProcesarPago.setStyle("-fx-background-color: #149178; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;");
                     }
                 });
-
-                // Se apaga al quitar el mouse (recalcula su color base)
                 btnProcesarPago.setOnMouseExited(e -> {
                     actualizarEstadoBotonPago();
                 });
@@ -142,14 +133,13 @@ public class PuntoVentaController {
         int id = prod.getIdProducto();
         int cantidadActual = cantidadesCarrito.getOrDefault(id, 0);
 
-        // --- VALIDACIÓN DE STOCK AL HACER CLIC EN LA TARJETA ---
         if ((cantidadActual + 1) > prod.getStock()) {
             Alert alerta = new Alert(Alert.AlertType.WARNING);
             alerta.setTitle("Stock Insuficiente");
             alerta.setHeaderText("Límite de inventario alcanzado");
             alerta.setContentText("No puedes agregar más unidades. Solo quedan " + prod.getStock() + " de '" + prod.getNombreProducto() + "' en el almacén.");
             alerta.showAndWait();
-            return; // Se cancela la operación
+            return;
         }
 
         cantidadesCarrito.put(id, cantidadActual + 1);
@@ -162,14 +152,13 @@ public class PuntoVentaController {
         int cantidadActual = cantidadesCarrito.getOrDefault(id, 0);
         int nuevaCantidad = cantidadActual + cambio;
 
-        // --- VALIDACIÓN DE STOCK AL SUMAR DESDE EL CARRITO (+1) ---
         if (cambio > 0 && nuevaCantidad > p.getStock()) {
             Alert alerta = new Alert(Alert.AlertType.WARNING);
             alerta.setTitle("Stock Insuficiente");
             alerta.setHeaderText("Límite de inventario alcanzado");
             alerta.setContentText("Solo quedan " + p.getStock() + " de '" + p.getNombreProducto() + "' en el almacén.");
             alerta.showAndWait();
-            return; // Se cancela la operación
+            return;
         }
 
         if (nuevaCantidad <= 0) {
@@ -192,7 +181,6 @@ public class PuntoVentaController {
         totalCompra = 0.0;
 
         boolean carritoVacio = cantidadesCarrito.isEmpty();
-
         if (emptyStateCarrito != null) {
             emptyStateCarrito.setVisible(carritoVacio);
             emptyStateCarrito.setManaged(carritoVacio);
@@ -220,16 +208,12 @@ public class PuntoVentaController {
         if (lblTotal != null) {
             lblTotal.setText(String.format("$%.2f", totalCompra));
         }
-
         actualizarEstadoBotonPago();
     }
 
     private void actualizarEstadoBotonPago() {
         if (btnProcesarPago != null) {
             boolean carritoVacio = cantidadesCarrito.isEmpty();
-
-            // ELIMINAMOS el btnProcesarPago.setDisable(true) para que siempre reaccione al clic.
-            // Solo cambiamos el color y el cursor para dar la ilusión de inactividad.
             if (carritoVacio) {
                 btnProcesarPago.setStyle("-fx-background-color: #bdc3c7; -fx-text-fill: #7f8c8d; -fx-background-radius: 6; -fx-font-weight: bold; -fx-cursor: default;");
             } else {
@@ -239,14 +223,13 @@ public class PuntoVentaController {
     }
 
     private void procesarPago() {
-        // --- 🔥 LA NUEVA ALERTA DE CARRITO VACÍO 🔥 ---
         if (cantidadesCarrito.isEmpty()) {
             Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle("Carrito Vacío");
             alerta.setHeaderText("No hay productos para cobrar");
             alerta.setContentText("Por favor, selecciona al menos un artículo del catálogo antes de procesar el pago.");
             alerta.showAndWait();
-            return; // Detiene el código para que no abra la ventana de pago
+            return;
         }
 
         try {
@@ -266,13 +249,22 @@ public class PuntoVentaController {
                 double recibido = modalController.getMontoRecibido();
                 double cambio = recibido - totalCompra;
 
-                servicioVentas.registrarVenta(cantidadesCarrito, totalCompra);
+                // 🔥 AQUÍ IDENTIFICAMOS EL MÉTODO DE PAGO
+                String metodoPago = modalController.getMetodoPagoFinal();
+                int idMetodoSeleccionado = 1; // Por defecto Efectivo
+
+                if (metodoPago != null && metodoPago.toLowerCase().contains("tarjeta")) {
+                    idMetodoSeleccionado = 2; // Es Tarjeta
+                }
+
+                // 🔥 ENVIAMOS EL ID AL SERVICIO
+                servicioVentas.registrarVenta(cantidadesCarrito, totalCompra, idMetodoSeleccionado);
 
                 FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalTicket.fxml"));
                 Parent ticketRoot = ticketLoader.load();
 
                 ModalTicketController ticketController = ticketLoader.getController();
-                ticketController.cargarDatosTicket(cantidadesCarrito, productosCarrito, totalCompra, recibido, cambio, modalController.getMetodoPagoFinal());
+                ticketController.cargarDatosTicket(cantidadesCarrito, productosCarrito, totalCompra, recibido, cambio, metodoPago);
                 Stage ticketStage = new Stage();
                 ticketStage.setTitle("Ticket de Venta");
                 ticketStage.setScene(new Scene(ticketRoot));
@@ -282,7 +274,6 @@ public class PuntoVentaController {
                 cantidadesCarrito.clear();
                 productosCarrito.clear();
 
-                // Actualizamos el inventario visual para que refleje el nuevo stock
                 this.listaProductos = servicioVentas.obtenerProductos();
                 filtrarProductos(txtBuscarProducto != null ? txtBuscarProducto.getText() : "");
 
@@ -296,7 +287,6 @@ public class PuntoVentaController {
         }
     }
 
-    // --- MÉTODO ACTUALIZADO PARA EL BUSCADOR ---
     private void filtrarProductos(String busqueda) {
         contenedorProductos.getChildren().clear();
 
@@ -310,7 +300,6 @@ public class PuntoVentaController {
         String busquedaMinusculas = busqueda.toLowerCase();
 
         for (Producto prod : listaProductos) {
-            // Busca tanto por nombre como por ID del producto
             if (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas) ||
                     String.valueOf(prod.getIdProducto()).contains(busquedaMinusculas)) {
                 crearTarjetaProducto(prod);

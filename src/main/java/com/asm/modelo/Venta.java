@@ -1,8 +1,8 @@
 package com.asm.modelo;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp; // Importación faltante
-import java.time.LocalDateTime;                     // Importación faltante
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "venta")
@@ -13,7 +13,7 @@ public class Venta {
     @Column(name = "id_venta")
     private int idVenta;
 
-    // Hibernate se encargará automáticamente de poner la fecha y hora exacta
+    // Hibernate se encarga automáticamente de la fecha, sin candados que nos bloqueen
     @CreationTimestamp
     @Column(name = "fecha", updatable = false)
     private LocalDateTime fecha;
@@ -24,6 +24,7 @@ public class Venta {
     @Column(name = "id_usuario", nullable = false)
     private int idUsuario = 1;
 
+    // Nuestra columna clave para que cuadre la caja
     @Column(name = "total")
     private Double total;
 
@@ -37,7 +38,6 @@ public class Venta {
     public int getIdVenta() { return idVenta; }
     public void setIdVenta(int idVenta) { this.idVenta = idVenta; }
 
-    // devuelven e insertan LocalDateTime correctamente
     public LocalDateTime getFecha() { return fecha; }
     public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 

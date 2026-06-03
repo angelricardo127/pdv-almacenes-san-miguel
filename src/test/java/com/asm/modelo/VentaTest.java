@@ -1,7 +1,7 @@
 package com.asm.modelo;
 
 import org.junit.jupiter.api.Test;
-import java.util.Date;
+import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VentaTest {
@@ -10,7 +10,7 @@ public class VentaTest {
     public void testConstructorVacioYSetters() {
         // Arrange
         Venta venta = new Venta();
-        Date fechaActual = new Date();
+        LocalDateTime fechaActual = LocalDateTime.now();
 
         // Act
         venta.setIdVenta(150);
@@ -34,5 +34,4 @@ public class VentaTest {
         assertEquals(0, venta.getIdVenta());
         assertNull(venta.getFecha());
     }
-
 }

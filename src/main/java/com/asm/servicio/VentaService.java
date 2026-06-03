@@ -17,12 +17,6 @@ public class VentaService {
         this.sessionFactory = sessionFactory;
     }
 
-    /**
-     * Procesa una venta completa: valida stock, descuenta inventario y guarda los tickets.
-     * @param idMetodoPago ID del método de pago (Efectivo, Tarjeta, etc.)
-     * @param carrito Lista de detalles transaccionales que se quieren vender
-     * @return boolean true si la venta fue exitosa
-     */
     public boolean registrarVentaCompleta(int idMetodoPago, List<DetalleVenta> carrito) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
@@ -30,54 +24,43 @@ public class VentaService {
         try {
             transaction = session.beginTransaction();
 
-            // 1. Calcular el total de la venta recorriendo el carrito
             double totalCompra = 0.0;
             for (DetalleVenta detalle : carrito) {
                 totalCompra += (detalle.getCantidad() * detalle.getPrecioUnitario());
             }
 
-            // 2. Crear y guardar la cabecera de la venta
             Venta venta = new Venta(idMetodoPago);
-            venta.setTotal(totalCompra); // Inyectamos el total para evitar el NULL en la base de datos
+            venta.setTotal(totalCompra);
 
-            // Vincular la venta al usuario que tiene la sesión activa
             if (com.asm.modelo.SesionGlobal.getUsuarioActual() != null) {
                 venta.setIdUsuario(com.asm.modelo.SesionGlobal.getUsuarioActual().getIdUsuario());
             }
 
             session.persist(venta);
-            session.flush(); // Forzar a MySQL a darnos el id_venta autoincrementable
+            session.flush();
 
-            // 3. Procesar cada artículo del carrito virtual
             for (DetalleVenta detalle : carrito) {
-                // Consultar el estado actual del producto en la BD
                 Producto producto = session.get(Producto.class, detalle.getIdProducto());
 
                 if (producto == null) {
                     throw new RuntimeException("Error: El producto con ID " + detalle.getIdProducto() + " no existe.");
                 }
 
-                // EXCEPCIÓN E-1: Validar si hay suficiente stock disponible
                 if (producto.getStock() < detalle.getCantidad()) {
-                    throw new RuntimeException("Stock insuficiente para: " + producto.getNombreProducto()
-                            + " (Disponibles: " + producto.getStock() + ")");
+                    throw new RuntimeException("Stock insuficiente para: " + producto.getNombreProducto());
                 }
 
-                // RF-20: Descontar de forma automática el inventario
                 producto.setStock(producto.getStock() - detalle.getCantidad());
                 session.merge(producto);
 
-                // Vincular el detalle con el ID de la venta que acabamos de registrar
                 detalle.setIdVenta(venta.getIdVenta());
                 session.persist(detalle);
             }
 
-            // Si todo salió bien, guardamos los cambios de manera definitiva
             transaction.commit();
             return true;
 
         } catch (Exception e) {
-            // Si algo falla (ej. stock insuficiente), deshacemos todo para no dejar datos corruptos
             if (transaction != null) {
                 transaction.rollback();
             }
@@ -88,10 +71,6 @@ public class VentaService {
         }
     }
 
-    /**
-     * Recupera el historial completo de ventas registradas en la base de datos.
-     * @return Lista de ventas para mostrar en los reportes
-     */
     public List<Venta> obtenerHistorialVentas() {
         Session session = sessionFactory.openSession();
         try {
@@ -104,10 +83,6 @@ public class VentaService {
         }
     }
 
-    /**
-     * Recupera el catálogo completo de productos desde la base de datos.
-     * @return Lista de productos disponibles para vender
-     */
     public List<Producto> obtenerProductos() {
         Session session = sessionFactory.openSession();
         try {
@@ -120,19 +95,17 @@ public class VentaService {
         }
     }
 
-    // Método alternativo de registro
-    public void registrarVenta(Map<Integer, Integer> carrito, double totalVenta) {
+    // 🔥 MÉTODO CORREGIDO: Ahora recibe idMetodoPago y guarda el total
+    public void registrarVenta(Map<Integer, Integer> carrito, double totalVenta, int idMetodoPago) {
         Session session = sessionFactory.openSession();
         Transaction tx = null;
 
         try {
             tx = session.beginTransaction();
 
-            // 1. Crear el registro principal de la Venta
             Venta nuevaVenta = new Venta();
-            // Nota: La fecha se genera sola gracias al @CreationTimestamp en tu clase Venta
-            nuevaVenta.setIdMetodoPago(1); // Asignamos 1 por defecto (Efectivo)
-            nuevaVenta.setTotal(totalVenta); // Inyectamos el total calculado
+            nuevaVenta.setIdMetodoPago(idMetodoPago);
+            nuevaVenta.setTotal(totalVenta);
 
             if (com.asm.modelo.SesionGlobal.getUsuarioActual() != null) {
                 nuevaVenta.setIdUsuario(com.asm.modelo.SesionGlobal.getUsuarioActual().getIdUsuario());
@@ -141,7 +114,6 @@ public class VentaService {
             session.persist(nuevaVenta);
             session.flush();
 
-            // 2. Recorrer el carrito para descontar stock y crear los detalles
             for (Map.Entry<Integer, Integer> entry : carrito.entrySet()) {
                 int idProducto = entry.getKey();
                 int cantidadVendida = entry.getValue();
@@ -149,12 +121,10 @@ public class VentaService {
                 Producto producto = session.get(Producto.class, idProducto);
 
                 if (producto != null) {
-                    // --- A) DESCONTAR STOCK ---
                     int nuevoStock = producto.getStock() - cantidadVendida;
                     producto.setStock(nuevoStock);
                     session.merge(producto);
 
-                    // --- B) GUARDAR EL DETALLE HISTÓRICO ---
                     DetalleVenta detalle = new DetalleVenta();
                     detalle.setIdVenta(nuevaVenta.getIdVenta());
                     detalle.setIdProducto(producto.getIdProducto());
@@ -177,7 +147,6 @@ public class VentaService {
         }
     }
 
-    // 1. Buscar la venta principal
     public Venta obtenerVentaPorId(int idVenta) {
         Session session = sessionFactory.openSession();
         Venta v = session.get(Venta.class, idVenta);
@@ -185,7 +154,6 @@ public class VentaService {
         return v;
     }
 
-    // 2. Buscar los detalles (qué productos compró en esa venta)
     public java.util.List<DetalleVenta> obtenerDetallesPorVenta(int idVenta) {
         Session session = sessionFactory.openSession();
         java.util.List<DetalleVenta> detalles = session.createQuery("FROM DetalleVenta WHERE idVenta = :id", DetalleVenta.class)
@@ -195,11 +163,35 @@ public class VentaService {
         return detalles;
     }
 
-    // 3. Buscar el producto individual para armar el ticket
     public Producto obtenerProductoPorId(int idProducto) {
         Session session = sessionFactory.openSession();
         Producto p = session.get(Producto.class, idProducto);
         session.close();
         return p;
+    }
+
+    // 🔥 NUESTRO MÉTODO PARA CUADRAR LA CAJA (VERSIÓN BLINDADA CON LOCALDATETIME)
+    public double obtenerSumaVentasDelDia(int idMetodoPago) {
+        Session session = sessionFactory.openSession();
+        try {
+            // Replicamos el éxito de Reportes: Creamos el rango del día actual
+            java.time.LocalDateTime inicioDia = java.time.LocalDate.now().atStartOfDay();
+            java.time.LocalDateTime finDia = java.time.LocalDate.now().atTime(java.time.LocalTime.MAX);
+
+            String hql = "SELECT SUM(v.total) FROM Venta v WHERE v.idMetodoPago = :metodo AND v.fecha >= :inicio AND v.fecha <= :fin";
+
+            Double suma = session.createQuery(hql, Double.class)
+                    .setParameter("metodo", idMetodoPago)
+                    .setParameter("inicio", inicioDia)
+                    .setParameter("fin", finDia)
+                    .uniqueResult();
+
+            return suma != null ? suma : 0.0;
+        } catch (Exception e) {
+            System.err.println("❌ Error al sumar ventas del día: " + e.getMessage());
+            return 0.0;
+        } finally {
+            session.close();
+        }
     }
 }
