@@ -30,7 +30,7 @@ public class LoginController {
         try {
             // 1. Configuramos Hibernate mapeando correctamente las clases
             Configuration configuration = new Configuration();
-            configuration.configure("/com/asm/vista/hibernate.cfg.xml");
+            configuration.configure("com/asm/vista/hibernate.cfg.xml");
             configuration.addAnnotatedClass(com.asm.modelo.Usuario.class);
             configuration.addAnnotatedClass(com.asm.modelo.Rol.class);
 

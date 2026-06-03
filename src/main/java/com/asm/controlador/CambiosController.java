@@ -245,12 +245,18 @@ public class CambiosController {
         HBox.setHgrow(btnConfirmar, Priority.ALWAYS);
 
         // ====================================================================
-        //  LA LÓGICA DE DEVOLUCIÓN (NUEVA CONEXIÓN AL TICKET MODAL)
+        //  LA LÓGICA DE DEVOLUCIÓN (NUEVA CONEXIÓN AL TICKET MODAL Y ALERTAS)
         // ====================================================================
         btnConfirmar.setOnAction(e -> {
             String motivo = txtMotivo.getText();
+
+            // 1. Candado Visual del Motivo
             if (motivo == null || motivo.trim().isEmpty()) {
-                System.err.println(" Debe escribir un motivo para la devolución.");
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                alerta.setTitle("Motivo Requerido");
+                alerta.setHeaderText(null);
+                alerta.setContentText("Por favor, escriba el motivo de la devolución en la caja de texto.");
+                alerta.showAndWait();
                 return;
             }
 
@@ -275,10 +281,15 @@ public class CambiosController {
                 }
             }
 
+            // 2. Candado Visual de Producto Seleccionado
             if (!seDevolvioAlgo) {
-                System.err.println(" Seleccione al menos un producto de la lista.");
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                alerta.setTitle("Producto no seleccionado");
+                alerta.setHeaderText(null);
+                alerta.setContentText("Debe marcar la casilla de al menos un producto de la lista para poder devolverlo.");
+                alerta.showAndWait();
             } else {
-                System.out.println(" ¡Proceso de devolución completado exitosamente en BD!");
+                System.out.println("🎉 ¡Proceso de devolución completado exitosamente en BD!");
 
                 // Levantamos la ventana del ticket elegante
                 try {
