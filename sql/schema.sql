@@ -38,6 +38,14 @@ CREATE TABLE rol (
     nombre_rol VARCHAR(50) NOT NULL
 );
 
+-- 2. Limpiamos la tabla por si tienes roles revueltos o con IDs equivocados (Opcional)
+-- TRUNCATE TABLE rol;
+
+-- 3. Insertamos los roles EXACTOS que tu código Java está esperando:
+INSERT INTO rol (id_rol, nombre_rol) VALUES (1, 'Administrador');
+INSERT INTO rol (id_rol, nombre_rol) VALUES (2, 'Cajero');
+INSERT INTO rol (id_rol, nombre_rol) VALUES (3, 'Almacenista');
+
 -- tabla cliente 
 CREATE TABLE cliente (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
@@ -161,3 +169,45 @@ VALUES ('admin', 'admin123', 'Jefferson', 'Gutierritos', 1);
 INSERT INTO productos (nombre_product, stock, precio, id_talla, id_genero) 
 VALUES ('Playera Tipo Polo Diaria', 50, 250.00, 2, 3);
 
+INSERT INTO productos (nombre_product, stock, precio, id_talla, id_genero) 
+VALUES ('Pantalon Gala Hombre', 50, 450.00, 4, 4);
+
+SELECT * FROM almacenes_san_miguel.productos;
+
+ALTER TABLE productos ADD COLUMN activo BOOLEAN DEFAULT 1;
+UPDATE productos SET activo = 1;
+SET SQL_SAFE_UPDATES = 0;
+UPDATE productos SET activo = 1;
+SET SQL_SAFE_UPDATES = 1;
+
+use almacenes_san_miguel
+
+-- tabla devolución tiene el historial de retornos, depende de venta y productos
+CREATE TABLE devolucion (
+    id_devolucion INT AUTO_INCREMENT PRIMARY KEY,
+    id_ventaOriginal INT NOT NULL,
+    id_producto INT NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    motivo VARCHAR(255) NOT NULL,
+    monto_retornado DECIMAL(10,2) NOT NULL,
+    
+    CONSTRAINT fk_devolucion_venta
+        FOREIGN KEY (id_ventaOriginal) REFERENCES venta(id_venta),
+    CONSTRAINT fk_devolucion_producto
+        FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+);
+
+-- 1. Apagamos los seguros temporalmente
+SET SQL_SAFE_UPDATES = 0;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 2. Agregamos la columna a la tabla de ventas
+ALTER TABLE venta ADD COLUMN id_usuario INT NOT NULL DEFAULT 1;
+
+-- 3. Creamos la relación (llave foránea)
+ALTER TABLE venta ADD CONSTRAINT fk_ventas_usuario 
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario);
+
+-- 4. Volvemos a encender los seguros
+SET FOREIGN_KEY_CHECKS = 1;
+SET SQL_SAFE_UPDATES = 1;

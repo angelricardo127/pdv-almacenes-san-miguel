@@ -30,7 +30,7 @@ public class LoginController {
         try {
             // 1. Configuramos Hibernate mapeando correctamente las clases
             Configuration configuration = new Configuration();
-            configuration.configure("/com/asm/vista/hibernate.cfg.xml");
+            configuration.configure("com/asm/vista/hibernate.cfg.xml");
             configuration.addAnnotatedClass(com.asm.modelo.Usuario.class);
             configuration.addAnnotatedClass(com.asm.modelo.Rol.class);
 
@@ -38,7 +38,7 @@ public class LoginController {
             this.usuarioService = new UsuarioService(factory);
 
         } catch (Exception e) {
-            System.err.println("❌ Error crítico al inicializar Hibernate en el Login: " + e.getMessage());
+            System.err.println(" Error crítico al inicializar Hibernate en el Login: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -55,32 +55,37 @@ public class LoginController {
         }
 
         if (user.isEmpty() || pass.isEmpty()) {
-            System.out.println("⚠️ Por favor, llena ambos campos.");
+            System.out.println(" Por favor, llena ambos campos.");
             if (lblError != null) lblError.setText("Por favor, llena ambos campos.");
             return;
         }
 
-        System.out.println("⏳ Validando credenciales de [" + user + "] en MySQL...");
+        System.out.println(" Validando credenciales de [" + user + "] en MySQL...");
 
         try {
-            // Usamos el método detallado que lanza las excepciones precisas
+            // usamos el metodo detallado que lanza las excepciones precisas
             Usuario usuarioValidado = usuarioService.validarUsuarioDetallado(user, pass);
 
-            // Si llegamos a esta línea, el login fue exitoso
-            System.out.println("✅ ¡Bienvenido " + usuarioValidado.getNombre() + "! Acceso concedido.");
+            // si llegamos a esta línea, el login fue exitoso
+            System.out.println(" ¡Bienvenido " + usuarioValidado.getNombre() + "! Acceso concedido.");
+
+            // 1 primero Guardamos la sesión usando la variable usuario validado
+            com.asm.modelo.SesionGlobal.setUsuarioActual(usuarioValidado);
+
+            // 2 segundo abrimos la ventana, así el Dashboard ya podrá leer el rol
             abrirSistemaPrincipal();
 
         } catch (Exception e) {
-            // Si algo falló en MySQL (usuario no existe, contraseña mal, inactivo) lo atrapamos aquí
-            System.out.println("❌ Error de login: " + e.getMessage());
+            // si algo fallo en MySQL (usuario no existe, contraseña mal, inactivo) lo atrapamos aquí
+            System.out.println(" Error de login: " + e.getMessage());
 
-            // Le pintamos el texto rojo exacto al usuario en pantalla
+            // le pintamos el texto rojo exacto al usuario en pantalla
             if (lblError != null) {
                 lblError.setText(e.getMessage());
             }
 
             txtPassword.clear();
-            // Mantenemos tu alerta visual del borde rojo
+            // mantenemos tu alerta visual del borde rojo
             txtPassword.setStyle("-fx-background-color: white; -fx-border-color: red; -fx-border-radius: 6; -fx-background-radius: 6;");
         }
     }
@@ -104,7 +109,7 @@ public class LoginController {
             loginStage.close();
 
         } catch (Exception e) {
-            System.err.println("❌ Error al abrir el sistema principal: " + e.getMessage());
+            System.err.println(" Error al abrir el sistema principal: " + e.getMessage());
             e.printStackTrace();
         }
     }

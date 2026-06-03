@@ -18,11 +18,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import com.asm.modelo.DetalleTicketPreview;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class CambiosController {
 
-    @FXML private Label lblFechaActual;
+    // Cambiamos lblFechaActual por lblBienvenida para conectar con la vista corregida
+    @FXML private Label lblBienvenida;
     @FXML private ListView<TicketPreview> listaTickets;
     @FXML private VBox panelDetalle;
 
@@ -31,6 +35,18 @@ public class CambiosController {
     @FXML
     public void initialize() {
         System.out.println("Módulo de Cambios y Devoluciones iniciado.");
+
+        // --- LÓGICA DE SESIÓN Y FECHA ---
+        String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+
+        if (lblBienvenida != null && usuarioLogueado != null) {
+            lblBienvenida.setText("Usuario activo: " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno() + " - " + fechaHoy);
+        } else if (lblBienvenida != null) {
+            lblBienvenida.setText("Usuario activo - " + fechaHoy);
+        }
+        // --------------------------------
+
         configurarDisenoLista();
 
         // 1. Configuramos Hibernate igual que en el módulo de Inventario
@@ -165,7 +181,7 @@ public class CambiosController {
         VBox listaProductosUI = new VBox(10);
         List<DetalleTicketPreview> productos = servicio.obtenerDetallesVenta(ticket.getNumeroTicket());
 
-        // MAPA MÁGICO: Aquí guardaremos la relación entre el CheckBox visual y los datos del producto
+        // MAPA MÁGICO: Guarda la relación entre CheckBox visual y producto
         java.util.Map<CheckBox, DetalleTicketPreview> mapaSeleccion = new java.util.HashMap<>();
 
         if(productos != null) {
@@ -177,8 +193,7 @@ public class CambiosController {
                 CheckBox chkBox = new CheckBox();
                 chkBox.setStyle("-fx-scale-x: 1.3; -fx-scale-y: 1.3; -fx-cursor: hand;");
 
-            // Guardamos este checkbox y su producto en el mapa
-            mapaSeleccion.put(chkBox, prod);
+                mapaSeleccion.put(chkBox, prod);
 
                 Label icono = new Label("📦");
                 icono.setStyle("-fx-font-size: 24px;");
@@ -224,17 +239,24 @@ public class CambiosController {
             panelDetalle.setAlignment(Pos.CENTER);
         });
 
-        Button btnConfirmar = new Button("Confirmar Devolución");
+        Button btnConfirmar = new Button("Confirmar Devolución (F10)");
         btnConfirmar.setStyle("-fx-background-color: #20C997; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 6; -fx-padding: 12 20; -fx-cursor: hand;");
         btnConfirmar.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnConfirmar, Priority.ALWAYS);
 
-        // LA LÓGICA DE DEVOLUCIÓN
+        // ====================================================================
+        // 🔥 LA LÓGICA DE DEVOLUCIÓN (NUEVA CONEXIÓN AL TICKET MODAL)
+        // ====================================================================
         btnConfirmar.setOnAction(e -> {
             String motivo = txtMotivo.getText();
+
+            // 1. Candado Visual del Motivo
             if (motivo == null || motivo.trim().isEmpty()) {
-                System.err.println("⚠️ Debe escribir un motivo para la devolución.");
-                // Aquí en el futuro puedes poner una alerta visual (Dialog)
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                alerta.setTitle("Motivo Requerido");
+                alerta.setHeaderText(null);
+                alerta.setContentText("Por favor, escriba el motivo de la devolución en la caja de texto.");
+                alerta.showAndWait();
                 return;
             }
 
@@ -259,8 +281,13 @@ public class CambiosController {
                 }
             }
 
+            // 2. Candado Visual de Producto Seleccionado
             if (!seDevolvioAlgo) {
-                System.err.println("⚠️ Seleccione al menos un producto de la lista.");
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                alerta.setTitle("Producto no seleccionado");
+                alerta.setHeaderText(null);
+                alerta.setContentText("Debe marcar la casilla de al menos un producto de la lista para poder devolverlo.");
+                alerta.showAndWait();
             } else {
                 System.out.println("🎉 ¡Proceso de devolución completado exitosamente en BD!");
 
@@ -306,7 +333,7 @@ public class CambiosController {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/asm/vista/FormularioCambio.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            // --- ESTO ES LO NUEVO: Le pasamos el túnel de MySQL a la ventana flotante ---
+            // Pasamos el túnel de MySQL al asistente de cambios
             FormularioCambioController asistente = loader.getController();
             asistente.setServicio(this.servicio);
 

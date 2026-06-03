@@ -69,10 +69,11 @@
 
                 <VBox>
                     <children>
-                        <Label text="👤 Roberto Sánchez P..." textFill="WHITE">
+                        <Label fx:id="lblNombreUsuario" text="👤 Cargando..." textFill="WHITE">
                             <font><Font name="System Bold" size="12.0" /></font>
                         </Label>
-                        <Label text="Administrador" textFill="#9ca3af">
+
+                        <Label fx:id="lblRolUsuario" text="Cargando..." textFill="#9ca3af">
                             <font><Font size="11.0" /></font>
                             <padding><Insets left="20.0" /></padding>
                         </Label>
