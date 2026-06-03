@@ -216,7 +216,7 @@ public class CambiosController {
             }
         }
 
-        // 5. Motivo del Cambio/Devolución
+        // Motivo del Cambio/Devolución
         Label lblMotivo = new Label("Motivo del Cambio/Devolución *");
         lblMotivo.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0F172A;");
         TextArea txtMotivo = new TextArea();
@@ -224,7 +224,7 @@ public class CambiosController {
         txtMotivo.setPrefRowCount(3);
         txtMotivo.setStyle("-fx-border-color: #CBD5E1; -fx-border-radius: 5; -fx-font-family: 'Segoe UI';");
 
-        // 6. Botones de Acción
+        // Botones de Acción
         HBox cajaBotones = new HBox(15);
         Button btnCancelar = new Button("Cancelar");
         btnCancelar.setStyle("-fx-background-color: white; -fx-border-color: #94A3B8; -fx-border-radius: 6; -fx-padding: 12 20; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-cursor: hand;");
