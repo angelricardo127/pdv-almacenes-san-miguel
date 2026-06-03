@@ -30,12 +30,25 @@ public class VentaService {
         try {
             transaction = session.beginTransaction();
 
-            // 1. Crear y guardar la cabecera de la venta
+            // 1. Calcular el total de la venta recorriendo el carrito
+            double totalCompra = 0.0;
+            for (DetalleVenta detalle : carrito) {
+                totalCompra += (detalle.getCantidad() * detalle.getPrecioUnitario());
+            }
+
+            // 2. Crear y guardar la cabecera de la venta
             Venta venta = new Venta(idMetodoPago);
+            venta.setTotal(totalCompra); // Inyectamos el total para evitar el NULL en la base de datos
+
+            // Vincular la venta al usuario que tiene la sesión activa
+            if (com.asm.modelo.SesionGlobal.getUsuarioActual() != null) {
+                venta.setIdUsuario(com.asm.modelo.SesionGlobal.getUsuarioActual().getIdUsuario());
+            }
+
             session.persist(venta);
             session.flush(); // Forzar a MySQL a darnos el id_venta autoincrementable
 
-            // 2. Procesar cada artículo del carrito virtual
+            // 3. Procesar cada artículo del carrito virtual
             for (DetalleVenta detalle : carrito) {
                 // Consultar el estado actual del producto en la BD
                 Producto producto = session.get(Producto.class, detalle.getIdProducto());
@@ -74,6 +87,7 @@ public class VentaService {
             session.close();
         }
     }
+
     /**
      * Recupera el historial completo de ventas registradas en la base de datos.
      * @return Lista de ventas para mostrar en los reportes
@@ -81,16 +95,15 @@ public class VentaService {
     public List<Venta> obtenerHistorialVentas() {
         Session session = sessionFactory.openSession();
         try {
-            // HQL (Hibernate Query Language): Le pedimos los objetos Venta directamente
             return session.createQuery("FROM Venta", Venta.class).list();
         } catch (Exception e) {
             System.err.println("Error al obtener el historial de ventas: " + e.getMessage());
-            // Si algo falla, devolvemos una lista vacía para que no explote la pantalla
             return java.util.Collections.emptyList();
         } finally {
             session.close();
         }
     }
+
     /**
      * Recupera el catálogo completo de productos desde la base de datos.
      * @return Lista de productos disponibles para vender
@@ -98,7 +111,6 @@ public class VentaService {
     public List<Producto> obtenerProductos() {
         Session session = sessionFactory.openSession();
         try {
-            // HQL: Le pedimos todos los productos de la base de datos
             return session.createQuery("FROM Producto", Producto.class).list();
         } catch (Exception e) {
             System.err.println("Error al obtener el catálogo de productos: " + e.getMessage());
@@ -106,8 +118,9 @@ public class VentaService {
         } finally {
             session.close();
         }
-
     }
+
+    // Método alternativo de registro
     public void registrarVenta(Map<Integer, Integer> carrito, double totalVenta) {
         Session session = sessionFactory.openSession();
         Transaction tx = null;
@@ -117,11 +130,16 @@ public class VentaService {
 
             // 1. Crear el registro principal de la Venta
             Venta nuevaVenta = new Venta();
-            nuevaVenta.setFecha(new java.util.Date());
+            // Nota: La fecha se genera sola gracias al @CreationTimestamp en tu clase Venta
             nuevaVenta.setIdMetodoPago(1); // Asignamos 1 por defecto (Efectivo)
+            nuevaVenta.setTotal(totalVenta); // Inyectamos el total calculado
+
+            if (com.asm.modelo.SesionGlobal.getUsuarioActual() != null) {
+                nuevaVenta.setIdUsuario(com.asm.modelo.SesionGlobal.getUsuarioActual().getIdUsuario());
+            }
 
             session.persist(nuevaVenta);
-            session.flush(); // Obligamos a MySQL a generar el ID de la venta en este instante
+            session.flush();
 
             // 2. Recorrer el carrito para descontar stock y crear los detalles
             for (Map.Entry<Integer, Integer> entry : carrito.entrySet()) {
@@ -138,7 +156,6 @@ public class VentaService {
 
                     // --- B) GUARDAR EL DETALLE HISTÓRICO ---
                     DetalleVenta detalle = new DetalleVenta();
-                    // Usamos los IDs enteros tal como los declaraste en tu modelo
                     detalle.setIdVenta(nuevaVenta.getIdVenta());
                     detalle.setIdProducto(producto.getIdProducto());
                     detalle.setCantidad(cantidadVendida);
@@ -149,16 +166,17 @@ public class VentaService {
             }
 
             tx.commit();
-            System.out.println("💾 Transacción exitosa: Venta registrada y stock actualizado en MySQL.");
+            System.out.println("Transacción exitosa: Venta registrada y stock actualizado en MySQL.");
 
         } catch (Exception e) {
             if (tx != null) tx.rollback();
-            System.err.println("❌ Error crítico al registrar la venta: " + e.getMessage());
+            System.err.println("Error crítico al registrar la venta: " + e.getMessage());
             e.printStackTrace();
         } finally {
             session.close();
         }
     }
+
     // 1. Buscar la venta principal
     public Venta obtenerVentaPorId(int idVenta) {
         Session session = sessionFactory.openSession();
@@ -184,5 +202,4 @@ public class VentaService {
         session.close();
         return p;
     }
-
 }

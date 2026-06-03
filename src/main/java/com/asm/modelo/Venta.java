@@ -1,8 +1,8 @@
 package com.asm.modelo;
 
 import jakarta.persistence.*;
-import java.util.Date;
-import java.util.List;
+import org.hibernate.annotations.CreationTimestamp; // Importación faltante
+import java.time.LocalDateTime;                     // Importación faltante
 
 @Entity
 @Table(name = "venta")
@@ -13,9 +13,10 @@ public class Venta {
     @Column(name = "id_venta")
     private int idVenta;
 
-    @Column(name = "fecha", insertable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fecha;
+    // Hibernate se encargará automáticamente de poner la fecha y hora exacta
+    @CreationTimestamp
+    @Column(name = "fecha", updatable = false)
+    private LocalDateTime fecha;
 
     @Column(name = "id_metodo_pago", nullable = false)
     private int idMetodoPago;
@@ -23,7 +24,6 @@ public class Venta {
     @Column(name = "id_usuario", nullable = false)
     private int idUsuario = 1;
 
-    //  La columna que agregamos a la BD
     @Column(name = "total")
     private Double total;
 
@@ -33,11 +33,14 @@ public class Venta {
         this.idMetodoPago = idMetodoPago;
     }
 
-    // Getters y Setters
+    // --- Getters y Setters ---
     public int getIdVenta() { return idVenta; }
     public void setIdVenta(int idVenta) { this.idVenta = idVenta; }
-    public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
+
+    // devuelven e insertan LocalDateTime correctamente
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+
     public int getIdMetodoPago() { return idMetodoPago; }
     public void setIdMetodoPago(int idMetodoPago) { this.idMetodoPago = idMetodoPago; }
     public int getIdUsuario() { return idUsuario; }
