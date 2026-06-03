@@ -12,7 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField; // Importamos el TextField
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import org.hibernate.SessionFactory;
@@ -20,17 +20,11 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.List;
 
-/**
- * Controlador principal del Módulo de Inventario.
- * Se encarga de gestionar la vista de la tabla de productos, conectar con la base de datos
- * a través de Hibernate y manejar la apertura de ventanas secundarias (como el registro).
- */
 public class InventarioController {
 
-    // ---inyeccion de componentes fxml
-    @FXML private TextField txtBuscador; // 🔍 AQUI DECLARAMOS TU BARRA DE BÚSQUEDA
     // --- inyeccion de componentes fxml
-    @FXML private Label lblBienvenida; // <-- AQUÍ DECLARAMOS EL LABEL DEL SALUDO
+    @FXML private TextField txtBuscador;
+    @FXML private Label lblBienvenida;
     @FXML private TableView<Producto> tablaInventario;
     @FXML private TableColumn<Producto, String> colSku;
     @FXML private TableColumn<Producto, String> colProducto;
@@ -44,13 +38,16 @@ public class InventarioController {
 
     // --- servicios y estado de la vista
     private InventarioService servicio;
-    private ObservableList<Producto> listaProductos;
+
+    // 💡 SOLUCIÓN: Instanciamos las listas desde el principio a nivel de clase
+    private ObservableList<Producto> listaProductos = FXCollections.observableArrayList();
+    private FilteredList<Producto> productosFiltrados;
 
     @FXML
     public void initialize() {
         System.out.println("Iniciando el Módulo de Inventario");
 
-        // --- INICIO: LÓGICA PARA ACTUALIZAR EL NOMBRE Y FECHA ---
+        // --- LÓGICA DEL NOMBRE Y FECHA (Intacta) ---
         String fechaHoy = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new java.util.Locale("es", "ES")));
         com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
 
@@ -59,11 +56,10 @@ public class InventarioController {
         } else if (lblBienvenida != null) {
             lblBienvenida.setText("Bienvenido • " + fechaHoy);
         }
-        // --- FIN: LÓGICA DEL NOMBRE ---
 
         try {
             Configuration configuration = new Configuration();
-            configuration.configure("com/asm/vista/hibernate.cfg.xml"); // lee credenciales y URL
+            configuration.configure("com/asm/vista/hibernate.cfg.xml");
 
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);
             configuration.addAnnotatedClass(com.asm.modelo.Talla.class);
@@ -73,11 +69,56 @@ public class InventarioController {
             servicio = new InventarioService(factory);
 
             configurarColumnas();
+
+            // 💡 SOLUCIÓN: Configuramos el buscador una sola vez al arrancar
+            configurarBuscador();
+
             cargarDatosEnTabla();
 
         } catch (Exception e) {
             System.err.println("Error al cargar el Inventario: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    // 💡 NUEVO MÉTODO: Separa la lógica del buscador para que no se rompa al refrescar
+    private void configurarBuscador() {
+        productosFiltrados = new FilteredList<>(listaProductos, b -> true);
+
+        if (txtBuscador != null) {
+            txtBuscador.textProperty().addListener((observable, oldValue, newValue) -> {
+                productosFiltrados.setPredicate(producto -> {
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+                    String busqueda = newValue.toLowerCase();
+
+                    if (producto.getNombreProducto().toLowerCase().contains(busqueda)) {
+                        return true;
+                    } else if (producto.getSku() != null && producto.getSku().toLowerCase().contains(busqueda)) {
+                        return true;
+                    }
+                    return false;
+                });
+            });
+        }
+
+        SortedList<Producto> productosOrdenados = new SortedList<>(productosFiltrados);
+        productosOrdenados.comparatorProperty().bind(tablaInventario.comparatorProperty());
+        tablaInventario.setItems(productosOrdenados);
+    }
+
+    public void cargarDatosEnTabla() {
+        List<Producto> productosBD = servicio.obtenerCatalogoCompleto();
+
+        if (productosBD == null) {
+            System.out.println(" Módulo Inventario: ¡La lista que regresó Hibernate es NULL!");
+        } else {
+            System.out.println(" Módulo Inventario: Hibernate encontró " + productosBD.size() + " productos en MySQL.");
+
+            // 💡 SOLUCIÓN: Solo reemplazamos los datos internos de la lista.
+            // El buscador ya está conectado a esta lista desde el initialize, así que reaccionará automáticamente.
+            listaProductos.setAll(productosBD);
         }
     }
 
@@ -166,58 +207,6 @@ public class InventarioController {
                 }
             }
         });
-    }
-
-    public void cargarDatosEnTabla() {
-        List<Producto> productosBD = servicio.obtenerCatalogoCompleto();
-
-        if (productosBD == null) {
-            System.out.println(" Módulo Inventario: ¡La lista que regresó Hibernate es NULL!");
-        } else {
-            System.out.println(" Módulo Inventario: Hibernate encontró " + productosBD.size() + " productos en MySQL.");
-
-            listaProductos = FXCollections.observableArrayList(productosBD);
-
-            // 🔎 MAGIA DEL BUSCADOR EN TIEMPO REAL
-            if (txtBuscador != null) {
-                // 1. Envolvemos nuestra lista original en una lista filtrable
-                FilteredList<Producto> productosFiltrados = new FilteredList<>(listaProductos, b -> true);
-
-                // 2. Escuchamos cada vez que cambia el texto en la barra de búsqueda
-                txtBuscador.textProperty().addListener((observable, oldValue, newValue) -> {
-                    productosFiltrados.setPredicate(producto -> {
-                        // Si la barra está vacía, mostramos todo
-                        if (newValue == null || newValue.isEmpty()) {
-                            return true;
-                        }
-
-                        String busqueda = newValue.toLowerCase();
-
-                        // Buscamos por Nombre (Ej. "Playera") o por SKU (Ej. "PROD-001")
-                        if (producto.getNombreProducto().toLowerCase().contains(busqueda)) {
-                            return true;
-                        } else if (producto.getSku() != null && producto.getSku().toLowerCase().contains(busqueda)) {
-                            return true;
-                        }
-
-                        return false; // No hubo coincidencia
-                    });
-                });
-
-                // 3. Envolvemos la lista filtrada en una lista ordenable (por si el usuario da clic en las cabeceras de la tabla)
-                SortedList<Producto> productosOrdenados = new SortedList<>(productosFiltrados);
-
-                // 4. Conectamos la lista ordenable con la tabla visual
-                productosOrdenados.comparatorProperty().bind(tablaInventario.comparatorProperty());
-
-                // 5. Metemos finalmente los datos a la tabla
-                tablaInventario.setItems(productosOrdenados);
-
-            } else {
-                // Si por alguna razón olvidaste ponerle el ID al txtBuscador en el FXML, cargamos normal
-                tablaInventario.setItems(listaProductos);
-            }
-        }
     }
 
     @FXML
