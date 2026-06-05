@@ -41,7 +41,7 @@ public class DevolucionesServiceIntegracionTest {
         }
     }
 
-    // 1. PROBAR: obtenerHistorialTickets()
+    // obtenerHistorialTickets()
     @Test
     public void checarObtencionDelHistorialDeTickets() {
         // Ejecutamos el JOIN masivo
@@ -51,7 +51,7 @@ public class DevolucionesServiceIntegracionTest {
         System.out.println("-> Prueba 1 Exitosa: Se armaron " + historial.size() + " vistas previas de tickets usando SQL Nativo.");
     }
 
-    // 2. PROBAR: obtenerDetallesVenta(String idVenta)
+    //  obtenerDetallesVenta(String idVenta)
     @Test
     public void checarObtencionDeDetallesDelTicket() {
         // Consultamos los detalles de la venta ID 1 (como un String, ya que así lo pide tu método)
@@ -61,7 +61,7 @@ public class DevolucionesServiceIntegracionTest {
         System.out.println("-> Prueba 2 Exitosa: El ticket 1 tiene " + detalles.size() + " artículos desglosados.");
     }
 
-    // 3. PROBAR: registrarDevolucion()
+    //  registrarDevolucion()
     @Test
     public void checarRegistroDeDevolucionEnBaseDeDatos() {
         // Vamos a simular que el cliente devolvió la playera (Producto ID 1) del Ticket 1 por un defecto
@@ -70,7 +70,7 @@ public class DevolucionesServiceIntegracionTest {
         String motivo = "Talla incorrecta - Cambio de uniforme";
         double montoRetornado = 180.00;
 
-        // Como el método es 'void', usamos assertDoesNotThrow para garantizar que el INSERT en MySQL no explote
+        // Como el metodo es 'void' usamos assertDoesNotThrow para garantizar que el INSERT en MySQL no explote
         assertDoesNotThrow(() -> {
             devolucionesService.registrarDevolucion(idVenta, idProducto, motivo, montoRetornado);
         }, "Hibernate lanzó una excepción al intentar hacer el INSERT en la tabla devolucion.");

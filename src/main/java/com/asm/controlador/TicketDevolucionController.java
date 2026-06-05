@@ -15,7 +15,7 @@ public class TicketDevolucionController {
     @FXML private Label lblReembolso;
 
     /**
-     * Este es el método clave. La pantalla de devoluciones lo va a llamar
+     * La pantalla de devoluciones lo va a llamar
      * para inyectar los datos reales justo antes de mostrar el ticket.
      */
     public void setDatosTicket(String folioTicket, int cantidadProductos, String motivo, double totalReembolso) {
@@ -27,11 +27,10 @@ public class TicketDevolucionController {
 
     @FXML
     private void imprimirTicket(ActionEvent event) {
-        System.out.println("⏳ Solicitando cuadro de impresión/guardado a Windows...");
+        System.out.println(" Solicitando cuadro de impresión/guardado a Windows...");
         PrinterJob job = PrinterJob.createPrinterJob();
 
         if (job != null) {
-            // 🔥 El truco mágico: pasar 'null' evita que JavaFX bloquee la ventana de Windows
             boolean continuar = job.showPrintDialog(null);
 
             if (continuar) {
@@ -43,15 +42,15 @@ public class TicketDevolucionController {
 
                 if (exito) {
                     job.endJob();
-                    System.out.println("✅ ¡Comprobante guardado/impreso con éxito!");
+                    System.out.println(" ¡Comprobante guardado/impreso con éxito!");
                 } else {
-                    System.err.println("⚠️ Hubo un error al procesar el documento.");
+                    System.err.println(" Hubo un error al procesar el documento.");
                 }
             } else {
-                System.out.println("❌ El usuario cerró la ventana de Windows.");
+                System.out.println(" El usuario cerró la ventana de Windows.");
             }
         } else {
-            System.err.println("⚠️ Cuidado: Windows no detectó ninguna impresora ni generador de PDF instalado.");
+            System.err.println(" Cuidado: Windows no detectó ninguna impresora ni generador de PDF instalado.");
         }
     }
 
@@ -61,6 +60,5 @@ public class TicketDevolucionController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
 
-        // Opcional: Aquí podrías disparar un evento para limpiar el formulario de devoluciones
     }
 }

@@ -35,16 +35,16 @@ public class InventarioServiceIntegracionTest {
         }
     }
 
-    // 1. PROBAR: registrarNuevoProducto()
+    //  registrarNuevoProducto()
     @Test
     public void checarRegistroDeNuevoProducto() {
-        // Creamos un producto de prueba para no ensuciar tu catálogo real
+        // Creamos un producto de prueba para no ensuciar el catálogo real
         Producto nuevoArticulo = new Producto();
         nuevoArticulo.setNombreProducto("Corbata Escolar Prueba");
         nuevoArticulo.setPrecio(85.50);
         nuevoArticulo.setStock(20);
         nuevoArticulo.setActivo(true);
-        //  AGREGAMOS LOS CAMPOS OBLIGATORIOS
+
         nuevoArticulo.setIdTalla(1);
         nuevoArticulo.setIdGenero(1);
 

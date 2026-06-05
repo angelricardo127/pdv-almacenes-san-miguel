@@ -2,7 +2,6 @@ package com.asm.controlador;
 
 import com.asm.modelo.Producto;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -20,6 +19,7 @@ import javafx.print.PrinterJob;
 public class ModalTicketController {
 
     @FXML private Label lblFechaHora;
+    @FXML private Label lblCajeroTicket; // <-- Conectado con el nuevo fx:id del FXML
     @FXML private VBox vboxListaArticulos;
     @FXML private Label lblSubtotalTicket;
     @FXML private Label lblTotalTicket;
@@ -32,19 +32,27 @@ public class ModalTicketController {
 
     @FXML
     public void initialize() {
-        // 1. Poner la fecha y hora actual automáticamente
+        // Poner la fecha y hora actual automáticamente
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
         lblFechaHora.setText(dtf.format(LocalDateTime.now()));
 
-        // 2. Darle función a los botones de cerrar
+        // PONER EL CAJERO REAL AUTOMÁTICAMENTE DESDE LA SESIÓN GLOBAL
+        com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
+        if (lblCajeroTicket != null && usuarioLogueado != null) {
+            lblCajeroTicket.setText(usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidoPaterno());
+        }
+
+        // Darle función a los botones de cerrar
         btnCerrar.setOnAction(event -> cerrarVentana());
         btnCerrarX.setOnAction(event -> cerrarVentana());
 
-        // 3. Simular la impresión
+        // Ejecutar la impresión nativa
         btnGenerarTicket.setOnAction(event -> imprimirTicket());
     }
 
-    // Este método lo llamaremos desde ModalPagoController justo después de confirmar el pago
+    /**
+     * MÉTODO ORIGINAL: Usado por PuntoVentaController y ModalPagoController para Ventas normales.
+     */
     public void cargarDatosTicket(Map<Integer, Integer> cantidades, Map<Integer, Producto> productos,
                                   double total, double recibido, double cambio, String metodoPago) {
 
@@ -54,26 +62,20 @@ public class ModalTicketController {
         lblCambioTicket.setText(String.format("$%.2f", cambio));
         lblMetodoPagoTicket.setText(metodoPago);
 
-        // Limpiamos la lista por si acaso
         vboxListaArticulos.getChildren().clear();
 
-        // Recorremos los productos comprados para dibujarlos en el ticket
         for (Integer id : cantidades.keySet()) {
             Producto p = productos.get(id);
             int cantidad = cantidades.get(id);
             double subtotalProducto = p.getPrecio() * cantidad;
 
-            // Nombre del producto (Ej: Pantalón Gala Hombre)
             Label lblNombre = new Label(p.getNombreProducto());
             lblNombre.setFont(Font.font("Monospaced", 12));
 
-            // Renglón inferior con cantidad y precio (Ej: 1 x $450.00       $450.00)
             HBox renglonDetalle = new HBox();
-
             Label lblCantPrecio = new Label(cantidad + " x " + String.format("$%.2f", p.getPrecio()));
             lblCantPrecio.setFont(Font.font("Monospaced", 12));
 
-            // Un espacio flexible para empujar el total a la derecha
             Region separador = new Region();
             HBox.setHgrow(separador, Priority.ALWAYS);
 
@@ -82,7 +84,6 @@ public class ModalTicketController {
 
             renglonDetalle.getChildren().addAll(lblCantPrecio, separador, lblSubt);
 
-            // Juntamos el nombre y el detalle en un bloque y lo agregamos al ticket
             VBox bloqueProducto = new VBox(lblNombre, renglonDetalle);
             bloqueProducto.setSpacing(2);
 
@@ -90,10 +91,66 @@ public class ModalTicketController {
         }
     }
 
-    private void imprimirTicket() {
-        System.out.println("🖨️ Abriendo cuadro de diálogo de impresión...");
+    /**
+     * NUEVO MÉTODO SOBRECARGADO: Llamado desde FormularioCambioController para cambios de prendas.
+     */
+    public void cargarDatosCambio(String folio, String prendaSale, double precioSale, String prendaNuevo, double precioNuevo, double diferencia) {
 
-        // 1. Ocultamos los botones
+        lblSubtotalTicket.setText(String.format("$%.2f", precioSale));
+        lblTotalTicket.setText(String.format("$%.2f", precioNuevo));
+
+        vboxListaArticulos.getChildren().clear();
+
+        // Renglón del producto que el cliente regresa
+        Label lblSaleNombre = new Label("(-) REGRESA: " + prendaSale);
+        lblSaleNombre.setFont(Font.font("Monospaced", 11));
+        lblSaleNombre.setStyle("-fx-text-fill: #E53E3E;");
+
+        HBox renglonSale = new HBox();
+        Label lblSaleDetalle = new Label("1 x " + String.format("$%.2f", precioSale));
+        lblSaleDetalle.setFont(Font.font("Monospaced", 11));
+        Region sep1 = new Region();
+        HBox.setHgrow(sep1, Priority.ALWAYS);
+        Label lblSaleSub = new Label(String.format("-$%.2f", precioSale));
+        lblSaleSub.setFont(Font.font("Monospaced", 11));
+        renglonSale.getChildren().addAll(lblSaleDetalle, sep1, lblSaleSub);
+
+        // Renglón del producto nuevo que se lleva
+        Label lblNuevoNombre = new Label("(+) SE LLEVA: " + prendaNuevo);
+        lblNuevoNombre.setFont(Font.font("Monospaced", 11));
+        lblNuevoNombre.setStyle("-fx-text-fill: #3182CE;");
+
+        HBox renglonNuevo = new HBox();
+        Label lblNuevoDetalle = new Label("1 x " + String.format("$%.2f", precioNuevo));
+        lblNuevoDetalle.setFont(Font.font("Monospaced", 11));
+        Region sep2 = new Region();
+        HBox.setHgrow(sep2, Priority.ALWAYS);
+        Label lblNuevoSub = new Label(String.format("$%.2f", precioNuevo));
+        lblNuevoSub.setFont(Font.font("Monospaced", 11));
+        renglonNuevo.getChildren().addAll(lblNuevoDetalle, sep2, lblNuevoSub);
+
+        VBox bloqueCambio = new VBox(lblSaleNombre, renglonSale, new Label(" "), lblNuevoNombre, renglonNuevo);
+        bloqueCambio.setSpacing(2);
+        vboxListaArticulos.getChildren().add(bloqueCambio);
+
+        if (diferencia > 0) {
+            lblMetodoPagoTicket.setText("Excedente Cobrado");
+            lblRecibidoTicket.setText(String.format("$%.2f", diferencia));
+            lblCambioTicket.setText("$0.00");
+        } else if (diferencia < 0) {
+            lblMetodoPagoTicket.setText("Saldo Devuelto");
+            lblRecibidoTicket.setText("$0.00");
+            lblCambioTicket.setText(String.format("$%.2f", Math.abs(diferencia)));
+        } else {
+            lblMetodoPagoTicket.setText("Cambio Equivalente");
+            lblRecibidoTicket.setText("$0.00");
+            lblCambioTicket.setText("$0.00");
+        }
+    }
+
+    private void imprimirTicket() {
+        System.out.println("🖨 Abriendo cuadro de diálogo de impresión...");
+
         btnGenerarTicket.setVisible(false);
         btnCerrar.setVisible(false);
         btnCerrarX.setVisible(false);
@@ -101,40 +158,33 @@ public class ModalTicketController {
         PrinterJob job = PrinterJob.createPrinterJob();
 
         if (job != null) {
-            // 2. Aquí está la magia (el null) para que Windows no colapse, pero sin retrasos
-            // 1. Obtenemos la ventana actual del ticket
             javafx.stage.Stage ventanaTicket = (javafx.stage.Stage) btnGenerarTicket.getScene().getWindow();
-
-// 2. Buscamos a la ventana Padre (la que abrió este ticket)
             javafx.stage.Window ventanaPadre = ventanaTicket.getOwner();
 
-// 3. Le decimos a Windows que ponga la impresora justo en frente del Padre
             boolean mostrarDialogo = job.showPrintDialog(ventanaPadre);
             if (mostrarDialogo) {
-                // 3. Tomamos la foto y la mandamos
                 boolean impreso = job.printPage(btnGenerarTicket.getScene().getRoot());
 
                 if (impreso) {
                     job.endJob();
-                    System.out.println("✅ Ticket enviado exitosamente.");
+                    System.out.println(" Ticket enviado exitosamente a la cola de impresión.");
                 } else {
-                    System.out.println("❌ Falló la comunicación con la impresora.");
+                    System.out.println(" Falló la comunicación con la impresora.");
                 }
             } else {
-                System.out.println("⚠️ Impresión cancelada por el usuario.");
+                System.out.println(" Impresión cancelada por el usuario.");
             }
         } else {
-            System.out.println("❌ No se encontró ninguna impresora.");
+            System.out.println(" No se encontró ninguna impresora instalada en el equipo.");
         }
 
-        // 4. Volvemos a mostrar los botones
         btnGenerarTicket.setVisible(true);
         btnCerrar.setVisible(true);
         btnCerrarX.setVisible(true);
 
-        // 5. Cerramos la ventanita del ticket
         cerrarVentana();
     }
+
     private void cerrarVentana() {
         Stage stage = (Stage) btnCerrar.getScene().getWindow();
         stage.close();

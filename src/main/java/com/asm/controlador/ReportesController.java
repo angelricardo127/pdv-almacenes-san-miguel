@@ -22,7 +22,7 @@ import java.util.Locale;
 
 public class ReportesController {
 
-    // --- FILTROS Y MODAL ---
+    // Filtros y modal
     @FXML private DatePicker dpFechaDesde;
     @FXML private DatePicker dpFechaHasta;
     @FXML private StackPane modalReporte;
@@ -30,19 +30,18 @@ public class ReportesController {
     @FXML private Label lblSumaTotal;
     @FXML private Label lblBienvenida;
 
-    // --- KPIs DEL DASHBOARD (SUPERIOR) ---
+    // KPIs del sashboard
     @FXML private Label lblVentasHoy;
     @FXML private Label lblTransacciones;
     @FXML private Label lblTicketPromedio;
     @FXML private Label lblDevoluciones;
 
-    // --- CONTENEDORES DINÁMICOS DEL DASHBOARD (INFERIOR) ---
+    // Contenedores dinamicos del dashboard
     @FXML private VBox vboxCategorias;
     @FXML private VBox vboxTopProductos;
     @FXML private VBox vboxMetodosPago;
     @FXML private VBox vboxCajeros;
 
-    // --- TABLA ---
     @FXML private TableView<String[]> tablaReporte;
     @FXML private TableColumn<String[], String> colFolio;
     @FXML private TableColumn<String[], String> colFecha;
@@ -51,7 +50,7 @@ public class ReportesController {
     @FXML private TableColumn<String[], String> colMetodo;
     @FXML private TableColumn<String[], String> colTotal;
 
-    // --- CONEXIÓN A BD ---
+    // Conexcion a la base de datos
     private SessionFactory factory;
     private ReportesService service;
 
@@ -103,7 +102,7 @@ public class ReportesController {
             lblTicketPromedio.setText("$ " + String.format("%.2f", ticketPromedio));
             lblDevoluciones.setText("0");
         } catch (Exception e) {
-            System.err.println("⚠️ Error al cargar KPIs superiores: " + e.getMessage());
+            System.err.println(" Error al cargar KPIs superiores: " + e.getMessage());
         }
     }
 

@@ -33,10 +33,10 @@ public class ReporteVentaController {
 
         tablaReportes.setItems(listaVentasOberservable);
 
-        // 1. Le pedimos al Service que traiga el historial de MySQL
+        //  Le pedimos al Service que traiga el historial de MySQL
         List<Venta> historial = ventaService.obtenerHistorialVentas();
 
-        // 2. Mandamos esa información a la interfaz
+        //  Mandamos esa información a la interfaz
         cargarDatosReporte(historial);
     }
 

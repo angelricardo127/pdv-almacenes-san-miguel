@@ -114,7 +114,6 @@ public class GestionCajaController {
         }
 
         if (modalCierre != null) {
-            // 🔥 CONSULTA REAL A LA BASE DE DATOS
             ventasEfectivoReal = ventaService.obtenerSumaVentasDelDia(1);
             ventasTarjetaReal = ventaService.obtenerSumaVentasDelDia(2);
             System.out.println("🕵️ Efectivo traído de MySQL: " + ventasEfectivoReal);

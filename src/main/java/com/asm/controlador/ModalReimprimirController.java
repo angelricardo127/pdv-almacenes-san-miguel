@@ -26,7 +26,7 @@ public class ModalReimprimirController {
 
     private VentaService servicioVentas;
 
-    // Método para recibir el servicio desde la pantalla principal
+    // Metodo para recibir el servicio desde la pantalla principal
     public void setServicioVentas(VentaService servicioVentas) {
         this.servicioVentas = servicioVentas;
     }
@@ -42,26 +42,25 @@ public class ModalReimprimirController {
         String folioStr = txtFolioTicket.getText();
 
         if (folioStr == null || folioStr.trim().isEmpty()) {
-            System.out.println("⚠️ Por favor ingresa un número de folio.");
+            System.out.println(" Por favor ingresa un número de folio.");
             return;
         }
 
         try {
             int idVenta = Integer.parseInt(folioStr.trim());
 
-            // 1. Buscamos si la venta existe en MySQL
+            //  Buscamos si la venta existe en MySQL
             Venta ventaHistorica = servicioVentas.obtenerVentaPorId(idVenta);
 
             if (ventaHistorica == null) {
-                System.out.println("❌ No se encontró ninguna venta con el folio: #" + idVenta);
-                // Si quieres, aquí luego puedes cambiar el color del TextField a rojo
+                System.out.println(" No se encontró ninguna venta con el folio: #" + idVenta);
                 return;
             }
 
-            // 2. Traemos todos los detalles (los artículos que compró)
+            //  Traemos todos los detalles (los artículos que compró)
             List<DetalleVenta> detalles = servicioVentas.obtenerDetallesPorVenta(idVenta);
 
-            // 3. Reconstruimos los mapas que necesita tu ModalTicketController
+            //  Reconstruimos los mapas que necesita tu ModalTicketController
             Map<Integer, Integer> cantidades = new HashMap<>();
             Map<Integer, Producto> productos = new HashMap<>();
             double totalCompra = 0.0;
@@ -78,7 +77,7 @@ public class ModalReimprimirController {
                 }
             }
 
-            // 4. Invocamos tu misma ventana de Ticket
+            //  Invocamos tu misma ventana de Ticket
             FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalTicket.fxml"));
             Parent ticketRoot = ticketLoader.load();
 
@@ -98,9 +97,9 @@ public class ModalReimprimirController {
             ticketStage.showAndWait();
 
         } catch (NumberFormatException e) {
-            System.out.println("⚠️ El folio debe ser un número entero (Ej: 1).");
+            System.out.println(" El folio debe ser un número entero (Ej: 1).");
         } catch (Exception e) {
-            System.err.println("❌ Error al armar el ticket histórico: " + e.getMessage());
+            System.err.println(" Error al armar el ticket histórico: " + e.getMessage());
             e.printStackTrace();
         }
     }

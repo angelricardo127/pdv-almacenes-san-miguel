@@ -45,7 +45,7 @@ public class PuntoVentaController {
     private VentaService servicioVentas;
 
     @FXML
-    public void initialize() {
+    public void initialize() { // metodo para inicializar la interfaz
         System.out.println("Cargando el Punto de Venta desde la BD...");
 
         String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
@@ -59,7 +59,7 @@ public class PuntoVentaController {
 
         contenedorProductos.getChildren().clear();
 
-        try {
+        try { // configuramos la base de datos mapeando las clases principales
             Configuration configuration = new Configuration();
             configuration.configure("com/asm/vista/hibernate.cfg.xml");
             configuration.addAnnotatedClass(com.asm.modelo.Producto.class);
@@ -71,8 +71,12 @@ public class PuntoVentaController {
             this.servicioVentas = new VentaService(factory);
 
             this.listaProductos = servicioVentas.obtenerProductos();
+
+            // FILTRO DE ARRANQUE: Solo dibuja las prendas que tengan stock disponible
             for (Producto prod : listaProductos) {
-                crearTarjetaProducto(prod);
+                if (prod.getStock() > 0) {
+                    crearTarjetaProducto(prod);
+                }
             }
 
             if (txtBuscarProducto != null) {
@@ -101,6 +105,7 @@ public class PuntoVentaController {
         }
     }
 
+    // metodo para crear la tarjeta del producto
     private void crearTarjetaProducto(Producto prod) {
         VBox tarjeta = new VBox();
         tarjeta.setPrefSize(200, 150);
@@ -129,6 +134,7 @@ public class PuntoVentaController {
         contenedorProductos.getChildren().add(tarjeta);
     }
 
+    // metodo para agregar productos al carrito
     private void agregarAlCarrito(Producto prod) {
         int id = prod.getIdProducto();
         int cantidadActual = cantidadesCarrito.getOrDefault(id, 0);
@@ -249,7 +255,6 @@ public class PuntoVentaController {
                 double recibido = modalController.getMontoRecibido();
                 double cambio = recibido - totalCompra;
 
-                // 🔥 AQUÍ IDENTIFICAMOS EL MÉTODO DE PAGO
                 String metodoPago = modalController.getMetodoPagoFinal();
                 int idMetodoSeleccionado = 1; // Por defecto Efectivo
 
@@ -257,7 +262,6 @@ public class PuntoVentaController {
                     idMetodoSeleccionado = 2; // Es Tarjeta
                 }
 
-                // 🔥 ENVIAMOS EL ID AL SERVICIO
                 servicioVentas.registrarVenta(cantidadesCarrito, totalCompra, idMetodoSeleccionado);
 
                 FXMLLoader ticketLoader = new FXMLLoader(getClass().getResource("/com/asm/vista/ModalTicket.fxml"));
@@ -287,12 +291,15 @@ public class PuntoVentaController {
         }
     }
 
+    // FILTRO DE BÚSQUEDA CORREGIDO: Evita desplegar artículos agotados o con valores negativos
     private void filtrarProductos(String busqueda) {
         contenedorProductos.getChildren().clear();
 
         if (busqueda == null || busqueda.trim().isEmpty()) {
             for (Producto prod : listaProductos) {
-                crearTarjetaProducto(prod);
+                if (prod.getStock() > 0) {
+                    crearTarjetaProducto(prod);
+                }
             }
             return;
         }
@@ -300,8 +307,10 @@ public class PuntoVentaController {
         String busquedaMinusculas = busqueda.toLowerCase();
 
         for (Producto prod : listaProductos) {
-            if (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas) ||
-                    String.valueOf(prod.getIdProducto()).contains(busquedaMinusculas)) {
+            if (prod.getStock() > 0 &&
+                    (prod.getNombreProducto().toLowerCase().contains(busquedaMinusculas) ||
+                            String.valueOf(prod.getIdProducto()).contains(busquedaMinusculas))) {
+
                 crearTarjetaProducto(prod);
             }
         }

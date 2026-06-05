@@ -36,7 +36,7 @@ public class CambiosController {
     public void initialize() {
         System.out.println("Módulo de Cambios y Devoluciones iniciado.");
 
-        // --- LÓGICA DE SESIÓN Y FECHA ---
+        // logica de sesion y fecha
         String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
         com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
 
@@ -45,11 +45,10 @@ public class CambiosController {
         } else if (lblBienvenida != null) {
             lblBienvenida.setText("Usuario activo - " + fechaHoy);
         }
-        // --------------------------------
 
         configurarDisenoLista();
 
-        // 1. Configuramos Hibernate igual que en el módulo de Inventario
+        //Configuramos Hibernate igual que en el módulo de Inventario
         try {
             Configuration configuration = new Configuration();
             configuration.configure("/com/asm/vista/hibernate.cfg.xml"); // Asegura la diagonal inicial
@@ -60,7 +59,7 @@ public class CambiosController {
             SessionFactory factory = configuration.buildSessionFactory();
             servicio = new DevolucionesService(factory);
 
-            // 2. Cargamos los datos reales
+            //  Cargamos los datos
             cargarDatosReales();
 
         } catch (Exception e) {
@@ -68,9 +67,6 @@ public class CambiosController {
         }
     }
 
-    /**
-     * Esta es la magia que transforma un dato simple en la tarjeta de Figma.
-     */
     private void configurarDisenoLista() {
         listaTickets.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -81,7 +77,7 @@ public class CambiosController {
                     setGraphic(null);
                     setStyle("-fx-background-color: transparent;");
                 } else {
-                    // --- FILA 1: Ticket y Fecha ---
+                    //  Ticket y Fecha
                     Label lblTicket = new Label("Ticket #" + ticket.getNumeroTicket());
                     lblTicket.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #111827;");
 
@@ -103,11 +99,10 @@ public class CambiosController {
                     HBox.setHgrow(spacer2, Priority.ALWAYS);
                     HBox fila2 = new HBox(lblCajero, spacer2, lblTotal);
 
-                    // --- FILA 3: Detalles (Gris pequeñito) ---
                     Label lblDetalles = new Label(ticket.getCantidadProductos() + " productos • " + ticket.getMetodoPago());
                     lblDetalles.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 11px;");
 
-                    // Juntamos todas las filas en una caja vertical (La tarjeta)
+                    // Juntamos todas las filas en una caja vertical (
                     VBox tarjeta = new VBox(8, fila1, fila2, lblDetalles);
                     tarjeta.setStyle("-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15; -fx-cursor: hand;");
 
@@ -135,9 +130,9 @@ public class CambiosController {
 
             if (ticketsBD != null && !ticketsBD.isEmpty()) {
                 listaTickets.getItems().addAll(ticketsBD);
-                System.out.println("✅ Se cargaron " + ticketsBD.size() + " tickets desde MySQL.");
+                System.out.println(" Se cargaron " + ticketsBD.size() + " tickets desde MySQL.");
             } else {
-                System.out.println("⚠️ No hay ventas registradas en la base de datos.");
+                System.out.println(" No hay ventas registradas en la base de datos.");
             }
         }
     }
@@ -244,13 +239,11 @@ public class CambiosController {
         btnConfirmar.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnConfirmar, Priority.ALWAYS);
 
-        // ====================================================================
-        // 🔥 LA LÓGICA DE DEVOLUCIÓN (NUEVA CONEXIÓN AL TICKET MODAL)
-        // ====================================================================
+        // logica de devolucion
         btnConfirmar.setOnAction(e -> {
             String motivo = txtMotivo.getText();
 
-            // 1. Candado Visual del Motivo
+            // candado Visual del Motivo
             if (motivo == null || motivo.trim().isEmpty()) {
                 javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
                 alerta.setTitle("Motivo Requerido");
@@ -272,7 +265,7 @@ public class CambiosController {
 
                     // Mandamos a la BD
                     servicio.registrarDevolucion(idVenta, prod.getIdProducto(), motivo, prod.getSubtotal());
-                    System.out.println("✅ Devolución registrada: " + prod.getNombreProducto());
+                    System.out.println(" Devolución registrada: " + prod.getNombreProducto());
                     seDevolvioAlgo = true;
 
                     // Sumamos para el ticket impreso
@@ -312,7 +305,7 @@ public class CambiosController {
                     stage.showAndWait();
 
                 } catch (Exception ex) {
-                    System.err.println("❌ Error al abrir el ticket elegante: " + ex.getMessage());
+                    System.err.println(" Error al abrir el ticket elegante: " + ex.getMessage());
                     ex.printStackTrace();
                 }
 
@@ -323,7 +316,7 @@ public class CambiosController {
 
         cajaBotones.getChildren().addAll(btnCancelar, btnConfirmar);
 
-        // 7. Ensamblaje Final
+        //. Ensamblaje Final
         panelDetalle.getChildren().addAll(lblTitulo, infoCard, lblProdBox, listaProductosUI, lblMotivo, txtMotivo, cajaBotones);
     }
 

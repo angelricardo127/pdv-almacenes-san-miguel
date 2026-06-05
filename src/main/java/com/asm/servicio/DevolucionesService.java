@@ -1,6 +1,7 @@
 package com.asm.servicio;
 
 import com.asm.modelo.TicketPreview;
+import com.asm.modelo.Producto; // Importamos tu clase Producto
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
@@ -44,12 +45,10 @@ public class DevolucionesService {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-            // Convertimos cada fila que regresó MySQL en tu objeto TicketPreview
-            // Convertimos cada fila que regresó MySQL en tu objeto TicketPreview
+            // Convertimos cada fila que regresó MySQL en el objeto TicketPreview
             for (Object[] fila : resultados) {
                 String idVenta = String.valueOf(fila[0]);
 
-                // --- ESCUDO PROTECTOR PARA LA FECHA ---
                 String fechaFormateada = "Fecha no registrada"; // Texto por defecto
                 if (fila[1] != null) {
                     fechaFormateada = sdf.format((java.util.Date) fila[1]);
@@ -63,7 +62,7 @@ public class DevolucionesService {
                 lista.add(new TicketPreview(idVenta, fechaFormateada, cajero, total, cantidad, metodo));
             }
         } catch (Exception e) {
-            System.err.println("🚨 Error al obtener el historial de ventas: " + e.getMessage());
+            System.err.println(" Error al obtener el historial de ventas: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -93,12 +92,35 @@ public class DevolucionesService {
                 lista.add(new DetalleTicketPreview(idProd, nombre, cantidad, precio, subtotal));
             }
         } catch (Exception e) {
-            System.err.println("🚨 Error al obtener los detalles: " + e.getMessage());
+            System.err.println(" Error al obtener los detalles: " + e.getMessage());
         }
         return lista;
     }
 
-    // --- NUEVO MÉTODO PARA GUARDAR LA DEVOLUCIÓN ---
+
+     //Trae todas las prendas de la base de datos mapeadas directamente como entidades Producto.
+
+    public List<Producto> obtenerProductosDisponibles() {
+        List<Producto> lista = new ArrayList<>();
+
+        // Consulta nativa apuntando a la tabla 'productos'
+        String sql = "SELECT * FROM productos";
+
+        try (Session session = sessionFactory.openSession()) {
+            // Le pasamos Producto.class para que Hibernate se encargue de construir los objetos automáticamente
+            NativeQuery<Producto> query = session.createNativeQuery(sql, Producto.class);
+            lista = query.getResultList();
+
+            System.out.println(" Módulo Devoluciones: Se cargaron " + lista.size() + " productos para el catálogo de cambios.");
+        } catch (Exception e) {
+            System.err.println(" Error al obtener los productos disponibles en Devoluciones: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
+    // metodo para guardar la devolucion
     public void registrarDevolucion(int idVenta, int idProducto, String motivo, double montoRetornado) {
         String sql = "INSERT INTO devolucion (id_ventaOriginal, id_producto, motivo, monto_retornado) " +
                 "VALUES (:idVenta, :idProd, :motivo, :monto)";
@@ -114,8 +136,7 @@ public class DevolucionesService {
             query.executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
-            System.err.println("🚨 Error al registrar la devolución: " + e.getMessage());
+            System.err.println(" Error al registrar la devolución: " + e.getMessage());
         }
     }
-
 }

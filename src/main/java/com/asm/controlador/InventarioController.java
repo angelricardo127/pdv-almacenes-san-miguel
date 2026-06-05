@@ -22,7 +22,7 @@ import java.util.List;
 
 public class InventarioController {
 
-    // --- inyeccion de componentes fxml
+    //  inyeccion de componentes fxml
     @FXML private TextField txtBuscador;
     @FXML private Label lblBienvenida;
     @FXML private TableView<Producto> tablaInventario;
@@ -36,10 +36,9 @@ public class InventarioController {
     @FXML private TableColumn<Producto, Void> colAcciones;
     @FXML private Button btnRegistrarNuevo;
 
-    // --- servicios y estado de la vista
+    // servicios y estado de la vista
     private InventarioService servicio;
 
-    // 💡 SOLUCIÓN: Instanciamos las listas desde el principio a nivel de clase
     private ObservableList<Producto> listaProductos = FXCollections.observableArrayList();
     private FilteredList<Producto> productosFiltrados;
 
@@ -47,7 +46,6 @@ public class InventarioController {
     public void initialize() {
         System.out.println("Iniciando el Módulo de Inventario");
 
-        // --- LÓGICA DEL NOMBRE Y FECHA (Intacta) ---
         String fechaHoy = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new java.util.Locale("es", "ES")));
         com.asm.modelo.Usuario usuarioLogueado = com.asm.modelo.SesionGlobal.getUsuarioActual();
 
@@ -70,7 +68,6 @@ public class InventarioController {
 
             configurarColumnas();
 
-            // 💡 SOLUCIÓN: Configuramos el buscador una sola vez al arrancar
             configurarBuscador();
 
             cargarDatosEnTabla();
@@ -81,7 +78,6 @@ public class InventarioController {
         }
     }
 
-    // 💡 NUEVO MÉTODO: Separa la lógica del buscador para que no se rompa al refrescar
     private void configurarBuscador() {
         productosFiltrados = new FilteredList<>(listaProductos, b -> true);
 
@@ -116,8 +112,6 @@ public class InventarioController {
         } else {
             System.out.println(" Módulo Inventario: Hibernate encontró " + productosBD.size() + " productos en MySQL.");
 
-            // 💡 SOLUCIÓN: Solo reemplazamos los datos internos de la lista.
-            // El buscador ya está conectado a esta lista desde el initialize, así que reaccionará automáticamente.
             listaProductos.setAll(productosBD);
         }
     }

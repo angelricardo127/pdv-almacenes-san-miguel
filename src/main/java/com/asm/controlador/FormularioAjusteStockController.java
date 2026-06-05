@@ -63,19 +63,19 @@ public class FormularioAjusteStockController {
             String tipoAjuste = cmbTipoAjuste.getValue();
             String textoCantidad = txtCantidad.getText();
 
-            // 1. Validar que SÍ hayan elegido un producto
+            //  Validar que SÍ hayan elegido un producto
             if (productoSeleccionado == null) {
                 mostrarAlerta("Seleccione producto por favor antes de aplicar el ajuste.");
                 return;
             }
 
-            // 2. Validar que SÍ hayan elegido el tipo de ajuste
+            //  Validar que SÍ hayan elegido el tipo de ajuste
             if (tipoAjuste == null) {
                 mostrarAlerta("Por favor seleccione el Tipo de Ajuste.");
                 return;
             }
 
-            // 3. Validar que la cantidad no esté vacía
+            //  Validar que la cantidad no esté vacía
             if (textoCantidad == null || textoCantidad.trim().isEmpty()) {
                 mostrarAlerta("Ingrese la cantidad a ajustar.");
                 return;
@@ -102,11 +102,11 @@ public class FormularioAjusteStockController {
                 productoSeleccionado.setStock(stockActual - cantidadAjuste);
             }
 
-            // TODO: (Opcional a futuro) Guardar el txtMotivo en una tabla de 'Historial_Movimientos'
+
 
             // Mandamos el UPDATE a MySQL
             servicio.actualizarProducto(productoSeleccionado);
-            System.out.println("✅ Ajuste aplicado exitosamente");
+            System.out.println(" Ajuste aplicado exitosamente");
 
             // Recargamos la tabla principal y cerramos
             controladorPadre.cargarDatosEnTabla();
@@ -118,7 +118,7 @@ public class FormularioAjusteStockController {
         }
     }
 
-    // --- MÉTODO AUXILIAR PARA NO REPETIR EL CÓDIGO DE LAS ALERTAS ---
+    // Metodo para no repetir alertas
     private void mostrarAlerta(String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.setTitle("Aviso de Validación");

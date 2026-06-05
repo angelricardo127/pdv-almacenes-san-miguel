@@ -38,7 +38,7 @@ public class CorteCajaServiceIntegrationTest {
         }
     }
 
-    // 1. PROBAR: obtenerCorteActual()
+    //
     @Test
     public void checarQueExistaHistorialDeCortes() {
         CorteCaja ultimoCorte = corteCajaService.obtenerCorteActual();
@@ -53,7 +53,7 @@ public class CorteCajaServiceIntegrationTest {
         }
     }
 
-    // 2. PROBAR: Validacion logica en abrirCaja()
+    //
     @Test
     public void checarBloqueoDeFondoInicialNegativo() {
         // simulamos que un cajero intenta abrir su turno con dinero negativo
@@ -71,25 +71,24 @@ public class CorteCajaServiceIntegrationTest {
 
     @Test
     public void checarFlujoCompletoDeCaja() {
-        // PASO CERO: Limpiar el terreno por si se quedo una caja abierta de pruebas anteriores
         CorteCaja cortePendiente = corteCajaService.obtenerCorteActual();
         if (cortePendiente != null && cortePendiente.getMontoFisico() == 0.0) {
             corteCajaService.cerrarCaja(1.0); // la cerramos simbolicamente
         }
 
-        // PASO 1: Abrir la caja con $1000 de fondo
+
         boolean abierta = corteCajaService.abrirCaja(1, 1000.0);
         assertTrue(abierta, "fallo al intentar abrir la caja en mysql");
 
-        // PASO 2: Registrar un retiro para comprar garrafones de agua ($80)
+        //  Registrar un retiro para comprar garrafones de agua ($80)
         boolean retiroExitoso = corteCajaService.registrarRetiro(80.0);
         assertTrue(retiroExitoso, "fallo al registrar el retiro manual");
 
-        // PASO 3: Cerrar la caja al final del turno contando $2500 en fisico
+        //  Cerrar la caja al final del turno contando $2500 en fisico
         boolean cerrada = corteCajaService.cerrarCaja(2500.0);
         assertTrue(cerrada, "fallo al intentar cerrar la caja en mysql");
 
-        // VALIDACION FINAL: Traemos el corte para comprobar que los datos se guardaron
+        //  Traemos el corte para comprobar que los datos se guardaron
         CorteCaja corteFinal = corteCajaService.obtenerCorteActual();
         assertEquals(2500.0, corteFinal.getMontoFisico(), "el monto fisico final no cuadra");
         assertEquals(80.0, corteFinal.getRetirosManuales(), "el retiro manual no se acumulo bien");

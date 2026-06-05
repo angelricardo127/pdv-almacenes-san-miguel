@@ -14,8 +14,8 @@ public class CorteCajaService {
     }
 
     /**
-     * PASOS PARA APERTURA DE CAJA (RF-05)
-     * 1. Validar que no exista un corte activo (monto_fisico == 0).
+     * pasos para la aprertura de caja
+     * 1. Validar que no exista un corte activo .
      * 2. Registrar el ID del usuario que opera la caja.
      * 3. Capturar el fondo inicial de dinero en efectivo.
      * 4. Registrar la fecha/hora de inicio y guardar en la BD.
@@ -31,7 +31,7 @@ public class CorteCajaService {
         try {
             transaction = session.beginTransaction();
 
-            // Paso 1: Validar si ya hay una caja abierta (monto_fisico igual a 0)
+            //  Validar si ya hay una caja abierta (monto_fisico igual a 0)
             CorteCaja cajaAbierta = session.createQuery(
                             "FROM CorteCaja WHERE montoFisico = 0.0 ORDER BY idCorte DESC", CorteCaja.class)
                     .setMaxResults(1)
@@ -41,7 +41,7 @@ public class CorteCajaService {
                 throw new RuntimeException("Error: Ya existe un turno activo en el sistema. Debe cerrarse primero.");
             }
 
-            // Pasos 2, 3 y 4: Instanciar y persistir el nuevo registro
+            //  Instanciar y persistir el nuevo registro
             CorteCaja nuevoCorte = new CorteCaja(idUsuario, fondoInicial);
             session.persist(nuevoCorte);
 
@@ -56,12 +56,7 @@ public class CorteCajaService {
         }
     }
 
-    /**
-     * PASOS PARA CIERRE DE CAJA (RF-06)
-     * 1. Localizar el corte activo actual del sistema.
-     * 2. Recibir la cantidad de dinero físico contado por el cajero.
-     * 3. Actualizar la columna monto_fisico para dar por terminado el turno.
-     */
+
     public boolean cerrarCaja(double montoRealContado) {
         if (montoRealContado < 0) {
             throw new RuntimeException("El monto físico no puede ser menor a cero.");
@@ -73,7 +68,7 @@ public class CorteCajaService {
         try {
             transaction = session.beginTransaction();
 
-            // Paso 1: Localizar el corte que sigue abierto
+            //  Localizar el corte que sigue abierto
             CorteCaja corteActivo = session.createQuery(
                             "FROM CorteCaja WHERE montoFisico = 0.0 ORDER BY idCorte DESC", CorteCaja.class)
                     .setMaxResults(1)
@@ -83,7 +78,7 @@ public class CorteCajaService {
                 throw new RuntimeException("Error: No se encontró ningún turno abierto para proceder con el cierre.");
             }
 
-            // Pasos 2 y 3: Asignar el dinero contado en físico y actualizar en la BD
+            //  Asignar el dinero contado en físico y actualizar en la BD
             corteActivo.setMontoFisico(montoRealContado);
             session.merge(corteActivo);
 
@@ -98,10 +93,6 @@ public class CorteCajaService {
         }
     }
 
-    /**
-     * PASO ADICIONAL: Registrar salida de efectivo (Retiros Manuales)
-     * Permite ir acumulando los retiros de efectivo que se hagan durante el turno.
-     */
     public boolean registrarRetiro(double montoRetiro) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;

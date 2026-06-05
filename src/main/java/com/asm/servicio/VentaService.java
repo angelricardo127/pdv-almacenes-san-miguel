@@ -83,19 +83,22 @@ public class VentaService {
         }
     }
 
+    /**
+     * CORREGIDO: Ahora aplica el filtro 'WHERE activo = true' para sincronizarse
+     * de manera exacta con el catálogo general del Inventario.
+     */
     public List<Producto> obtenerProductos() {
         Session session = sessionFactory.openSession();
         try {
-            return session.createQuery("FROM Producto", Producto.class).list();
+            return session.createQuery("FROM Producto WHERE activo = true", Producto.class).list();
         } catch (Exception e) {
-            System.err.println("Error al obtener el catálogo de productos: " + e.getMessage());
+            System.err.println("Error al obtener el catálogo de productos activos: " + e.getMessage());
             return java.util.Collections.emptyList();
         } finally {
             session.close();
         }
     }
 
-    // 🔥 MÉTODO CORREGIDO: Ahora recibe idMetodoPago y guarda el total
     public void registrarVenta(Map<Integer, Integer> carrito, double totalVenta, int idMetodoPago) {
         Session session = sessionFactory.openSession();
         Transaction tx = null;
@@ -170,11 +173,9 @@ public class VentaService {
         return p;
     }
 
-    // 🔥 NUESTRO MÉTODO PARA CUADRAR LA CAJA (VERSIÓN BLINDADA CON LOCALDATETIME)
     public double obtenerSumaVentasDelDia(int idMetodoPago) {
         Session session = sessionFactory.openSession();
         try {
-            // Replicamos el éxito de Reportes: Creamos el rango del día actual
             java.time.LocalDateTime inicioDia = java.time.LocalDate.now().atStartOfDay();
             java.time.LocalDateTime finDia = java.time.LocalDate.now().atTime(java.time.LocalTime.MAX);
 
@@ -188,7 +189,7 @@ public class VentaService {
 
             return suma != null ? suma : 0.0;
         } catch (Exception e) {
-            System.err.println("❌ Error al sumar ventas del día: " + e.getMessage());
+            System.err.println(" Error al sumar ventas del día: " + e.getMessage());
             return 0.0;
         } finally {
             session.close();

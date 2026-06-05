@@ -16,7 +16,7 @@ public class ReportesService {
         this.sessionFactory = sessionFactory;
     }
 
-    // 1. Obtener las ventas filtradas
+    //  Obtener las ventas filtradas
     public List<Object[]> obtenerVentasPorRango(LocalDate inicio, LocalDate fin) {
         try (Session session = sessionFactory.openSession()) {
             LocalDateTime fechaInicio = inicio.atStartOfDay();
@@ -39,7 +39,7 @@ public class ReportesService {
         }
     }
 
-    // 2. Obtener el total de dinero recaudado HOY
+    //  Obtener el total de dinero recaudado HOY
     public double obtenerTotalVentasHoy() {
         try (Session session = sessionFactory.openSession()) {
             LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
@@ -57,7 +57,7 @@ public class ReportesService {
         }
     }
 
-    // 3. Obtener el número de transacciones (tickets) de HOY
+    //  Obtener el número de transacciones (tickets) de HOY
     public long obtenerTransaccionesHoy() {
         try (Session session = sessionFactory.openSession()) {
             LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
@@ -75,11 +75,8 @@ public class ReportesService {
         }
     }
 
-    // =========================================================================
-    // CONSULTAS AVANZADAS PARA LA PARTE INFERIOR DEL DASHBOARD
-    // =========================================================================
 
-    // 4. Rendimiento por Cajero (Usuario)
+    //  Rendimiento por Cajero (Usuario)
     public List<Object[]> obtenerRendimientoCajeros() {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT concat(u.nombre, ' ', u.apellidoPaterno), SUM(v.total) " +
@@ -93,7 +90,7 @@ public class ReportesService {
         }
     }
 
-    // 5. Ventas por Método de Pago
+    //  Ventas por Método de Pago
     public List<Object[]> obtenerVentasPorMetodoPago() {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT mp.nombreMetodo, SUM(v.total) " +
@@ -107,7 +104,7 @@ public class ReportesService {
         }
     }
 
-    // 6. Productos Más Vendidos
+    //  Productos Más Vendidos
     public List<Object[]> obtenerTopProductos() {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT p.nombreProducto, SUM(dv.cantidad) " +

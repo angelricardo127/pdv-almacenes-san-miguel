@@ -58,7 +58,7 @@ public class ModalNuevoUsuarioController {
         String confirm = txtConfirmPassword.getText();
         String rolSeleccionado = cmbRol.getValue();
 
-        // 1. Validaciones básicas
+        //  Validaciones básicas
         if (nombreCompleto.isEmpty() || username.isEmpty() || password.isEmpty() || rolSeleccionado == null) {
             mostrarAlerta("Campos vacíos", "Por favor llena todos los campos obligatorios.");
             return;
@@ -68,7 +68,7 @@ public class ModalNuevoUsuarioController {
             return;
         }
 
-        // 2. Dividir el "Nombre Completo" para guardarlo en la BD
+        //  Dividir el "Nombre Completo" para guardarlo en la BD
         String[] partesNombre = nombreCompleto.split(" ", 2);
         String nombre = partesNombre[0];
         // Si escribió dos palabras, la segunda se va a apellido_paterno
@@ -84,7 +84,7 @@ public class ModalNuevoUsuarioController {
             idRol = 3; // Almacenista
         }
 
-        // 4. Crear el objeto Usuario (Ajustado a tu clase Usuario.java)
+        //  Crear el objeto Usuario (Ajustado a tu clase Usuario.java)
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(nombre);
         nuevoUsuario.setApellidoPaterno(apellido);
@@ -94,7 +94,7 @@ public class ModalNuevoUsuarioController {
         nuevoUsuario.setIdRol(idRol);
         nuevoUsuario.setEstatus(1);
 
-        // 5. Guardar en Base de Datos con Hibernate
+        //  Guardar en Base de Datos con Hibernate
         try (Session session = factory.openSession()) {
             Transaction tx = session.beginTransaction();
             session.persist(nuevoUsuario);

@@ -28,17 +28,17 @@ public class MenuPrincipalController {
 
     private void intercambiarPantalla(String nombreFxml) {
         try {
-            // 1. Limpiar lo que esté cargado actualmente a la derecha
+            //  Limpiar lo que esté cargado actualmente a la derecha
             contenedorPrincipal.getChildren().clear();
 
-            // 2. Cargar la nueva pestaña desde la ruta correcta
+            //  Cargar la nueva pestaña desde la ruta correcta
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/asm/vista/" + nombreFxml));
             Parent nuevaVista = loader.load();
 
-            // 3. Forzar a que la nueva vista se estire para ocupar todo el espacio
+            //  Forzar a que la nueva vista se estire para ocupar todo el espacio
             VBox.setVgrow(nuevaVista, javafx.scene.layout.Priority.ALWAYS);
 
-            // 4. Inyectar la vista en el contenedor
+            //  Inyectar la vista en el contenedor
             contenedorPrincipal.getChildren().add(nuevaVista);
 
         } catch (IOException e) {

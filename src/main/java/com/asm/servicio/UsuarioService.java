@@ -13,9 +13,7 @@ public class UsuarioService {
         this.sessionFactory = sessionFactory;
     }
 
-    // -------------------------------------------------------------------------
     // metodo 1: El original (Lo dejamos intacto para las pruebas de JUnit)
-    // -------------------------------------------------------------------------
     public Usuario validarUsuario(String username, String password) {
         Session session = sessionFactory.openSession();
 
@@ -36,31 +34,29 @@ public class UsuarioService {
         }
     }
 
-    // -------------------------------------------------------------------------
     // metodo 2: El detallado (Especial para la pantalla de Login en JavaFX)
-    // -------------------------------------------------------------------------
     public Usuario validarUsuarioDetallado(String username, String password) throws Exception {
         Session session = sessionFactory.openSession();
 
         try {
-            // 1. Buscamos solo por el nombre de usuario
+            //  Buscamos solo por el nombre de usuario
             String hql = "FROM Usuario WHERE username = :user";
             Query<Usuario> query = session.createQuery(hql, Usuario.class);
             query.setParameter("user", username);
 
             Usuario usuarioEncontrado = query.uniqueResult();
 
-            // 2. Validamos si existe en la base de datos
+            //  Validamos si existe en la base de datos
             if (usuarioEncontrado == null) {
                 throw new Exception("El usuario no existe o es incorrecto.");
             }
 
-            // 3. Validamos la contraseña
+            // Validamos la contraseña
             if (!usuarioEncontrado.getContrasena().equals(password)) {
                 throw new Exception("Contraseña incorrecta. Inténtelo de nuevo.");
             }
 
-            // 4. Validamos si está activo (estatus = 1)
+            //  Validamos si está activo (estatus = 1)
             if (usuarioEncontrado.getEstatus() != 1) {
                 throw new Exception("Usuario inactivo. Contacte al administrador.");
             }
