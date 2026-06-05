@@ -119,8 +119,9 @@ public class GestionCajaController {
         }
 
         if (modalCierre != null) {
-            ventasEfectivoReal = ventaService.obtenerSumaVentasDesdeHora(1, horaAperturaTurno);
-            ventasTarjetaReal = ventaService.obtenerSumaVentasDesdeHora(2, horaAperturaTurno);
+            // CORRECCIÓN: Llamamos al método correcto que ya existe en VentaService
+            ventasEfectivoReal = ventaService.obtenerSumaVentasDelDia(1);
+            ventasTarjetaReal = ventaService.obtenerSumaVentasDelDia(2);
 
             double totalVentas = ventasEfectivoReal + ventasTarjetaReal;
 
