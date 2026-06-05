@@ -16,6 +16,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class GestionCajaController {
@@ -37,6 +38,8 @@ public class GestionCajaController {
     private double fondoInicialGuardado = 0.0;
     private double ventasEfectivoReal = 0.0;
     private double ventasTarjetaReal = 0.0;
+
+    private static LocalDateTime horaAperturaTurno;
 
     @FXML
     public void initialize() {
@@ -96,6 +99,8 @@ public class GestionCajaController {
             }
 
             com.asm.modelo.SesionGlobal.setTurnoAbierto(true);
+            horaAperturaTurno = LocalDateTime.now();
+
             lblExitoCajero.setText(lblCajero.getText());
             lblExitoFondo.setText(String.format("$%.2f", fondoInicialGuardado));
             modalApertura.setVisible(false);
@@ -114,10 +119,9 @@ public class GestionCajaController {
         }
 
         if (modalCierre != null) {
-            ventasEfectivoReal = ventaService.obtenerSumaVentasDelDia(1);
-            ventasTarjetaReal = ventaService.obtenerSumaVentasDelDia(2);
-            System.out.println("🕵️ Efectivo traído de MySQL: " + ventasEfectivoReal);
-            System.out.println("🕵️ Tarjeta traída de MySQL: " + ventasTarjetaReal);
+            ventasEfectivoReal = ventaService.obtenerSumaVentasDesdeHora(1, horaAperturaTurno);
+            ventasTarjetaReal = ventaService.obtenerSumaVentasDesdeHora(2, horaAperturaTurno);
+
             double totalVentas = ventasEfectivoReal + ventasTarjetaReal;
 
             lblCierreVentasEfectivo.setText(String.format("$%.2f", ventasEfectivoReal));
@@ -168,6 +172,8 @@ public class GestionCajaController {
 
         lblExitoDiferencia.setText(lblCierreDiferencia.getText());
         com.asm.modelo.SesionGlobal.setTurnoAbierto(false);
+        horaAperturaTurno = null;
+
         modalCierre.setVisible(false);
         modalExitoCierre.setVisible(true);
     }
