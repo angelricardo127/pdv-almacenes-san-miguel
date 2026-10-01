@@ -50,3 +50,12 @@ El desarrollo se fundamenta en herramientas y estándares de la industria para a
 1. **Clonación del repositorio:**
    bash
    git clone [https://github.com/angelricardo127/AlmacenesSanMiguel.git](https://github.com/angelricardo127/AlmacenesSanMiguel.git)
+
+## Equipo de Ingeniería
+Proyecto diseñado y desarrollado por estudiantes de Ingeniería en Sistemas Computacionales del Instituto Tecnológico de León (ITL):
+
+Angel Ricardo Hernández Nava
+
+André Alessandro González Paulín
+
+Víctor Hugo Ojeda Cabrera
